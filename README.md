@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# manage-store-app
 
-## Getting Started
+Application web de gestion de boutique développée avec Next.js et TypeScript.
 
-First, run the development server:
+---
+
+## ⚙️ Stack technique
+
+| Outil              | Usage                           |
+|--------------------|----------------------------------|
+| [Next.js](https://nextjs.org/)         | Framework React avec SSR & SSG         |
+| [TypeScript](https://www.typescriptlang.org/) | Typage statique pour JavaScript        |
+| [Tailwind CSS](https://tailwindcss.com/) | Styling rapide basé sur les utilitaires |
+| [ESLint](https://eslint.org/)         | Analyse statique du code               |
+| [Prettier](https://prettier.io/)      | Formatage de code                      |
+| [Husky](https://typicode.github.io/husky) + [lint-staged](https://github.com/okonet/lint-staged) | Prévention des erreurs avant commit     |
+
+---
+
+
+## ⚙️ Installation
+
+1. Cloner le dépôt :
+
+   ```bash
+   git clone https://github.com/ton-utilisateur/manage-store-app.git
+   cd manage-store-app
+
+## 📦 Getting Started
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your-username/URL_Shortner_API.git
+cd URL_Shortner
+
+```
+2. Installation
+
+Install project with npm
+
+```bash
+npm install
+
+```
+3. Configure environment variables (.env):
+
+```bash
+PORT=4000
+
+NODE_ENV=
+
+```
+4.Run the server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🛡️ Qualité du code
+-  Le projet utilise Husky et lint-staged pour lancer automatiquement           ESLint,      Prettier et la vérification TypeScript avant chaque commit.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+-  La présence de console.log dans le code est interdite et bloquera les commits.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 📋 Scripts disponibles
+-dev — démarre le serveur Next.js en mode développement
 
-## Learn More
+- start — démarre le serveur en mode production
+- build — compile le projet pour la production
+- lint — lance ESLint pour détecter les problèmes de code
+- type-check — vérifie la conformité TypeScript sans générer de fichiers
+- prepare — installe Husky pour les hooks git
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📄 License
 
-## Deploy on Vercel
+This project is licensed under the [MIT](https://snyk.io/fr/articles/what-is-mit-license/) License — see the LICENSE file for details.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🙌 Author
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Made with ❤️ by [Sielinou Fonou Diderot]()
+
