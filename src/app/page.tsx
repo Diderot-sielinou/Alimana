@@ -9,7 +9,6 @@ export default function LandingPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
       {/* Header/Navbar */}
       <header className="w-full bg-white shadow-sm py-4 md:px-12 flex justify-between items-center z-10">
-        {/* Logo - Clickable to return to landing page */}
         <Link
           href="/"
           className="flex items-center space-x-2 text-2xl font-bold text-amber-700 hover:text-amber-900 transition-colors"
@@ -18,7 +17,7 @@ export default function LandingPage() {
           <span>ALIMANA</span>
         </Link>
 
-        {/* Navigation/Auth Buttons */}
+        {/* Navigation */}
         <nav className="space-x-4">
           <Link href="/login" passHref>
             <Button
@@ -42,6 +41,7 @@ export default function LandingPage() {
           backgroundImage: "url('/images/clients.webp')",
           backgroundPosition: 'center',
           objectFit: 'cover',
+          backgroundRepeat: 'no-repeat',
         }}
       >
         <div className="max-w-4xl text-center">
