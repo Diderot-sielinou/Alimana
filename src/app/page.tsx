@@ -146,7 +146,7 @@ export default function LandingPage() {
       <TestimonialSection />
 
       {/* CTA Section */}
-      <section id="#testimonial" className=" py-16 px-4 sm:px-6 lg:px-8 rounded-2xl text-center">
+      <section id="#getstarted" className=" py-16 px-4 sm:px-6 lg:px-8 rounded-2xl text-center">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
             Ready to transform your store management?
