@@ -37,14 +37,18 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main
-        className="flex-grow flex items-center justify-center py-16 px-6 md:px-12"
-        style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
+        className="h-screen flex-grow flex items-center justify-center py-16 px-6 md:px-12"
+        style={{
+          backgroundImage: "url('/images/clients.webp')",
+          backgroundPosition: 'center',
+          objectFit: 'cover',
+        }}
       >
         <div className="max-w-4xl text-center">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6">
             Streamline Your Store Operations with <span className="text-amber-700">Ease</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-2xl mx-auto">
             ALIMANA is your all-in-one solution for product, sales, and user management, designed to
             empower your business.
           </p>
@@ -76,7 +80,7 @@ export default function LandingPage() {
           <h2 className="text-4xl font-bold text-gray-800 mb-12">Powerful Features, Simplified</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Feature Card 1 */}
-            <div className="bg-blue-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
               <Package className="w-12 h-12 text-amber-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Product Management</h3>
               <p className="text-gray-600">
@@ -84,7 +88,7 @@ export default function LandingPage() {
               </p>
             </div>
             {/* Feature Card 2 */}
-            <div className="bg-blue-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
               <ShoppingBag className="w-12 h-12 text-amber-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Efficient Sales</h3>
               <p className="text-gray-600">
@@ -92,7 +96,7 @@ export default function LandingPage() {
               </p>
             </div>
             {/* Feature Card 3 */}
-            <div className="bg-blue-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
               <Users className="w-12 h-12 text-amber-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-800 mb-2">User & Role Control</h3>
               <p className="text-gray-600">
@@ -100,7 +104,7 @@ export default function LandingPage() {
               </p>
             </div>
             {/* Feature Card 4 */}
-            <div className="bg-blue-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
               <Barcode className="w-12 h-12 text-amber-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Smart Reporting</h3>
               <p className="text-gray-600">
@@ -112,7 +116,7 @@ export default function LandingPage() {
       </section>
       {/* section why choose us */}
 
-      <section className="bg-primary/5 py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-primary">
             Why Choose ALIMANA?

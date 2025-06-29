@@ -32,7 +32,7 @@ export default function TestimonialSection() {
         </h2>
         <div className="grid gap-10 md:grid-cols-3">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-card p-6 rounded-2xl shadow-md border">
+            <div key={index} className="bg-card p-6 rounded-2xl border">
               <div className="mb-4 text-muted-foreground italic">“{testimonial.quote}”</div>
               <div className="flex items-center justify-center gap-3 mt-6">
                 <Avatar>
