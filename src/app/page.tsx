@@ -145,6 +145,25 @@ export default function LandingPage() {
       {/* section testimonials */}
       <TestimonialSection />
 
+      {/* CTA Section */}
+      <section className=" py-16 px-4 sm:px-6 lg:px-8 rounded-2xl text-center">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
+            Ready to transform your store management?
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Join thousands of store owners who have streamlined their operations with ALIMANA.
+          </p>
+          <div className="mt-8">
+            <Link href="/signup">
+              <Button size="lg" className="bg-amber-600 hover:bg-amber-700">
+                Get Started
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <Footer />
     </div>
