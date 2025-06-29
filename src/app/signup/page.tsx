@@ -90,7 +90,6 @@ export default function SignupPage() {
 
   const handleGoogleSignup = () => {
     // Implement Google OAuth signup
-    console.log('Google signup');
   };
 
   const progress = (step / 3) * 100;
