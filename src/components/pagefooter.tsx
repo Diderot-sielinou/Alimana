@@ -34,6 +34,11 @@ export default function Footer() {
                 Why choose us
               </Link>
             </li>
+            <li>
+              <Link href="/getstarted" className="hover:underline text-gray-600">
+                Get started
+              </Link>
+            </li>
           </ul>
         </div>
 

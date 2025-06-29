@@ -25,7 +25,7 @@ const testimonials = [
 
 export default function TestimonialSection() {
   return (
-    <section className="py-20 bg-background text-foreground">
+    <section id="#testimonial" className="py-20 bg-background text-foreground">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl font-bold sm:text-4xl mb-12">
           Loved by store owners across Cameroon
