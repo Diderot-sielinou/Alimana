@@ -36,12 +36,9 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main
-        className="h-screen flex-grow flex items-center justify-center py-16 px-6 md:px-12"
+        className="h-screen flex-grow flex items-center justify-center py-16 px-6 md:px-12 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/images/shopcustomer.webp')",
-          backgroundPosition: 'center',
-          objectFit: 'cover',
-          backgroundRepeat: 'no-repeat',
+          backgroundImage: "url('/images/clients.webp')",
         }}
       >
         <div className="max-w-4xl text-center">
