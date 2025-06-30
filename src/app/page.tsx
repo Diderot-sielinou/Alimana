@@ -38,7 +38,7 @@ export default function LandingPage() {
       <main
         className="h-screen flex-grow flex items-center justify-center py-16 px-6 md:px-12"
         style={{
-          backgroundImage: "url('/images/clients.webp')",
+          backgroundImage: "url('/images/shopcustomer.webp')",
           backgroundPosition: 'center',
           objectFit: 'cover',
           backgroundRepeat: 'no-repeat',
