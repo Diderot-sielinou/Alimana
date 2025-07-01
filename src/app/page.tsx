@@ -53,7 +53,7 @@ export default function LandingPage() {
             <Link href="/signup" passHref>
               <Button
                 size="lg"
-                className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 text-lg shadow-lg"
+                className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 text-lg shadow-lg mb-4 w-52"
               >
                 Get Started Free
               </Button>
@@ -62,7 +62,7 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-amber-600 text-amber-600 hover:bg-indigo-50 px-8 py-3 text-lg"
+                className="border-amber-600 text-amber-600 hover:bg-indigo-50 px-8 py-3 text-lg w-52 mr-2"
               >
                 Learn More
               </Button>
