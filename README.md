@@ -1,4 +1,6 @@
-# manage-store-app
+# ALIMANA
+
+This is a store management system web app for store to be able to keep track of all activities in there store.
 
 Application web de gestion de boutique développée avec Next.js et TypeScript.
 
