@@ -1,103 +1,168 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import Footer from '@/components/pagefooter';
+import TestimonialSection from '@/components/testimonials';
+import { Package, ShoppingBag, Users, Barcode } from 'lucide-react';
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
+      {/* Header/Navbar */}
+      <header className="w-full bg-white shadow-sm py-4 md:px-12 flex justify-between items-center z-10">
+        <Link
+          href="/"
+          className="flex items-center space-x-2 text-2xl font-bold text-amber-700 hover:text-amber-900 transition-colors"
+        >
+          <ShoppingBag className="w-8 h-8" />
+          <span>ALIMANA</span>
+        </Link>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        {/* Navigation */}
+        <nav className="space-x-4">
+          <Link href="/login" passHref>
+            <Button
+              variant="ghost"
+              className="text-amber-700 hover:bg-indigo-50 hover:text-amber-800"
+            >
+              {' '}
+              Login{' '}
+            </Button>
+          </Link>
+          <Link href="/signup" passHref>
+            <Button className="bg-amber-600 hover:bg-amber-700 text-white shadow-md">SignUp</Button>
+          </Link>
+        </nav>
+      </header>
+
+      {/* Hero Section */}
+      <main
+        className="h-screen flex-grow flex items-center justify-center py-16 px-6 md:px-12 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('/images/clients.webp')",
+        }}
+      >
+        <div className="max-w-4xl text-center">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6">
+            Streamline Your Store Operations with <span className="text-amber-700">Ease</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-2xl mx-auto">
+            ALIMANA is your all-in-one solution for product, sales, and user management, designed to
+            empower your business.
+          </p>
+          <div className="space-x-4">
+            <Link href="/signup" passHref>
+              <Button
+                size="lg"
+                className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 text-lg shadow-lg mb-4 w-52"
+              >
+                Get Started Free
+              </Button>
+            </Link>
+            <Link href="#features" passHref>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-amber-600 text-amber-600 hover:bg-indigo-50 px-8 py-3 text-lg w-52 mr-2"
+              >
+                Learn More
+              </Button>
+            </Link>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+      {/* Features Section */}
+      <section id="features" className="bg-white py-16 px-6 md:px-12">
+        <div className="max-w-6xl mx-auto text-center">
+          <h2 className="text-4xl font-bold text-gray-800 mb-12">Powerful Features, Simplified</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Feature Card 1 */}
+            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
+              <Package className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Product Management</h3>
+              <p className="text-gray-600">
+                Track quantity, generate barcodes, and organize your inventory effortlessly.
+              </p>
+            </div>
+            {/* Feature Card 2 */}
+            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
+              <ShoppingBag className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Efficient Sales</h3>
+              <p className="text-gray-600">
+                Quickly add items to cart, calculate change, and streamline checkout.
+              </p>
+            </div>
+            {/* Feature Card 3 */}
+            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
+              <Users className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">User & Role Control</h3>
+              <p className="text-gray-600">
+                Invite staff, set roles, permissions, and track activities.
+              </p>
+            </div>
+            {/* Feature Card 4 */}
+            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
+              <Barcode className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Smart Reporting</h3>
+              <p className="text-gray-600">
+                Gain insights with detailed sales and inventory reports.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* section why choose us */}
+
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-primary">
+            Why Choose ALIMANA?
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Join thousands of successful store owners who trust our platform.
+          </p>
+
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <div>
+              <p className="text-4xl font-bold text-foreground">99.9%</p>
+              <p className="mt-2 text-muted-foreground">Uptime Guarantee</p>
+            </div>
+            <div>
+              <p className="text-4xl font-bold text-foreground">10,000+</p>
+              <p className="mt-2 text-muted-foreground">Happy Customers</p>
+            </div>
+            <div>
+              <p className="text-4xl font-bold text-foreground">24/7</p>
+              <p className="mt-2 text-muted-foreground">Customer Support</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* section testimonials */}
+      <TestimonialSection />
+
+      {/* CTA Section */}
+      <section id="#getstarted" className=" py-16 px-4 sm:px-6 lg:px-8 rounded-2xl text-center">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
+            Ready to transform your store management?
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Join thousands of store owners who have streamlined their operations with ALIMANA.
+          </p>
+          <div className="mt-8">
+            <Link href="/signup">
+              <Button size="lg" className="bg-amber-600 hover:bg-amber-700">
+                Get Started
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

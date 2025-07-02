@@ -1,19 +1,18 @@
-# manage-store-app
+# ALIMANA
+
+This is a store management system web app for store to be able to keep track of all activities in there store.
 
 Application web de gestion de boutique développée avec Next.js et TypeScript.
 
 ---
 
-## ⚙️ Stack technique
+## 🚀 Technologies utilisées
 
-| Outil                                                                                            | Usage                                   |
-| ------------------------------------------------------------------------------------------------ | --------------------------------------- |
-| [Next.js](https://nextjs.org/)                                                                   | Framework React avec SSR & SSG          |
-| [TypeScript](https://www.typescriptlang.org/)                                                    | Typage statique pour JavaScript         |
-| [Tailwind CSS](https://tailwindcss.com/)                                                         | Styling rapide basé sur les utilitaires |
-| [ESLint](https://eslint.org/)                                                                    | Analyse statique du code                |
-| [Prettier](https://prettier.io/)                                                                 | Formatage de code                       |
-| [Husky](https://typicode.github.io/husky) + [lint-staged](https://github.com/okonet/lint-staged) | Prévention des erreurs avant commit     |
+- [Next.js](https://nextjs.org/) (React framework SSR/SSG)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/) (framework CSS utilitaire)
+- [ESLint](https://eslint.org/) & [Prettier](https://prettier.io/) (linting & formatting)
+- [Husky](https://typicode.github.io/husky/) & [lint-staged](https://github.com/okonet/lint-staged) (pré-commit hooks)
 
 ---
 
@@ -67,6 +66,10 @@ npm run dev
 - lint — lance ESLint pour détecter les problèmes de code
 - type-check — vérifie la conformité TypeScript sans générer de fichiers
 - prepare — installe Husky pour les hooks git
+
+## Access Swagger Documentation
+
+[Visit](http://localhost:4000/api/api-docs)
 
 ## 📄 License
 
