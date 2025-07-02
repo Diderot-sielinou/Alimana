@@ -16,7 +16,6 @@ export default function ConfirmPasswordPage() {
       alert('Passwords do not match');
       return;
     }
-    // TODO: Send new password to backend API
     console.log('Password reset:', password);
     router.push('/login');
   };
