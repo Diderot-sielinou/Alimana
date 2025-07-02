@@ -1,7 +1,6 @@
 'use client';
 
 import type React from 'react';
-
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
@@ -19,6 +18,14 @@ interface SignupData {
   acceptTerms: boolean;
 }
 
+interface SignupErrors {
+  fullName?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  acceptTerms?: string;
+}
+
 export default function SignupPage() {
   const [formData, setFormData] = useState<SignupData>({
     fullName: '',
@@ -27,38 +34,45 @@ export default function SignupPage() {
     confirmPassword: '',
     acceptTerms: false,
   });
-  const [errors, setErrors] = useState<Partial<SignupData>>({});
+
+  const [errors, setErrors] = useState<SignupErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const updateFormData = (field: keyof SignupData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
+    if (errors[field as keyof SignupErrors]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<SignupData> = {};
+    const newErrors: SignupErrors = {};
 
     if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters';
     }
+
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the terms and conditions';
+
+    if (!formData.acceptTerms) {
+      newErrors.acceptTerms = 'You must accept the terms and conditions';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -72,20 +86,17 @@ export default function SignupPage() {
     setIsSubmitting(true);
 
     try {
-      // Here you would typically send the data to your backend
       console.log('Creating user account:', formData);
 
-      // Store user data temporarily (in real app, this would be in your backend)
       localStorage.setItem(
         'pendingUser',
         JSON.stringify({
           fullName: formData.fullName,
           email: formData.email,
-          password: formData.password, // Store password for later use
+          password: formData.password,
         })
       );
 
-      // Redirect to sign in page
       window.location.href = '/signin';
     } catch (error) {
       console.error('Error creating account:', error);
@@ -95,13 +106,12 @@ export default function SignupPage() {
   };
 
   const handleGoogleSignup = () => {
-    // Implement Google OAuth signup
+    // Implement Google signup
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Header */}
         <div className="text-center mb-8">
           <Link
             href="/"
@@ -121,11 +131,7 @@ export default function SignupPage() {
               onClick={handleGoogleSignup}
               className="w-full bg-transparent"
             >
-              <svg
-                className="mr-2 h-4 w-4"
-                viewBox="0 0 48 48"
-                // xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg height="200" width="200" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
                   fill="#FFC107"
@@ -145,7 +151,6 @@ export default function SignupPage() {
               </svg>
               Continue with Google
             </Button>
-
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
@@ -158,6 +163,7 @@ export default function SignupPage() {
 
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Full Name */}
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <div className="relative">
@@ -174,6 +180,7 @@ export default function SignupPage() {
                 {errors.fullName && <p className="text-sm text-red-600">{errors.fullName}</p>}
               </div>
 
+              {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <div className="relative">
@@ -190,6 +197,7 @@ export default function SignupPage() {
                 {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
               </div>
 
+              {/* Password */}
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
@@ -213,6 +221,7 @@ export default function SignupPage() {
                 {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
               </div>
 
+              {/* Confirm Password */}
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <div className="relative">
@@ -242,12 +251,13 @@ export default function SignupPage() {
                 )}
               </div>
 
+              {/* Accept Terms */}
               <div className="space-y-2">
                 <div className="flex items-start space-x-2">
                   <Checkbox
                     id="acceptTerms"
                     checked={formData.acceptTerms}
-                    onCheckedChange={(checked) => updateFormData('acceptTerms', checked as boolean)}
+                    onCheckedChange={(checked) => updateFormData('acceptTerms', Boolean(checked))}
                     className="mt-1"
                   />
                   <Label htmlFor="acceptTerms" className="text-sm text-gray-600 leading-relaxed">
