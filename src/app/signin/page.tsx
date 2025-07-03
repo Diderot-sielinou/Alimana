@@ -93,7 +93,6 @@ export default function SigninPage() {
           </Link>
 
           <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
-          <p className="text-gray-600 mt-2">Sign in to your account</p>
         </div>
 
         <Card className="shadow-xl border-0">
