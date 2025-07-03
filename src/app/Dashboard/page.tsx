@@ -16,6 +16,7 @@ import {
   Menu,
 } from 'lucide-react';
 import Image from 'next/image';
+import { Store } from 'lucide-react';
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -94,7 +95,7 @@ export default function Dashboard() {
   }, []);
 
   const links = [
-    { href: '/', label: 'Dashboard', icon: Home },
+    { href: '/Dashboard', label: 'Dashboard', icon: Home },
     { href: '/analytics', label: 'Analytics', icon: BarChart },
     { href: '/sales', label: 'Sales', icon: ShoppingCart },
     { href: '/sales-reports', label: 'Sales Reports', icon: FileText },
@@ -113,8 +114,9 @@ export default function Dashboard() {
         } transition-transform duration-300 md:translate-x-0`}
       >
         <div className="flex items-center justify-between h-16 border-b border-orange-500 px-4">
-          <Link href="/" className="text-xl font-bold text-white">
-            ALIMANA
+          <Link href="/Dashboard" className="flex items-center gap-2 text-xl font-bold text-white">
+            <Store className="w-6 h-6" />
+            <span>STORE</span>
           </Link>
           <button onClick={() => setSidebarOpen(false)} className="md:hidden">
             ✕
@@ -126,8 +128,10 @@ export default function Dashboard() {
               <li key={href}>
                 <Link
                   href={href}
-                  className={`flex items-center px-4 py-2 transition-colors ${
-                    pathname === href ? 'bg-orange-500 font-semibold' : 'hover:bg-orange-500'
+                  className={`flex items-center px-4 py-2 transition-all duration-200 rounded ${
+                    pathname === href
+                      ? 'bg-orange-500 font-semibold text-white ring-3 ring-orange-500 shadow-lg'
+                      : 'hover:bg-orange-500'
                   }`}
                 >
                   <Icon className="w-5 h-5 mr-2" />
@@ -183,7 +187,7 @@ export default function Dashboard() {
                 <option selected>This Month</option>
                 <option>Custom Range</option>
               </select>
-              <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700">
+              <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-600">
                 <i className="fas fa-download mr-1"></i> Export
               </button>
             </div>
