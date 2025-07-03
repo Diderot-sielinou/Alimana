@@ -1,84 +1,60 @@
 'use client';
 
-import type React from 'react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 
-interface SignupData {
-  fullName: string;
+type SigninFormData = {
   email: string;
   password: string;
-  confirmPassword: string;
-  acceptTerms: boolean;
-}
+  rememberMe: boolean;
+};
 
-interface SignupErrors {
-  fullName?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  acceptTerms?: string;
-}
+type SigninErrors = Partial<Record<keyof SigninFormData, string>>;
 
-export default function SignupPage() {
-  const [formData, setFormData] = useState<SignupData>({
-    fullName: '',
+export default function SigninPage() {
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState<SigninFormData>({
     email: '',
     password: '',
-    confirmPassword: '',
-    acceptTerms: false,
+    rememberMe: false,
   });
-
-  const [errors, setErrors] = useState<SignupErrors>({});
+  const [errors, setErrors] = useState<SigninErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const updateFormData = (field: keyof SignupData, value: string | boolean) => {
+  const updateFormData = <K extends keyof SigninFormData>(field: K, value: SigninFormData[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field as keyof SignupErrors]) {
+    if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const validateForm = (): boolean => {
-    const newErrors: SignupErrors = {};
-
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+    const newErrors: SigninErrors = {};
 
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = 'Please enter a valid email address';
     }
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    if (!formData.acceptTerms) {
-      newErrors.acceptTerms = 'You must accept the terms and conditions';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!validateForm()) return;
@@ -86,32 +62,27 @@ export default function SignupPage() {
     setIsSubmitting(true);
 
     try {
-      console.log('Creating user account:', formData);
+      console.log('Signing in with:', formData);
 
-      localStorage.setItem(
-        'pendingUser',
-        JSON.stringify({
-          fullName: formData.fullName,
-          email: formData.email,
-          password: formData.password,
-        })
-      );
+      const userHasStore = localStorage.getItem('userStore');
 
-      window.location.href = '/signin';
+      router.push(userHasStore ? '/dashboard' : '/create-store');
     } catch (error) {
-      console.error('Error creating account:', error);
+      console.error('Sign in error:', error);
+      setErrors({ password: 'Invalid email or password' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleGoogleSignup = () => {
-    // Implement Google signup
+    // Implement Google OAuth signup
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+        {/* Header */}
         <div className="text-center mb-8">
           <Link
             href="/"
@@ -120,18 +91,23 @@ export default function SignupPage() {
             <ArrowLeft className="h-4 w-4" />
             <span>Back to home</span>
           </Link>
+
+          <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
         </div>
 
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-4">
-            <CardTitle className="text-xl">Sign Up</CardTitle>
-            <CardDescription>Create your account to get started with Alimana</CardDescription>
+            <CardTitle className="text-xl">Sign In</CardTitle>
             <Button
               variant="outline"
               onClick={handleGoogleSignup}
               className="w-full bg-transparent"
             >
-              <svg height="200" width="200" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                className="mr-2 h-4 w-4"
+                viewBox="0 0 48 48"
+                // xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
                   fill="#FFC107"
@@ -159,27 +135,11 @@ export default function SignupPage() {
                 <span className="bg-white px-2 text-gray-500">Or</span>
               </div>
             </div>
+            <CardDescription>Enter your credentials to access your account</CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Full Name */}
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="Enter your full name"
-                    className="pl-10"
-                    value={formData.fullName}
-                    onChange={(e) => updateFormData('fullName', e.target.value)}
-                  />
-                </div>
-                {errors.fullName && <p className="text-sm text-red-600">{errors.fullName}</p>}
-              </div>
-
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
@@ -188,6 +148,7 @@ export default function SignupPage() {
                   <Input
                     id="email"
                     type="email"
+                    autoComplete="email"
                     placeholder="Enter your email"
                     className="pl-10"
                     value={formData.email}
@@ -205,15 +166,17 @@ export default function SignupPage() {
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Create a strong password"
+                    autoComplete="current-password"
+                    placeholder="Enter your password"
                     className="pl-10 pr-10"
                     value={formData.password}
                     onChange={(e) => updateFormData('password', e.target.value)}
                   />
                   <button
                     type="button"
+                    aria-label="Toggle password visibility"
                     className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    onClick={() => setShowPassword(!showPassword)}
+                    onClick={() => setShowPassword((prev) => !prev)}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -221,57 +184,24 @@ export default function SignupPage() {
                 {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
               </div>
 
-              {/* Confirm Password */}
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    placeholder="Confirm your password"
-                    className="pl-10 pr-10"
-                    value={formData.confirmPassword}
-                    onChange={(e) => updateFormData('confirmPassword', e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-                {errors.confirmPassword && (
-                  <p className="text-sm text-red-600">{errors.confirmPassword}</p>
-                )}
-              </div>
-
-              {/* Accept Terms */}
-              <div className="space-y-2">
-                <div className="flex items-start space-x-2">
+              {/* Remember me & Forgot password */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="acceptTerms"
-                    checked={formData.acceptTerms}
-                    onCheckedChange={(checked) => updateFormData('acceptTerms', Boolean(checked))}
-                    className="mt-1"
+                    id="rememberMe"
+                    checked={formData.rememberMe}
+                    onCheckedChange={(checked) => updateFormData('rememberMe', checked as boolean)}
                   />
-                  <Label htmlFor="acceptTerms" className="text-sm text-gray-600 leading-relaxed">
-                    I agree to the{' '}
-                    <Link href="/terms" className="text-amber-600 hover:text-amber-700 underline">
-                      Terms of Service
-                    </Link>{' '}
-                    and{' '}
-                    <Link href="/privacy" className="text-amber-600 hover:text-amber-700 underline">
-                      Privacy Policy
-                    </Link>
+                  <Label htmlFor="rememberMe" className="text-sm text-gray-600">
+                    Remember me
                   </Label>
                 </div>
-                {errors.acceptTerms && <p className="text-sm text-red-600">{errors.acceptTerms}</p>}
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-amber-600 hover:text-amber-700"
+                >
+                  Forgot password?
+                </Link>
               </div>
 
               <Button
@@ -279,14 +209,14 @@ export default function SignupPage() {
                 className="w-full bg-amber-600 hover:bg-amber-700"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Creating Account...' : 'Create Account'}
+                {isSubmitting ? 'Signing In...' : 'Sign In'}
               </Button>
             </form>
 
             <div className="text-center text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link href="/signin" className="text-amber-600 hover:text-amber-700 font-medium">
-                Sign in
+              Don&apos;t have an account?{' '}
+              <Link href="/signup" className="text-amber-600 hover:text-amber-700 font-medium">
+                Create account
               </Link>
             </div>
           </CardContent>
