@@ -66,7 +66,7 @@ export default function SigninPage() {
 
       const userHasStore = localStorage.getItem('userStore');
 
-      router.push(userHasStore ? '/create-store' : '/dashboard');
+      router.push(userHasStore ? '/dashboard' : '/create-store');
     } catch (error) {
       console.error('Sign in error:', error);
       setErrors({ password: 'Invalid email or password' });
