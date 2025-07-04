@@ -5,17 +5,12 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { StoreErrors, UpdateFormData, StoreData } from '@/types/store';
 
 interface Props {
-  formData: {
-    storeName: string;
-    storeDescription: string;
-  };
-  errors: {
-    storeName?: string;
-    storeDescription?: string;
-  };
-  updateFormData: (field: string, value: string) => void;
+  formData: Pick<StoreData, 'storeName' | 'storeDescription'>;
+  errors: StoreErrors;
+  updateFormData: UpdateFormData;
   onNext: () => void;
 }
 

@@ -4,21 +4,16 @@ import { ArrowLeft, Lock, Eye, EyeOff, Store } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { StoreErrors, UpdateFormData, StoreData } from '@/types/store';
 
-interface Step3Props {
-  formData: {
-    password: string;
-    confirmPassword: string;
-  };
-  errors: {
-    password?: string;
-    confirmPassword?: string;
-  };
+interface Props {
+  formData: Pick<StoreData, 'password' | 'confirmPassword'>;
+  errors: StoreErrors;
   showPassword: boolean;
   showConfirmPassword: boolean;
-  togglePassword: () => void;
-  toggleConfirmPassword: () => void;
-  updateFormData: (field: string, value: string) => void;
+  setShowPassword: (show: boolean) => void;
+  setShowConfirmPassword: (show: boolean) => void;
+  updateFormData: UpdateFormData;
   onBack: () => void;
   onSubmit: () => void;
 }
@@ -28,12 +23,12 @@ export function Step3SecureAccount({
   errors,
   showPassword,
   showConfirmPassword,
-  togglePassword,
-  toggleConfirmPassword,
+  setShowPassword,
+  setShowConfirmPassword,
   updateFormData,
   onBack,
   onSubmit,
-}: Step3Props) {
+}: Props) {
   return (
     <>
       <div className="space-y-2">
@@ -51,7 +46,7 @@ export function Step3SecureAccount({
           <button
             type="button"
             className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-            onClick={togglePassword}
+            onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
@@ -74,7 +69,7 @@ export function Step3SecureAccount({
           <button
             type="button"
             className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-            onClick={toggleConfirmPassword}
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
           >
             {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>

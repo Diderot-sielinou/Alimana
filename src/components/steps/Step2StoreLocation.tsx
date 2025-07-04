@@ -4,42 +4,27 @@ import { MapPin, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { StoreErrors, UpdateFormData } from '../types/store';
 
-interface Step2Props {
-  formData: {
-    address: string;
-    city: string;
-    state: string;
-    zipCode: string;
-  };
-  errors: {
-    address?: string;
-    city?: string;
-    state?: string;
-    zipCode?: string;
-  };
-  updateFormData: (field: string, value: string) => void;
+interface Props {
+  formData: Pick<StoreData, 'address' | 'city' | 'state' | 'streetaddress' | 'zipCode'>;
+  errors: StoreErrors;
+  updateFormData: UpdateFormData;
   onBack: () => void;
   onNext: () => void;
 }
 
-export function Step2StoreLocation({
-  formData,
-  errors,
-  updateFormData,
-  onBack,
-  onNext,
-}: Step2Props) {
+export function Step2StoreLocation({ formData, errors, updateFormData, onBack, onNext }: Props) {
   return (
     <>
       <div className="space-y-2">
-        <Label htmlFor="address">Street Address</Label>
+        <Label htmlFor="address">Address</Label>
         <div className="relative">
           <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="address"
             type="text"
-            placeholder="Enter street address"
+            placeholder="Enter address"
             className="pl-10"
             value={formData.address}
             onChange={(e) => updateFormData('address', e.target.value)}
@@ -75,6 +60,16 @@ export function Step2StoreLocation({
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="streetaddress">Street Address</Label>
+        <Input
+          id="streetaddress"
+          type="text"
+          placeholder="Street Address"
+          value={formData.streetaddress}
+          onChange={(e) => updateFormData('streetaddress', e.target.value)}
+        />
+        {errors.streetaddress && <p className="text-sm text-red-600">{errors.streetaddress}</p>}
+
         <Label htmlFor="zipCode">ZIP Code</Label>
         <Input
           id="zipCode"

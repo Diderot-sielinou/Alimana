@@ -10,17 +10,19 @@ import Step1StoreInfo from '@/components/steps/Step1StoreInfo';
 import { Step2StoreLocation } from '@/components/steps/Step2StoreLocation';
 import { Step3SecureAccount } from '@/components/steps/Step3SecureAccount';
 
-interface StoreData {
+export interface StoreData {
   storeName: string;
   storeDescription: string;
   address: string;
   city: string;
   state: string;
+  streetaddress: string;
   zipCode: string;
   password: string;
   confirmPassword: string;
-  updateFormData: string;
 }
+
+type StoreDataKey = keyof StoreData;
 
 export default function CreateStorePage() {
   const [step, setStep] = useState(1);
@@ -32,14 +34,14 @@ export default function CreateStorePage() {
     address: '',
     city: '',
     state: '',
+    streetaddress: '',
     zipCode: '',
     password: '',
     confirmPassword: '',
-    updateFormData: '',
   });
   const [errors, setErrors] = useState<Partial<StoreData>>({});
 
-  const updateFormData = (field: keyof StoreData, value: string) => {
+  const updateFormData = (field: StoreDataKey, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
@@ -134,7 +136,7 @@ export default function CreateStorePage() {
             className="inline-flex items-center space-x-2 text-amber-600 hover:text-amber-700 mb-4"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to sign in</span>
+            <span>Back to sign In</span>
           </Link>
 
           <h1 className="text-2xl font-bold text-gray-900">Create Your Store</h1>
