@@ -52,9 +52,9 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Placeholder for charts or tables */}
-      <div className="mt-6 text-gray-600 text-sm border rounded-lg p-4 bg-white shadow-sm">
+      {/* <div className="mt-6 text-gray-600 text-sm border rounded-lg p-4 bg-white shadow-sm">
         Chart or detailed analytics component coming soon...
-      </div>
+      </div> */}
     </div>
   );
 }
