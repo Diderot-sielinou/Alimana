@@ -7,7 +7,7 @@ export default function Footer() {
         {/* Brand Info */}
         <div>
           <h2 className="text-xl font-bold text-slate-100">ALIMANA</h2>
-          <p className="mt-2 text-muted-foreground text-gray-600 text-sm">
+          <p className="mt-2 text-muted-foreground  text-slate-300 text-sm">
             The complete store management solution for modern businesses. Streamline operations,
             boost productivity, and grow your revenue.
           </p>
@@ -20,22 +20,22 @@ export default function Footer() {
           </h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href="/features" className="hover:underline text-gray-600">
+              <Link href="/features" className="hover:underline text-slate-300">
                 Features
               </Link>
             </li>
             <li>
-              <Link href="/testimonial" className="hover:underline text-gray-600">
+              <Link href="/testimonial" className="hover:underline text-slate-300">
                 Testimonial
               </Link>
             </li>
             <li>
-              <Link href="/whyus" className="hover:underline text-gray-600">
+              <Link href="/whyus" className="hover:underline text-slate-300">
                 Why choose us
               </Link>
             </li>
             <li>
-              <Link href="/getstarted" className="hover:underline text-gray-600">
+              <Link href="/getstarted" className="hover:underline text-slate-300">
                 Get started
               </Link>
             </li>
@@ -49,17 +49,17 @@ export default function Footer() {
           </h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href="/help" className="hover:underline text-gray-600">
+              <Link href="/help" className="hover:underline  text-slate-300">
                 Help Center
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="hover:underline text-gray-600">
+              <Link href="/contact" className="hover:underline  text-slate-300">
                 Contact Us
               </Link>
             </li>
             <li>
-              <Link href="/status" className="hover:underline text-gray-600">
+              <Link href="/status" className="hover:underline  text-slate-300">
                 Join us
               </Link>
             </li>
