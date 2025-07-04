@@ -111,29 +111,65 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      {/* section why choose us */}
 
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      {/* section why choose us */}
+      <section id="whyus" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-primary">
             Why Choose ALIMANA?
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Join thousands of successful store owners who trust our platform.
+            Empowering store owners with tools to manage, grow, and succeed—without the stress.
           </p>
 
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8">
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
             <div>
               <p className="text-4xl font-bold text-foreground">99.9%</p>
               <p className="mt-2 text-muted-foreground">Uptime Guarantee</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Your business is always open. We ensure consistent performance, day and night.
+              </p>
             </div>
+
             <div>
               <p className="text-4xl font-bold text-foreground">10,000+</p>
               <p className="mt-2 text-muted-foreground">Happy Customers</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Trusted by thousands of store owners worldwide to streamline operations and boost
+                sales.
+              </p>
             </div>
+
             <div>
               <p className="text-4xl font-bold text-foreground">24/7</p>
               <p className="mt-2 text-muted-foreground">Customer Support</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Get help whenever you need it—from real humans who care about your success.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-4xl font-bold text-foreground">Fast Setup</p>
+              <p className="mt-2 text-muted-foreground">Get Started in Minutes</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                No tech skills? No problem. Launch your store fast with our intuitive onboarding.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-4xl font-bold text-foreground">Secure & Compliant</p>
+              <p className="mt-2 text-muted-foreground">Enterprise-Grade Protection</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                We safeguard your data with the latest encryption and compliance standards.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-4xl font-bold text-foreground">All-in-One</p>
+              <p className="mt-2 text-muted-foreground">Complete Management Suite</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                From inventory to sales to analytics, manage everything in one clean dashboard.
+              </p>
             </div>
           </div>
         </div>
