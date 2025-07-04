@@ -16,6 +16,7 @@ import {
   Menu,
 } from 'lucide-react';
 import { Store } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -129,7 +130,7 @@ export default function Dashboard() {
                   href={href}
                   className={`flex items-center px-4 py-2 transition-all duration-200 rounded ${
                     pathname === href
-                      ? 'bg-orange-500 font-semibold text-white ring-3 ring-orange-500 shadow-lg'
+                      ? 'bg-orange-500 font-semibold text-white ring-2 ring-orange-500 shadow-lg'
                       : 'hover:bg-orange-500'
                   }`}
                 >
@@ -162,7 +163,7 @@ export default function Dashboard() {
               <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
             </button>
             <button className="flex items-center space-x-2">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1644904105846-095e45fca990?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YWRtaW5pc3RyYXRvciUyMGltYWdlfGVufDB8fDB8fHww"
                 alt="User"
                 width={400}
@@ -176,18 +177,17 @@ export default function Dashboard() {
         <div className="px-6 py-2 bg-gray-50 border-t">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              <i className="fas fa-sync-alt mr-1"></i> Last updated:{' '}
-              <span id="lastUpdated">Just now</span>
+              <span className="mr-1">🔄</span> Last updated: <span id="lastUpdated">Just now</span>
             </div>
             <div className="flex space-x-2">
               <select className="bg-orange-600 border rounded px-3 py-1 text-white">
-                <option>Today</option>
-                <option>This Week</option>
-                <option selected>This Month</option>
-                <option>Custom Range</option>
+                <option value="Today">Today</option>
+                <option value="This week">This Week</option>
+                <option value="This Month">This Month</option>
+                <option value="Custom Range">Custom Range</option>
               </select>
               <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-600">
-                <i className="fas fa-download mr-1"></i> Export
+                <i className="fas fa-download mr-1"></i> 📥 Export
               </button>
             </div>
           </div>
