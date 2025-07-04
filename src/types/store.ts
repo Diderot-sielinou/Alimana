@@ -1,7 +1,6 @@
 export interface StoreData {
   storeName: string;
   storeDescription: string;
-  address: string;
   city: string;
   state: string;
   streetaddress: string;

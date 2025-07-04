@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { StoreErrors, UpdateFormData, StoreData } from '@/types/store';
 
 interface Props {
-  formData: Pick<StoreData, 'address' | 'city' | 'state' | 'streetaddress' | 'zipCode'>;
+  formData: Pick<StoreData, 'city' | 'state' | 'streetaddress' | 'zipCode'>;
   errors: StoreErrors;
   updateFormData: UpdateFormData;
   onBack: () => void;
@@ -18,19 +18,19 @@ export function Step2StoreLocation({ formData, errors, updateFormData, onBack, o
   return (
     <>
       <div className="space-y-2">
-        <Label htmlFor="address">Address</Label>
+        <Label htmlFor="streetaddress"> Street Address</Label>
         <div className="relative">
           <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
-            id="address"
+            id="streetaddress"
             type="text"
-            placeholder="Enter address"
+            placeholder="Enter streetaddress"
             className="pl-10"
-            value={formData.address}
-            onChange={(e) => updateFormData('address', e.target.value)}
+            value={formData.streetaddress}
+            onChange={(e) => updateFormData('streetaddress', e.target.value)}
           />
         </div>
-        {errors.address && <p className="text-sm text-red-600">{errors.address}</p>}
+        {errors.streetaddress && <p className="text-sm text-red-600">{errors.streetaddress}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -60,16 +60,6 @@ export function Step2StoreLocation({ formData, errors, updateFormData, onBack, o
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="streetaddress">Street Address</Label>
-        <Input
-          id="streetaddress"
-          type="text"
-          placeholder="Street Address"
-          value={formData.streetaddress}
-          onChange={(e) => updateFormData('streetaddress', e.target.value)}
-        />
-        {errors.streetaddress && <p className="text-sm text-red-600">{errors.streetaddress}</p>}
-
         <Label htmlFor="zipCode">ZIP Code</Label>
         <Input
           id="zipCode"
