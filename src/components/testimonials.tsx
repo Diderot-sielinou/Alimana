@@ -28,12 +28,13 @@ const testimonials = [
     name: 'Brenda T.',
     role: 'Retail Shop Owner, Bafoussam',
     quote: 'I can track sales and manage products from anywhere. Highly recommend ALIMANA!',
-    image: 'https://randomuser.me/api/portraits/women/65.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/4/43/Nnenne_Iwuji-Eme.jpg',
   },
   {
     name: 'Alain C.',
     role: 'Mini Mart Manager, Limbe',
-    quote: 'No more manual calculations! ALIMANA helps us stay organized and professional.',
+    quote:
+      'No more manual calculations and the stress! ALIMANA helps us stay organized and professional.',
     image:
       'https://img.freepik.com/free-photo/confident-african-businesswoman-smiling-closeup-portrait-jobs-career-campaign_53876-143280.jpg?semt=ais_hybrid',
   },
@@ -56,7 +57,7 @@ const testimonials = [
 export default function TestimonialSection() {
   return (
     <section id="testimonial" className="py-20 bg-background text-foreground">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl font-bold sm:text-4xl mb-12">
           Loved by store owners across Cameroon
         </h2>
