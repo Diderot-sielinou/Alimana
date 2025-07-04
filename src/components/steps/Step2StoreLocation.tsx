@@ -4,7 +4,7 @@ import { MapPin, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { StoreErrors, UpdateFormData } from '../types/store';
+import { StoreErrors, UpdateFormData, StoreData } from '@/types/store';
 
 interface Props {
   formData: Pick<StoreData, 'address' | 'city' | 'state' | 'streetaddress' | 'zipCode'>;
