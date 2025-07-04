@@ -73,3 +73,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+section#features {
+  height: 85vh;
+}
+
+section#\#testimonial {
+  height: 85vh;
+}
