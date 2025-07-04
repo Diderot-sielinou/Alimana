@@ -21,25 +21,27 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
           ✕
         </button>
       </div>
+
       <nav className="mt-4">
         <ul className="space-y-1">
           {links.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href;
+
             return (
               <li key={href} className="relative">
                 <Link
-                  href={href}
-                  className={`flex items-center px-4 py-2 transition-all duration-200 rounded
+                  href={isActive ? '#' : href}
+                  className={`flex items-center px-4 py-2 transition-all duration-200 rounded relative
                     ${
                       isActive
-                        ? 'bg-orange-500 font-semibold text-white ring-2 ring-offset-2 ring-white shadow-lg'
-                        : 'hover:bg-orange-500 hover:shadow'
+                        ? 'bg-orange-500 font-semibold text-white ring-1 ring-orange-500'
+                        : 'hover:bg-orange-500'
                     }
                   `}
                 >
                   {isActive && (
                     <span
-                      className="absolute left-0 top-0 h-full w-1 bg-white rounded-r"
+                      className="absolute left-0 top-1 bottom-1 w-1 bg-white rounded-r"
                       aria-hidden="true"
                     />
                   )}

@@ -4,13 +4,13 @@ import { Chart } from 'chart.js/auto';
 import Link from 'next/link';
 import {
   Home,
-  BarChart,
-  ShoppingCart,
-  FileText,
-  Box,
-  Wallet,
-  Settings,
-  Users,
+  // BarChart,
+  // ShoppingCart,
+  // FileText,
+  // Box,
+  // Wallet,
+  // Settings,
+  // Users,
   Bell,
   Menu,
 } from 'lucide-react';
@@ -93,14 +93,14 @@ export default function Dashboard() {
   }, []);
 
   const links = [
-    { href: '/Dashboard', label: 'Dashboard', icon: Home },
-    { href: '/analytics', label: 'Analytics', icon: BarChart },
-    { href: '/sales', label: 'Sales', icon: ShoppingCart },
-    { href: '/sales-reports', label: 'Sales Reports', icon: FileText },
-    { href: '/inventory-reports', label: 'Inventory Reports', icon: Box },
-    { href: '/expense-reports', label: 'Expense Reports', icon: Wallet },
-    { href: '/system-settings', label: 'System Settings', icon: Settings },
-    { href: '/user-management', label: 'User Management', icon: Users },
+    { href: '/dashboard/dash', label: 'Dashboard', icon: Home },
+    // { href: '/analytics', label: 'Analytics', icon: BarChart },
+    // { href: '/sales', label: 'Sales', icon: ShoppingCart },
+    // { href: '/sales-reports', label: 'Sales Reports', icon: FileText },
+    // { href: '/inventory-reports', label: 'Inventory Reports', icon: Box },
+    // { href: '/expense-reports', label: 'Expense Reports', icon: Wallet },
+    // { href: '/system-settings', label: 'System Settings', icon: Settings },
+    // { href: '/user-management', label: 'User Management', icon: Users },
   ];
 
   return (
