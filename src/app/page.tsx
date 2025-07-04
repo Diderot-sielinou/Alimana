@@ -8,7 +8,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
       {/* Header/Navbar */}
-      <header className="w-full bg-white shadow-sm py-4 md:px-12 flex justify-between items-center z-10">
+      <header className="w-full bg-white shadow-sm py-4 md:px-24 flex justify-between items-center z-10">
         <Link
           href="/"
           className="flex items-center space-x-2 text-2xl font-bold text-amber-700 hover:text-amber-900 transition-colors"
@@ -45,7 +45,7 @@ export default function LandingPage() {
           <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6">
             Streamline Your Store Operations with <span className="text-amber-700">Ease</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-slate-200 mb-10 max-w-2xl mx-auto">
             ALIMANA is your all-in-one solution for product, sales, and user management, designed to
             empower your business.
           </p>
@@ -114,7 +114,7 @@ export default function LandingPage() {
 
       {/* section why choose us */}
       <section id="whyus" className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto text-center">
+        <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-primary">
             Why Choose ALIMANA?
           </h2>
@@ -180,7 +180,7 @@ export default function LandingPage() {
 
       {/* CTA Section */}
       <section id="#getstarted" className=" py-16 px-4 sm:px-6 lg:px-8 rounded-2xl text-center">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
             Ready to transform your store management?
           </h2>
