@@ -13,7 +13,6 @@ import { Step3SecureAccount } from '@/components/steps/Step3SecureAccount';
 export interface StoreData {
   storeName: string;
   storeDescription: string;
-  address: string;
   city: string;
   state: string;
   streetaddress: string;
@@ -31,7 +30,6 @@ export default function CreateStorePage() {
   const [formData, setFormData] = useState<StoreData>({
     storeName: '',
     storeDescription: '',
-    address: '',
     city: '',
     state: '',
     streetaddress: '',
@@ -56,10 +54,8 @@ export default function CreateStorePage() {
       if (!formData.storeDescription.trim())
         newErrors.storeDescription = 'Store description is required';
     } else if (currentStep === 2) {
-      if (!formData.address.trim()) newErrors.address = 'Address is required';
       if (!formData.city.trim()) newErrors.city = 'City is required';
       if (!formData.state.trim()) newErrors.state = 'State is required';
-      if (!formData.zipCode.trim()) newErrors.zipCode = 'ZIP code is required';
     } else if (currentStep === 3) {
       if (!formData.password) {
         newErrors.password = 'Password is required';
@@ -119,7 +115,7 @@ export default function CreateStorePage() {
 
       localStorage.removeItem('pendingUser');
 
-      window.location.href = '/dashboard';
+      window.location.href = '/dashboard/dash';
     } catch (error) {
       console.error('Error creating store:', error);
     }
