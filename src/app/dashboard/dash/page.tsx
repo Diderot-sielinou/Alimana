@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Chart } from 'chart.js/auto';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import {
   Home,
   BarChart,
@@ -15,12 +14,11 @@ import {
   Bell,
   Menu,
 } from 'lucide-react';
-import { Store } from 'lucide-react';
 import Image from 'next/image';
+import Sidebar from '@/components/sidebar';
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const pathname = usePathname();
 
   const lineChartRef = useRef<HTMLCanvasElement | null>(null);
   const doughnutChartRef = useRef<HTMLCanvasElement | null>(null);
@@ -108,40 +106,7 @@ export default function Dashboard() {
   return (
     <>
       {/* Sidebar */}
-      <aside
-        className={`fixed top-0 left-0 h-screen w-64 bg-orange-600 text-white shadow-lg z-30 transform ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-300 md:translate-x-0`}
-      >
-        <div className="flex items-center justify-between h-16 border-b border-orange-500 px-4">
-          <Link href="/Dashboard" className="flex items-center gap-2 text-xl font-bold text-white">
-            <Store className="w-6 h-6" />
-            <span>STORE</span>
-          </Link>
-          <button onClick={() => setSidebarOpen(false)} className="md:hidden">
-            ✕
-          </button>
-        </div>
-        <nav className="mt-4">
-          <ul className="space-y-1">
-            {links.map(({ href, label, icon: Icon }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className={`flex items-center px-4 py-2 transition-all duration-200 rounded ${
-                    pathname === href
-                      ? 'bg-orange-500 font-semibold text-white ring-2 ring-orange-500 shadow-lg'
-                      : 'hover:bg-orange-500'
-                  }`}
-                >
-                  <Icon className="w-5 h-5 mr-2" />
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </aside>
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={links} />
 
       {/* Header */}
       <header className="bg-white shadow-sm z-10 md:ml-64">
@@ -187,7 +152,7 @@ export default function Dashboard() {
                 <option value="Custom Range">Custom Range</option>
               </select>
               <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-600">
-                <i className="fas fa-download mr-1"></i> 📥 Export
+                <i className="fas fa-download mr-1"></i> Export
               </button>
             </div>
           </div>
