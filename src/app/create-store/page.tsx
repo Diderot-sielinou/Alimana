@@ -115,7 +115,7 @@ export default function CreateStorePage() {
 
       localStorage.removeItem('pendingUser');
 
-      window.location.href = '/dashboard/dash';
+      window.location.href = '/dashboard';
     } catch (error) {
       console.error('Error creating store:', error);
     }
