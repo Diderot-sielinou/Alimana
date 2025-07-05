@@ -93,7 +93,7 @@ export default function Dashboard() {
   }, []);
 
   const links = [
-    { href: '/dashboard/dash', label: 'Dashboard', icon: Home },
+    { href: '/dashboard', label: 'Dashboard', icon: Home },
     // { href: '/analytics', label: 'Analytics', icon: BarChart },
     // { href: '/sales', label: 'Sales', icon: ShoppingCart },
     // { href: '/sales-reports', label: 'Sales Reports', icon: FileText },

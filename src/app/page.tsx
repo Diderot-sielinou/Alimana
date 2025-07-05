@@ -19,7 +19,7 @@ export default function LandingPage() {
 
         {/* Navigation */}
         <nav className="space-x-4">
-          <Link href="/login" passHref>
+          <Link href="/signin" passHref>
             <Button
               variant="ghost"
               className="text-amber-700 hover:bg-indigo-50 hover:text-amber-800"
