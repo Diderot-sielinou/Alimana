@@ -8,7 +8,6 @@ export const dash = {
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  // État d'ouverture du sidebar
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const links = [
@@ -24,7 +23,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex">
-      {/* Sidebar */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={links} />
       <main>{children}</main>
     </div>
