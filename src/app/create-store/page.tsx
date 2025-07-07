@@ -7,8 +7,8 @@ import { ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import Step1StoreInfo from '@/components/steps/Step1StoreInfo';
-import { Step2StoreLocation } from '@/components/steps/Step2StoreLocation';
-import { Step3SecureAccount } from '@/components/steps/Step3SecureAccount';
+import Step2StoreLocation from '@/components/steps/Step2StoreLocation';
+import Step3SecureAccount from '@/components/steps/Step3SecureAccount';
 
 export interface StoreData {
   storeName: string;
@@ -104,10 +104,10 @@ export default function CreateStorePage() {
         'user',
         JSON.stringify({
           id: adminId,
-          email: userData?.email,
-          fullName: `${userData?.firstName} ${userData?.lastName}`.trim(),
+          email: userData?.email || '',
+          fullName: `${userData?.firstName ?? ''} ${userData?.lastName ?? ''}`.trim(),
           role: 'admin',
-          storeId,
+          storeId: storeId,
           storeName: formData.storeName,
           isActive: true,
         })

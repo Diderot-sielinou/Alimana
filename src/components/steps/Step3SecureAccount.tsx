@@ -18,7 +18,7 @@ interface Props {
   onSubmit: () => void;
 }
 
-export function Step3SecureAccount({
+export default function Step3SecureAccount({
   formData,
   errors,
   showPassword,

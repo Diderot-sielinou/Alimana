@@ -14,7 +14,13 @@ interface Props {
   onNext: () => void;
 }
 
-export function Step2StoreLocation({ formData, errors, updateFormData, onBack, onNext }: Props) {
+export default function Step2StoreLocation({
+  formData,
+  errors,
+  updateFormData,
+  onBack,
+  onNext,
+}: Props) {
   return (
     <>
       <div className="space-y-2">
