@@ -39,7 +39,7 @@ export default function CreateStorePage() {
   const [errors, setErrors] = useState<Partial<Record<StoreDataKey, string>>>({});
 
   useEffect(() => {
-    const canCreateStore = true; // Replace with actual auth/role check
+    const canCreateStore = true;
     if (!canCreateStore) router.push('/403');
   }, [router]);
 
