@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +16,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function NewProductPage() {
+  const router = useRouter();
   const [product, setProduct] = useState({
     name: '',
     description: '',
@@ -30,15 +32,20 @@ export default function NewProductPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Submitting Product:', product);
+    router.push('/dashboard/products'); // Redirect back to product list
     // You can store in localStorage or toast success
   };
 
   return (
     <div className="max-w-2xl mx-auto py-10">
+      <Button variant="outline" onClick={() => router.back()} className="mb-6">
+        ← Back
+      </Button>
       <Card>
         <CardHeader>
           <CardTitle>Add New Product</CardTitle>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
@@ -106,7 +113,7 @@ export default function NewProductPage() {
               <p className="text-xs text-gray-500">Image upload not implemented yet</p>
             </div>
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700">
               Add Product
             </Button>
           </form>

@@ -1,9 +1,11 @@
+//app/dashboard/pages
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Chart } from 'chart.js/auto';
 import Link from 'next/link';
 import {
   Home,
+  // Box,
   // BarChart,
   // ShoppingCart,
   // FileText,
@@ -94,6 +96,7 @@ export default function Dashboard() {
 
   const links = [
     { href: '/dashboard', label: 'Dashboard', icon: Home },
+    // { href: '/products', label: 'Products', icon: Box }, // ✅ Add this line
     // { href: '/analytics', label: 'Analytics', icon: BarChart },
     // { href: '/sales', label: 'Sales', icon: ShoppingCart },
     // { href: '/sales-reports', label: 'Sales Reports', icon: FileText },

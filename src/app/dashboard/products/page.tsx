@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -39,45 +40,55 @@ const mockProducts = [
 ];
 
 export default function ProductsPage() {
-  return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Products</h1>
-        <Button className="bg-amber-600 hover:bg-amber-700 text-white">+ New Product</Button>
-      </div>
+  const router = useRouter();
 
-      <Card className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {mockProducts.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>${product.price.toFixed(2)}</TableCell>
-                <TableCell>{product.stock}</TableCell>
-                <TableCell>
-                  <span
-                    className={`text-sm font-medium ${
-                      product.status === 'In Stock' ? 'text-green-600' : 'text-red-600'
-                    }`}
-                  >
-                    {product.status}
-                  </span>
-                </TableCell>
+  return (
+    <>
+      {' '}
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-semibold">Products</h1>
+          <Button
+            className="bg-amber-600 hover:bg-amber-700 text-white"
+            onClick={() => router.push('/dashboard/products/new')}
+          >
+            + New Product
+          </Button>
+        </div>
+
+        <Card className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead>Status</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
-    </div>
+            </TableHeader>
+            <TableBody>
+              {mockProducts.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>{product.name}</TableCell>
+                  <TableCell>{product.category}</TableCell>
+                  <TableCell>${product.price.toFixed(2)}</TableCell>
+                  <TableCell>{product.stock}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`text-sm font-medium ${
+                        product.status === 'In Stock' ? 'text-green-600' : 'text-red-600'
+                      }`}
+                    >
+                      {product.status}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      </div>
+    </>
   );
 }
