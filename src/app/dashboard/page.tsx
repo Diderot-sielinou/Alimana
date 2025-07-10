@@ -7,7 +7,7 @@ import {
   Home,
   // Box,
   // BarChart,
-  // ShoppingCart,
+  ShoppingCart,
   // FileText,
   // Box,
   // Wallet,
@@ -98,7 +98,7 @@ export default function Dashboard() {
     { href: '/dashboard', label: 'Dashboard', icon: Home },
     // { href: '/products', label: 'Products', icon: Box }, // ✅ Add this line
     // { href: '/analytics', label: 'Analytics', icon: BarChart },
-    // { href: '/sales', label: 'Sales', icon: ShoppingCart },
+    { href: '/sales', label: 'Sales', icon: ShoppingCart },
     // { href: '/sales-reports', label: 'Sales Reports', icon: FileText },
     // { href: '/inventory-reports', label: 'Inventory Reports', icon: Box },
     // { href: '/expense-reports', label: 'Expense Reports', icon: Wallet },
