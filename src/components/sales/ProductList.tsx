@@ -6,7 +6,7 @@ import SearchBar from './SearchBar';
 import CategoryFilter from './CategoryFilter';
 import Cart from './Cart';
 
-// Typage : on crée un produit avec quantité
+// Typage: produit avec quantité
 export type CartProduct = Product & { quantity: number };
 
 const mockProducts: Product[] = [
@@ -56,15 +56,34 @@ export default function ProductList() {
   });
 
   return (
-    <div className="flex flex-col gap-4">
-      <SearchBar value={search} onChange={setSearch} />
-      <CategoryFilter categories={categories} active={category} onSelect={setCategory} />
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {filtered.map((product) => (
-          <ProductCard key={product.id} product={product} onAdd={handleAdd} />
-        ))}
+    <section className="w-full p-4 md:p-6 bg-gray-50 min-h-screen">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* LEFT SIDE */}
+        <div className="lg:col-span-2 flex flex-col gap-4">
+          {/* Top bar: Search + Scan */}
+          <div className="flex flex-col md:flex-row md:items-center gap-2">
+            <SearchBar value={search} onChange={setSearch} />
+            <button className="flex-shrink-0 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+              Scan Barcode
+            </button>
+          </div>
+
+          {/* Category filter */}
+          <CategoryFilter categories={categories} active={category} onSelect={setCategory} />
+
+          {/* Product grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
+            {filtered.map((product) => (
+              <ProductCard key={product.id} product={product} onAdd={handleAdd} />
+            ))}
+          </div>
+        </div>
+
+        {/* RIGHT SIDE: Cart */}
+        <div className="lg:sticky lg:top-6">
+          <Cart items={cartItems} onClear={handleClearCart} />
+        </div>
       </div>
-      <Cart items={cartItems} onClear={handleClearCart} />
-    </div>
+    </section>
   );
 }
