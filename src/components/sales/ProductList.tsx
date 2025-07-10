@@ -6,6 +6,9 @@ import SearchBar from './SearchBar';
 import CategoryFilter from './CategoryFilter';
 import Cart from './Cart';
 
+// Typage : on crée un produit avec quantité
+export type CartProduct = Product & { quantity: number };
+
 const mockProducts: Product[] = [
   { id: '1', name: 'Wireless Headphones', price: 59.99 },
   { id: '2', name: 'Smartphone', price: 499.99 },
@@ -22,10 +25,19 @@ const categories = ['All', 'Electronics', 'Groceries', 'Clothing'];
 export default function ProductList() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
-  const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [cartItems, setCartItems] = useState<CartProduct[]>([]);
 
   const handleAdd = (product: Product) => {
-    setCartItems((prev) => [...prev, product]);
+    setCartItems((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
+      if (existing) {
+        return prev.map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      } else {
+        return [...prev, { ...product, quantity: 1 }];
+      }
+    });
   };
 
   const handleClearCart = () => {

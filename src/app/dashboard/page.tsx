@@ -95,7 +95,7 @@ export default function Dashboard() {
   const links = [
     { href: '/dashboard', label: 'Dashboard', icon: Home },
     // { href: '/analytics', label: 'Analytics', icon: BarChart },
-    { href: '/sales', label: 'Sales', icon: ShoppingCart },
+    { href: '/dashboard/sales', label: 'Sales', icon: ShoppingCart },
     // { href: '/sales-reports', label: 'Sales Reports', icon: FileText },
     // { href: '/inventory-reports', label: 'Inventory Reports', icon: Box },
     // { href: '/expense-reports', label: 'Expense Reports', icon: Wallet },
@@ -109,7 +109,7 @@ export default function Dashboard() {
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={links} />
 
       {/* Header */}
-      <header className="bg-white shadow-sm z-10 md:ml-64">
+      <header className="bg-white shadow-sm z-10 md:ml-64 w-[87%] pr-2">
         <div className="flex items-center justify-between px-6 py-3">
           <div className="flex items-center">
             <button onClick={() => setSidebarOpen(true)} className="text-orange-700 mr-4 md:hidden">
@@ -160,7 +160,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main */}
-      <main className="md:ml-64 min-h-screen bg-gray-50 p-6">
+      <main className="md:ml-64 min-h-screen bg-gray-50 w-[87%] px-6 pb-2">
         <h1 className="text-2xl font-bold text-orange-700 mb-4">📈 Dashboard</h1>
 
         {/* Cards */}
