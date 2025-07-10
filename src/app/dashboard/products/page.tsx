@@ -1,5 +1,8 @@
 'use client';
 
+import React, { useState } from 'react';
+import Sidebar from '@/components/sidebar';
+import { LayoutDashboard, ShoppingCart, Box } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -41,11 +44,42 @@ const mockProducts = [
 
 export default function ProductsPage() {
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const sidebarLinks = [
+    {
+      href: '/dashboard',
+      label: 'Dashboard',
+      icon: LayoutDashboard,
+    },
+    {
+      href: '/dashboard/sales',
+      label: 'Sales',
+      icon: ShoppingCart,
+    },
+    {
+      href: '/dashboard/products',
+      label: 'Product',
+      icon: Box,
+    },
+  ];
 
   return (
-    <>
-      {' '}
-      <div className="p-6">
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
+
+      {/* Main Content */}
+      <main className="flex-1 p-6 ml-0 md:ml-64">
+        <div className="mb-4">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="md:hidden text-orange-600 text-2xl"
+          >
+            ☰
+          </button>
+        </div>
+
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Products</h1>
           <Button
@@ -88,7 +122,7 @@ export default function ProductsPage() {
             </TableBody>
           </Table>
         </Card>
-      </div>
-    </>
+      </main>
+    </div>
   );
 }
