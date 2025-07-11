@@ -9,9 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { signUp, signUpWithGoogle } from '@/lib/auth';
 
 interface SignupData {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -19,7 +21,8 @@ interface SignupData {
 }
 
 interface SignupErrors {
-  fullName?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -28,7 +31,8 @@ interface SignupErrors {
 
 export default function SignupPage() {
   const [formData, setFormData] = useState<SignupData>({
-    fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -50,7 +54,8 @@ export default function SignupPage() {
   const validateForm = (): boolean => {
     const newErrors: SignupErrors = {};
 
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
+    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
 
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
@@ -80,33 +85,26 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-
     try {
-      console.log('Creating user account:', formData);
-
-      localStorage.setItem(
-        'pendingUser',
-        JSON.stringify({
-          fullName: formData.fullName,
-          email: formData.email,
-          password: formData.password,
-        })
-      );
-
+      await signUp({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      });
       window.location.href = '/signin';
     } catch (error) {
-      console.error('Error creating account:', error);
+      if (error instanceof Error) {
+        setErrors({ email: error.message });
+      } else {
+        setErrors({ email: 'Signup failed' });
+      }
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleGoogleSignup = () => {
-    // Implement Google signup
   };
 
   return (
@@ -126,12 +124,8 @@ export default function SignupPage() {
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-xl">Sign Up</CardTitle>
             <CardDescription>Create your account to get started with Alimana</CardDescription>
-            <Button
-              variant="outline"
-              onClick={handleGoogleSignup}
-              className="w-full bg-transparent"
-            >
-              <svg height="200" width="200" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <Button variant="outline" onClick={signUpWithGoogle} className="w-full bg-transparent">
+              <svg height="20" width="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
                   fill="#FFC107"
@@ -149,9 +143,9 @@ export default function SignupPage() {
                   fill="#1976D2"
                 />
               </svg>
-              Continue with Google
+              <span className="ml-2">Continue with Google</span>
             </Button>
-            <div className="relative">
+            <div className="relative mt-4">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
@@ -163,21 +157,38 @@ export default function SignupPage() {
 
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Full Name */}
+              {/* First Name */}
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="firstName">First Name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
-                    id="fullName"
+                    id="firstName"
                     type="text"
-                    placeholder="Enter your full name"
+                    placeholder="Enter your first name"
                     className="pl-10"
-                    value={formData.fullName}
-                    onChange={(e) => updateFormData('fullName', e.target.value)}
+                    value={formData.firstName}
+                    onChange={(e) => updateFormData('firstName', e.target.value)}
                   />
                 </div>
-                {errors.fullName && <p className="text-sm text-red-600">{errors.fullName}</p>}
+                {errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
+              </div>
+
+              {/* Last Name */}
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="lastName"
+                    type="text"
+                    placeholder="Enter your last name"
+                    className="pl-10"
+                    value={formData.lastName}
+                    onChange={(e) => updateFormData('lastName', e.target.value)}
+                  />
+                </div>
+                {errors.lastName && <p className="text-sm text-red-600">{errors.lastName}</p>}
               </div>
 
               {/* Email */}

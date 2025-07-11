@@ -3,7 +3,14 @@
 import RequireStore from '@/components/auth/RequireStore';
 import { useStore } from '@/context/store-context';
 
-const defaultPermissions = ['View Sales', 'Manage Products', 'Manage Users', 'View Reports'];
+const defaultPermissions = [
+  'View Sales',
+  'Manage Products',
+  'Manage Users',
+  'View Reports',
+  'Invite Users',
+  'Block Accounts',
+];
 
 const mockRoles = [
   {
@@ -12,11 +19,11 @@ const mockRoles = [
   },
   {
     name: 'Cashier',
-    permissions: ['View Sales', 'Manage Products'],
+    permissions: ['View Sales', 'View Reports', 'Manage Products'],
   },
   {
-    name: 'Viewer',
-    permissions: ['View Sales'],
+    name: 'Manager',
+    permissions: ['View Sales', 'Manager Products '],
   },
 ];
 

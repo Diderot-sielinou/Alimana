@@ -8,7 +8,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: 'Admin' | 'Cashier' | 'Viewer';
+  role: 'Admin' | 'Cashier' | 'Manager';
 }
 
 export default function UsersPage() {
@@ -19,7 +19,7 @@ export default function UsersPage() {
     const mockUsers: User[] = [
       { id: '1', name: 'Alice N.', email: 'alice@example.com', role: 'Admin' },
       { id: '2', name: 'Bob T.', email: 'bob@example.com', role: 'Cashier' },
-      { id: '3', name: 'Cynthia M.', email: 'cynthia@example.com', role: 'Viewer' },
+      { id: '3', name: 'Cynthia M.', email: 'cynthia@example.com', role: 'Manager' },
     ];
     setUsers(mockUsers);
   }, []);

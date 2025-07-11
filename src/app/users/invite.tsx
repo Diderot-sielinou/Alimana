@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 export default function InviteUserPage() {
   const { store } = useStore();
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<'Admin' | 'Cashier' | 'Viewer'>('Viewer');
+  const [role, setRole] = useState<'Admin' | 'Cashier' | 'Manager'>('Manager');
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
@@ -23,14 +23,14 @@ export default function InviteUserPage() {
 
       setSuccess(true);
       setEmail('');
-      setRole('Viewer');
+      setRole('Manager');
     } catch {
       setError('Failed to send invitation');
     }
   };
 
   const handleRoleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setRole(e.target.value as 'Admin' | 'Cashier' | 'Viewer');
+    setRole(e.target.value as 'Admin' | 'Cashier' | 'Manager');
   };
 
   return (
@@ -61,7 +61,7 @@ export default function InviteUserPage() {
               value={role}
               onChange={handleRoleChange}
             >
-              <option value="Viewer">Viewer</option>
+              <option value="Manager">Manager</option>
               <option value="Cashier">Cashier</option>
               <option value="Admin">Admin</option>
             </select>
