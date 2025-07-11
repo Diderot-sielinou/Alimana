@@ -1,16 +1,16 @@
 import { apiRequest } from './api';
 
-export async function signIn(email: string, password: string) {
+export async function signIn(data: { email: string; password: string }) {
   return apiRequest('/api/signin', {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ data }),
   });
 }
 
-export async function signUp(firstName: string, lastName: string, email: string, password: string) {
+export async function signUp(data: { fullName: string; email: string; password: string }) {
   return apiRequest('/api/signup', {
     method: 'POST',
-    body: JSON.stringify({ firstName, lastName, email, password }),
+    body: JSON.stringify(data),
   });
 }
 

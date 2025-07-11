@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { signUpWithGoogle } from '@/lib/auth';
 
 type SigninFormData = {
   email: string;
@@ -62,8 +63,6 @@ export default function SigninPage() {
     setIsSubmitting(true);
 
     try {
-      console.log('Signing in with:', formData);
-
       const userHasStore = localStorage.getItem('userStore');
 
       router.push(userHasStore ? '/dashboard' : '/create-store');
@@ -73,10 +72,6 @@ export default function SigninPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleGoogleSignup = () => {
-    // Implement Google OAuth signup
   };
 
   return (
@@ -98,11 +93,7 @@ export default function SigninPage() {
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-xl">Sign In</CardTitle>
-            <Button
-              variant="outline"
-              onClick={handleGoogleSignup}
-              className="w-full bg-transparent"
-            >
+            <Button variant="outline" onClick={signUpWithGoogle} className="w-full bg-transparent">
               <svg
                 className="mr-2 h-4 w-4"
                 viewBox="0 0 48 48"

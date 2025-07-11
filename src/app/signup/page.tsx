@@ -12,8 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { signUp, signUpWithGoogle } from '@/lib/auth';
 
 interface SignupData {
-  firstName: string;
-  lastName: string;
+  fullName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -21,8 +20,7 @@ interface SignupData {
 }
 
 interface SignupErrors {
-  firstName?: string;
-  lastName?: string;
+  fullName?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -31,8 +29,7 @@ interface SignupErrors {
 
 export default function SignupPage() {
   const [formData, setFormData] = useState<SignupData>({
-    firstName: '',
-    lastName: '',
+    fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -54,8 +51,7 @@ export default function SignupPage() {
   const validateForm = (): boolean => {
     const newErrors: SignupErrors = {};
 
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
+    if (!formData.fullName.trim()) newErrors.fullName = 'First name is required';
 
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
@@ -90,8 +86,7 @@ export default function SignupPage() {
     setIsSubmitting(true);
     try {
       await signUp({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
+        fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
       });
@@ -157,38 +152,21 @@ export default function SignupPage() {
 
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* First Name */}
+              {/* Full Name */}
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="fullName">Full Name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
-                    id="firstName"
+                    id="fullName"
                     type="text"
-                    placeholder="Enter your first name"
+                    placeholder="Enter your full name"
                     className="pl-10"
-                    value={formData.firstName}
-                    onChange={(e) => updateFormData('firstName', e.target.value)}
+                    value={formData.fullName}
+                    onChange={(e) => updateFormData('fullName', e.target.value)}
                   />
                 </div>
-                {errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
-              </div>
-
-              {/* Last Name */}
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="lastName"
-                    type="text"
-                    placeholder="Enter your last name"
-                    className="pl-10"
-                    value={formData.lastName}
-                    onChange={(e) => updateFormData('lastName', e.target.value)}
-                  />
-                </div>
-                {errors.lastName && <p className="text-sm text-red-600">{errors.lastName}</p>}
+                {errors.fullName && <p className="text-sm text-red-600">{errors.fullName}</p>}
               </div>
 
               {/* Email */}
