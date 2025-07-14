@@ -35,7 +35,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
         <nav className="mt-4">
           <ul className="space-y-1">
             {links.map(({ href, label, icon: Icon }) => {
-              const isActive = pathname.startsWith(href);
+              const isActive = pathname.startsWith(href) && pathname === href;
 
               return (
                 <li key={href} className="relative">
