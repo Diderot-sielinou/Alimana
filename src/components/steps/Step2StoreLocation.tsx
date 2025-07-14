@@ -4,21 +4,28 @@ import { MapPin, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { StoreErrors, UpdateFormData, StoreData } from '@/types/store';
+import { StoreData } from '@/app/create-store/page';
 
 interface Props {
-  formData: Pick<StoreData, 'address' | 'city' | 'state' | 'streetaddress' | 'zipCode'>;
-  errors: StoreErrors;
-  updateFormData: UpdateFormData;
+  formData: Pick<StoreData, 'address' | 'city' | 'state' | 'zipCode'>;
+  errors: Partial<Record<keyof StoreData, string>>;
+  updateFormData: (field: keyof StoreData, value: string) => void;
   onBack: () => void;
   onNext: () => void;
 }
 
-export function Step2StoreLocation({ formData, errors, updateFormData, onBack, onNext }: Props) {
+export default function Step2StoreLocation({
+  formData,
+  errors,
+  updateFormData,
+  onBack,
+  onNext,
+}: Props) {
   return (
-    <>
+    <div className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="address">Address</Label>
+        {' '}
+        <Label htmlFor="address">Address</Label>{' '}
         <div className="relative">
           <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
@@ -30,9 +37,9 @@ export function Step2StoreLocation({ formData, errors, updateFormData, onBack, o
             onChange={(e) => updateFormData('address', e.target.value)}
           />
         </div>
-        {errors.address && <p className="text-sm text-red-600">{errors.address}</p>}
+        {errors.address && <p className="text-sm text-red-600">{errors.address}</p>}{' '}
       </div>
-
+      {/* City and State */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="city">City</Label>
@@ -59,28 +66,6 @@ export function Step2StoreLocation({ formData, errors, updateFormData, onBack, o
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="streetaddress">Street Address</Label>
-        <Input
-          id="streetaddress"
-          type="text"
-          placeholder="Street Address"
-          value={formData.streetaddress}
-          onChange={(e) => updateFormData('streetaddress', e.target.value)}
-        />
-        {errors.streetaddress && <p className="text-sm text-red-600">{errors.streetaddress}</p>}
-
-        <Label htmlFor="zipCode">ZIP Code</Label>
-        <Input
-          id="zipCode"
-          type="text"
-          placeholder="ZIP Code"
-          value={formData.zipCode}
-          onChange={(e) => updateFormData('zipCode', e.target.value)}
-        />
-        {errors.zipCode && <p className="text-sm text-red-600">{errors.zipCode}</p>}
-      </div>
-
       <div className="flex space-x-4">
         <Button variant="outline" onClick={onBack} className="flex-1 bg-transparent">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -91,6 +76,6 @@ export function Step2StoreLocation({ formData, errors, updateFormData, onBack, o
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
-    </>
+    </div>
   );
 }
