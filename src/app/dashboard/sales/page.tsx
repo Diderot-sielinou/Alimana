@@ -24,11 +24,6 @@ export default function SalesPage() {
       label: 'Sales',
       icon: ShoppingCart,
     },
-    // {
-    //   href: '/dashboard/settings',
-    //   label: 'Settings',
-    //   icon: Settings,
-    // },
   ];
 
   return (
