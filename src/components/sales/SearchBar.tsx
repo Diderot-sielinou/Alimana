@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Search, Barcode, X, Keyboard, Lightbulb } from 'lucide-react';
 
 type Props = {
   value: string;
@@ -17,17 +18,19 @@ export default function SearchBar({ value, onChange }: Props) {
             id="product-search"
             placeholder="Search products..."
             className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={value} // <-- controlled input
-            onChange={(e) => onChange(e.target.value)} // <-- handle change
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
           />
-          <i className="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          {/* Search Icon */}
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
         </div>
         <button
           id="scan-btn"
-          className="flex items-center justify-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-green-700 transition"
+          className="flex items-center justify-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-600 transition"
           type="button"
         >
-          <i className="fas fa-barcode mr-2"></i> Scan Barcode
+          <Barcode className="w-5 h-5 mr-2" />
+          Scan Barcode
         </button>
       </div>
 
@@ -40,27 +43,29 @@ export default function SearchBar({ value, onChange }: Props) {
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold">Barcode Scanner</h3>
             <button id="close-scanner" className="text-gray-500 hover:text-gray-700" type="button">
-              <i className="fas fa-times"></i>
+              <X className="w-5 h-5" />
             </button>
           </div>
           <div className="barcode-scanner bg-gray-200 rounded-lg p-4 text-center mb-4">
-            <i className="fas fa-barcode text-6xl text-gray-600 mb-2"></i>
+            <Barcode className="w-16 h-16 text-gray-600 mb-2 mx-auto" />
             <p className="text-gray-700">Point camera at barcode</p>
           </div>
           <div className="flex justify-between">
             <button
               id="manual-entry"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
               type="button"
             >
-              <i className="fas fa-keyboard mr-2"></i> Manual Entry
+              <Keyboard className="w-5 h-5 mr-2" />
+              Manual Entry
             </button>
             <button
               id="flash-toggle"
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+              className="flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
               type="button"
             >
-              <i className="fas fa-lightbulb mr-2"></i> Flash
+              <Lightbulb className="w-5 h-5 mr-2" />
+              Flash
             </button>
           </div>
         </div>
