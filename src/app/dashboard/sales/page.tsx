@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import Sidebar from '@/components/sidebar';
-import { LayoutDashboard, ShoppingCart, Settings } from 'lucide-react';
-
+import { sidebarLinks } from '@/constants/sidebarLinks';
 import ProductList from '@/components/sales/ProductList';
 // import ProductCard from '@/components/sales/ProductCard';
 // import SearchBar from '@/components/sales/SearchBar';
@@ -12,24 +11,6 @@ import ProductList from '@/components/sales/ProductList';
 
 export default function SalesPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const sidebarLinks = [
-    {
-      href: '/dashboard',
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-    },
-    {
-      href: '/dashboard/sales',
-      label: 'Sales',
-      icon: ShoppingCart,
-    },
-    {
-      href: '/dashboard/settings',
-      label: 'Settings',
-      icon: Settings,
-    },
-  ];
 
   return (
     <div className="flex min-h-screen">
