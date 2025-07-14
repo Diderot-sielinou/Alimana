@@ -63,9 +63,9 @@ export default function ProductList() {
           {/* Top bar: Search + Scan */}
           <div className="flex flex-col md:flex-row md:items-center gap-2">
             <SearchBar value={search} onChange={setSearch} />
-            <button className="flex-shrink-0 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+            {/* <button className="flex-shrink-0 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
               Scan Barcode
-            </button>
+            </button> */}
           </div>
 
           {/* Category filter */}
