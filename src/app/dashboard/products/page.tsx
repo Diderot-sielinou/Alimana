@@ -1,8 +1,9 @@
+//app/dashboard/products/pages
 'use client';
 
 import React, { useState } from 'react';
 import Sidebar from '@/components/sidebar';
-import { LayoutDashboard, ShoppingCart, Box } from 'lucide-react';
+import { sidebarLinks } from '@/constants/sidebarLinks';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -45,24 +46,6 @@ const mockProducts = [
 export default function ProductsPage() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const sidebarLinks = [
-    {
-      href: '/dashboard',
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-    },
-    {
-      href: '/dashboard/sales',
-      label: 'Sales',
-      icon: ShoppingCart,
-    },
-    {
-      href: '/dashboard/products',
-      label: 'Product',
-      icon: Box,
-    },
-  ];
 
   return (
     <div className="flex min-h-screen">

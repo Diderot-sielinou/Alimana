@@ -15,29 +15,11 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Sidebar from '@/components/sidebar';
-import { LayoutDashboard, ShoppingCart, Settings } from 'lucide-react';
+import { sidebarLinks } from '@/constants/sidebarLinks';
 
 export default function NewProductPage() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const sidebarLinks = [
-    {
-      href: '/dashboard',
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-    },
-    {
-      href: '/dashboard/sales',
-      label: 'Sales',
-      icon: ShoppingCart,
-    },
-    {
-      href: '/dashboard/settings',
-      label: 'Settings',
-      icon: Settings,
-    },
-  ];
 
   const [product, setProduct] = useState({
     name: '',
