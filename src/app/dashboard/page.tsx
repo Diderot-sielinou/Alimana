@@ -1,19 +1,11 @@
+//app/dashboard/pages
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Chart } from 'chart.js/auto';
 import Link from 'next/link';
-import {
-  Home,
-  // BarChart,
-  ShoppingCart,
-  // FileText,
-  // Box,
-  // Wallet,
-  // Settings,
-  // Users,
-  Bell,
-  Menu,
-} from 'lucide-react';
+import { sidebarLinks } from '@/constants/sidebarLinks';
+
+import { Bell, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Sidebar from '@/components/sidebar';
 
@@ -92,21 +84,10 @@ export default function Dashboard() {
     };
   }, []);
 
-  const links = [
-    { href: '/dashboard', label: 'Dashboard', icon: Home },
-    // { href: '/analytics', label: 'Analytics', icon: BarChart },
-    { href: '/dashboard/sales', label: 'Sales', icon: ShoppingCart },
-    // { href: '/sales-reports', label: 'Sales Reports', icon: FileText },
-    // { href: '/inventory-reports', label: 'Inventory Reports', icon: Box },
-    // { href: '/expense-reports', label: 'Expense Reports', icon: Wallet },
-    // { href: '/system-settings', label: 'System Settings', icon: Settings },
-    // { href: '/user-management', label: 'User Management', icon: Users },
-  ];
-
   return (
     <>
       {/* Sidebar */}
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={links} />
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
 
       {/* Header */}
       <header className="bg-white shadow-sm z-10 md:ml-64 max-w-full pr-2">

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Sidebar from '@/components/sidebar';
-import { LayoutDashboard, ShoppingCart, Settings } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart } from 'lucide-react';
 
 import ProductList from '@/components/sales/ProductList';
 // import ProductCard from '@/components/sales/ProductCard';
@@ -23,11 +23,6 @@ export default function SalesPage() {
       href: '/dashboard/sales',
       label: 'Sales',
       icon: ShoppingCart,
-    },
-    {
-      href: '/dashboard/settings',
-      label: 'Settings',
-      icon: Settings,
     },
   ];
 

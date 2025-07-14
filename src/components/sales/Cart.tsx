@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { CartProduct } from './ProductCard';
 import Receipt from '@/components/sales/Receipt';
+import { Plus, Trash2, ShoppingBasket, Pause, CreditCard } from 'lucide-react';
 
 type Props = {
   items: CartProduct[];
@@ -32,8 +33,11 @@ export default function Cart({ items, onClear }: Props) {
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-medium text-gray-700">Customer</h3>
-            <button className="text-blue-600 text-sm hover:text-blue-800" type="button">
-              <i className="fas fa-plus mr-1"></i> Add
+            <button
+              className="flex items-center text-blue-600 text-sm hover:text-blue-800"
+              type="button"
+            >
+              <Plus className="w-4 h-4 mr-1" strokeWidth={3} /> Add
             </button>
           </div>
           <div className="bg-gray-50 p-3 rounded-lg">
@@ -47,16 +51,16 @@ export default function Cart({ items, onClear }: Props) {
             <h3 className="font-medium text-gray-700">Items ({items.length})</h3>
             <button
               onClick={onClear}
-              className="text-red-600 text-sm hover:text-red-800"
+              className="flex items-center text-red-600 text-sm hover:text-red-800"
               type="button"
             >
-              <i className="fas fa-trash-alt mr-1"></i> Clear
+              <Trash2 className="w-4 h-4 mr-1" strokeWidth={3} /> Clear
             </button>
           </div>
           <div className="max-h-96 overflow-y-auto border rounded-lg">
             {items.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
-                <i className="fas fa-shopping-basket text-3xl mb-2"></i>
+              <div className="p-4 text-center text-gray-500 flex flex-col items-center">
+                <ShoppingBasket className="w-8 h-8 mb-2" strokeWidth={3.5} />
                 <p>Your basket is empty</p>
               </div>
             ) : (
@@ -92,23 +96,22 @@ export default function Cart({ items, onClear }: Props) {
         {/* Payment Buttons */}
         <div className="grid grid-cols-2 gap-3">
           <button
-            className="px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition flex items-center justify-center"
+            className="flex items-center justify-center px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
             type="button"
           >
-            <i className="fas fa-pause mr-2"></i> Hold
+            <Pause className="w-4 h-4 mr-2" strokeWidth={3.5} /> Hold
           </button>
           <button
             onClick={handlePayNow}
-            className="px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition flex items-center justify-center"
+            className="flex items-center justify-center px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
             type="button"
             disabled={items.length === 0}
           >
-            <i className="fas fa-credit-card mr-2"></i> Pay Now
+            <CreditCard className="w-4 h-4 mr-2" strokeWidth={3.5} /> Pay Now
           </button>
         </div>
       </div>
 
-      {/* Receipt outside the basket */}
       {showReceipt && (
         <div className="mt-6 w-full lg:w-2/3">
           <Receipt
