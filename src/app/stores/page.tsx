@@ -9,6 +9,7 @@ import { useStore } from '@/context/store-context';
 
 interface Store {
   storeId: string;
+  storeUserId: number;
   name: string;
   logo?: string;
   role: 'Admin' | 'Cashier' | 'Manager';
@@ -23,7 +24,10 @@ export default function SelectStorePage() {
   useEffect(() => {
     async function fetchStores() {
       try {
-        const res = await fetch('/api/stores/linked-to-user');
+        const res = await fetch('/api/stores/linked-to-user', {
+          method: 'GET',
+          credentials: 'include',
+        });
         if (!res.ok) throw new Error('Failed to fetch stores');
         const data = await res.json();
         setStores(data);
@@ -36,9 +40,21 @@ export default function SelectStorePage() {
     fetchStores();
   }, []);
 
-  const handleSelect = (store: Store) => {
-    setStore({ id: store.storeId, role: store.role });
-    router.push(store.role === 'Cashier' ? '/sales/create' : '/dashboard');
+  const handleSelect = async (store: Store) => {
+    try {
+      const res = await fetch('/api/auth/select-store', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ storeUserId: store.storeUserId }),
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Failed to select store');
+      setStore({ id: store.storeId, role: store.role });
+      router.push(store.role === 'Cashier' ? '/sales/create' : '/dashboard');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to select store');
+    }
   };
 
   if (loading) return <p className="p-6 text-center">Loading stores...</p>;
@@ -52,7 +68,7 @@ export default function SelectStorePage() {
       <h1 className="text-center text-2xl font-bold mb-6">Select a Store</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
         {stores.map((store) => (
-          <Card key={store.storeId} className="border shadow-sm">
+          <Card key={store.storeUserId} className="border shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg flex items-center justify-between">
                 {store.name}

@@ -3,19 +3,21 @@
 import type React from 'react';
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, User, Mail, Lock, Eye, EyeOff, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { signUp, signUpWithGoogle } from '@/lib/auth';
+import { useRouter } from 'next/navigation';
 
 interface SignupData {
   fullName: string;
   email: string;
   password: string;
   confirmPassword: string;
+  phone: string;
   acceptTerms: boolean;
 }
 
@@ -24,34 +26,41 @@ interface SignupErrors {
   email?: string;
   password?: string;
   confirmPassword?: string;
+  phone?: string;
   acceptTerms?: string;
 }
 
 export default function SignupPage() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState<SignupData>({
     fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
+    phone: '',
     acceptTerms: false,
   });
 
   const [errors, setErrors] = useState<SignupErrors>({});
+  const [generalError, setGeneralError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const updateFormData = (field: keyof SignupData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear field-specific error on change
     if (errors[field as keyof SignupErrors]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
+    if (generalError) setGeneralError(null);
   };
 
   const validateForm = (): boolean => {
     const newErrors: SignupErrors = {};
 
-    if (!formData.fullName.trim()) newErrors.fullName = 'First name is required';
+    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
 
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
@@ -71,6 +80,10 @@ export default function SignupPage() {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
+    if (formData.phone && !/^(\+?[1-9]\d{1,14}|0\d{9})$/.test(formData.phone)) {
+      newErrors.phone = 'Phone number must be valid international or local format';
+    }
+
     if (!formData.acceptTerms) {
       newErrors.acceptTerms = 'You must accept the terms and conditions';
     }
@@ -84,18 +97,21 @@ export default function SignupPage() {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    setGeneralError(null);
+
     try {
       await signUp({
         fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
+        phone: '+237' + formData.phone.replace(/^(\+237)?/, ''),
       });
-      window.location.href = '/signin';
+      router.push('/create-store');
     } catch (error) {
       if (error instanceof Error) {
-        setErrors({ email: error.message });
+        setGeneralError(error.message);
       } else {
-        setErrors({ email: 'Signup failed' });
+        setGeneralError('Signup failed. Please try again.');
       }
     } finally {
       setIsSubmitting(false);
@@ -151,7 +167,9 @@ export default function SignupPage() {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+              {generalError && <p className="text-sm text-red-600 text-center">{generalError}</p>}
+
               {/* Full Name */}
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
@@ -164,9 +182,15 @@ export default function SignupPage() {
                     className="pl-10"
                     value={formData.fullName}
                     onChange={(e) => updateFormData('fullName', e.target.value)}
+                    aria-invalid={!!errors.fullName}
+                    aria-describedby="fullName-error"
                   />
                 </div>
-                {errors.fullName && <p className="text-sm text-red-600">{errors.fullName}</p>}
+                {errors.fullName && (
+                  <p id="fullName-error" className="text-sm text-red-600">
+                    {errors.fullName}
+                  </p>
+                )}
               </div>
 
               {/* Email */}
@@ -181,9 +205,38 @@ export default function SignupPage() {
                     className="pl-10"
                     value={formData.email}
                     onChange={(e) => updateFormData('email', e.target.value)}
+                    aria-invalid={!!errors.email}
+                    aria-describedby="email-error"
                   />
                 </div>
-                {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
+                {errors.email && (
+                  <p id="email-error" className="text-sm text-red-600">
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+
+              {/* Phone */}
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone (Optional)</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="+237..."
+                    className="pl-10"
+                    value={formData.phone}
+                    onChange={(e) => updateFormData('phone', e.target.value)}
+                    aria-invalid={!!errors.phone}
+                    aria-describedby="phone-error"
+                  />
+                </div>
+                {errors.phone && (
+                  <p id="phone-error" className="text-sm text-red-600">
+                    {errors.phone}
+                  </p>
+                )}
               </div>
 
               {/* Password */}
@@ -198,16 +251,23 @@ export default function SignupPage() {
                     className="pl-10 pr-10"
                     value={formData.password}
                     onChange={(e) => updateFormData('password', e.target.value)}
+                    aria-invalid={!!errors.password}
+                    aria-describedby="password-error"
                   />
                   <button
                     type="button"
                     className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
+                {errors.password && (
+                  <p id="password-error" className="text-sm text-red-600">
+                    {errors.password}
+                  </p>
+                )}
               </div>
 
               {/* Confirm Password */}
@@ -222,11 +282,14 @@ export default function SignupPage() {
                     className="pl-10 pr-10"
                     value={formData.confirmPassword}
                     onChange={(e) => updateFormData('confirmPassword', e.target.value)}
+                    aria-invalid={!!errors.confirmPassword}
+                    aria-describedby="confirmPassword-error"
                   />
                   <button
                     type="button"
                     className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -236,7 +299,9 @@ export default function SignupPage() {
                   </button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-sm text-red-600">{errors.confirmPassword}</p>
+                  <p id="confirmPassword-error" className="text-sm text-red-600">
+                    {errors.confirmPassword}
+                  </p>
                 )}
               </div>
 
@@ -248,6 +313,8 @@ export default function SignupPage() {
                     checked={formData.acceptTerms}
                     onCheckedChange={(checked) => updateFormData('acceptTerms', Boolean(checked))}
                     className="mt-1"
+                    aria-invalid={!!errors.acceptTerms}
+                    aria-describedby="acceptTerms-error"
                   />
                   <Label htmlFor="acceptTerms" className="text-sm text-gray-600 leading-relaxed">
                     I agree to the{' '}
@@ -260,7 +327,11 @@ export default function SignupPage() {
                     </Link>
                   </Label>
                 </div>
-                {errors.acceptTerms && <p className="text-sm text-red-600">{errors.acceptTerms}</p>}
+                {errors.acceptTerms && (
+                  <p id="acceptTerms-error" className="text-sm text-red-600">
+                    {errors.acceptTerms}
+                  </p>
+                )}
               </div>
 
               <Button

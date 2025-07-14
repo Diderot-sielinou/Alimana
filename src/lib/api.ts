@@ -1,3 +1,4 @@
+//src/lib/api.ts
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
