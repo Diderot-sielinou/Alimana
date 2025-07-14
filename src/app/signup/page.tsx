@@ -1,9 +1,9 @@
 'use client';
 
-import type React from 'react';
 import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,7 +11,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 
 interface SignupData {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -19,16 +20,17 @@ interface SignupData {
 }
 
 interface SignupErrors {
-  fullName?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  acceptTerms?: string;
+  [key: string]: string | undefined;
 }
 
 export default function SignupPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const invitationToken = searchParams.get('token');
+
   const [formData, setFormData] = useState<SignupData>({
-    fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -42,36 +44,31 @@ export default function SignupPage() {
 
   const updateFormData = (field: keyof SignupData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field as keyof SignupErrors]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
   const validateForm = (): boolean => {
     const newErrors: SignupErrors = {};
 
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
+    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
 
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = 'Enter a valid email';
     }
 
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
+    if (!formData.password || formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters';
     }
 
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
     if (!formData.acceptTerms) {
-      newErrors.acceptTerms = 'You must accept the terms and conditions';
+      newErrors.acceptTerms = 'You must accept the terms';
     }
 
     setErrors(newErrors);
@@ -86,27 +83,36 @@ export default function SignupPage() {
     setIsSubmitting(true);
 
     try {
-      console.log('Creating user account:', formData);
+      const payload = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        token: invitationToken ?? null,
+      };
 
-      localStorage.setItem(
-        'pendingUser',
-        JSON.stringify({
-          fullName: formData.fullName,
-          email: formData.email,
-          password: formData.password,
-        })
-      );
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-      window.location.href = '/signin';
-    } catch (error) {
-      console.error('Error creating account:', error);
+      if (!response.ok) throw new Error('Signup failed');
+
+      if (invitationToken) {
+        router.push('/signin?invited=true');
+      } else {
+        router.push('/create-store');
+      }
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleGoogleSignup = () => {
-    // Implement Google signup
+    // TODO: integrate Google SSO
   };
 
   return (
@@ -115,7 +121,7 @@ export default function SignupPage() {
         <div className="text-center mb-8">
           <Link
             href="/"
-            className="inline-flex items-center space-x-2 text-amber-600 hover:text-amber-700 mb-4"
+            className="inline-flex items-center text-amber-600 hover:text-amber-700 space-x-2 mb-4"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to home</span>
@@ -126,11 +132,7 @@ export default function SignupPage() {
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-xl">Sign Up</CardTitle>
             <CardDescription>Create your account to get started with Alimana</CardDescription>
-            <Button
-              variant="outline"
-              onClick={handleGoogleSignup}
-              className="w-full bg-transparent"
-            >
+            <Button variant="outline" className="w-full my-4 bg-white" onClick={handleGoogleSignup}>
               <svg height="200" width="200" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
@@ -149,130 +151,122 @@ export default function SignupPage() {
                   fill="#1976D2"
                 />
               </svg>
-              Continue with Google
+              <span>Continue with Google</span>
             </Button>
-            <div className="relative">
+            <div className="relative my-2">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-gray-500">Or</span>
+                <span className="bg-white px-2 text-gray-500">or</span>
               </div>
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Full Name */}
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="Enter your full name"
-                    className="pl-10"
-                    value={formData.fullName}
-                    onChange={(e) => updateFormData('fullName', e.target.value)}
-                  />
-                </div>
-                {errors.fullName && <p className="text-sm text-red-600">{errors.fullName}</p>}
+          <CardContent>
+            <form className="space-y-5" onSubmit={handleSubmit}>
+              {/* First Name */}
+              <div>
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) => updateFormData('firstName', e.target.value)}
+                  placeholder="John"
+                />
+                {errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
+              </div>
+
+              {/* Last Name */}
+              <div>
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) => updateFormData('lastName', e.target.value)}
+                  placeholder="Doe"
+                />
+                {errors.lastName && <p className="text-sm text-red-600">{errors.lastName}</p>}
               </div>
 
               {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    className="pl-10"
-                    value={formData.email}
-                    onChange={(e) => updateFormData('email', e.target.value)}
-                  />
-                </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => updateFormData('email', e.target.value)}
+                  placeholder="you@example.com"
+                />
                 {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
               </div>
 
               {/* Password */}
-              <div className="space-y-2">
+              <div className="relative">
                 <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Create a strong password"
-                    className="pl-10 pr-10"
-                    value={formData.password}
-                    onChange={(e) => updateFormData('password', e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={(e) => updateFormData('password', e.target.value)}
+                  placeholder="At least 8 characters"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute top-8 right-3"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
                 {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
               </div>
 
               {/* Confirm Password */}
-              <div className="space-y-2">
+              <div className="relative">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    placeholder="Confirm your password"
-                    className="pl-10 pr-10"
-                    value={formData.confirmPassword}
-                    onChange={(e) => updateFormData('confirmPassword', e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={formData.confirmPassword}
+                  onChange={(e) => updateFormData('confirmPassword', e.target.value)}
+                  placeholder="Re-type password"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute top-8 right-3"
+                >
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
                 {errors.confirmPassword && (
                   <p className="text-sm text-red-600">{errors.confirmPassword}</p>
                 )}
               </div>
 
               {/* Accept Terms */}
-              <div className="space-y-2">
-                <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="acceptTerms"
-                    checked={formData.acceptTerms}
-                    onCheckedChange={(checked) => updateFormData('acceptTerms', Boolean(checked))}
-                    className="mt-1"
-                  />
-                  <Label htmlFor="acceptTerms" className="text-sm text-gray-600 leading-relaxed">
-                    I agree to the{' '}
-                    <Link href="/terms" className="text-amber-600 hover:text-amber-700 underline">
-                      Terms of Service
-                    </Link>{' '}
-                    and{' '}
-                    <Link href="/privacy" className="text-amber-600 hover:text-amber-700 underline">
-                      Privacy Policy
-                    </Link>
-                  </Label>
-                </div>
-                {errors.acceptTerms && <p className="text-sm text-red-600">{errors.acceptTerms}</p>}
+              <div className="flex items-start space-x-2">
+                <Checkbox
+                  id="acceptTerms"
+                  checked={formData.acceptTerms}
+                  onCheckedChange={(checked) => updateFormData('acceptTerms', Boolean(checked))}
+                  className="mt-1"
+                />
+                <Label htmlFor="acceptTerms" className="text-sm text-gray-600 leading-relaxed">
+                  I agree to the{' '}
+                  <Link href="/terms" className="text-amber-600 underline">
+                    Terms
+                  </Link>{' '}
+                  and{' '}
+                  <Link href="/privacy" className="text-amber-600 underline">
+                    Privacy Policy
+                  </Link>
+                  .
+                </Label>
               </div>
+              {errors.acceptTerms && <p className="text-sm text-red-600">{errors.acceptTerms}</p>}
 
               <Button
                 type="submit"
@@ -283,12 +277,12 @@ export default function SignupPage() {
               </Button>
             </form>
 
-            <div className="text-center text-sm text-gray-600">
+            <p className="mt-4 text-center text-sm text-gray-600">
               Already have an account?{' '}
               <Link href="/signin" className="text-amber-600 hover:text-amber-700 font-medium">
                 Sign in
               </Link>
-            </div>
+            </p>
           </CardContent>
         </Card>
       </div>

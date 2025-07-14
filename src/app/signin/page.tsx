@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
 
 type SigninFormData = {
   email: string;
@@ -62,27 +63,51 @@ export default function SigninPage() {
     setIsSubmitting(true);
 
     try {
-      console.log('Signing in with:', formData);
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          rememberMe: formData.rememberMe,
+        }),
+      });
 
-      const userHasStore = localStorage.getItem('userStore');
+      if (!response.ok) {
+        const error = await response.json();
+        setErrors({ password: 'Invalid email or password' });
+        toast.error(error.message || 'Authentication failed');
+        return;
+      }
 
-      router.push(userHasStore ? '/dashboard' : '/create-store');
+      const user = await response.json();
+
+      // Example response: { stores: [...], role: 'cashier' }
+      if (user.role === 'cashier') {
+        router.push('/sales/create');
+      } else if (user.stores?.length > 1) {
+        router.push('/select-store');
+      } else if (user.stores?.length === 1) {
+        router.push('/dashboard');
+      } else {
+        router.push('/create-store'); // Fallback (no store yet)
+      }
     } catch (error) {
       console.error('Sign in error:', error);
-      setErrors({ password: 'Invalid email or password' });
+      setErrors({ password: 'Something went wrong. Please try again.' });
+      // toast.error('Sign in failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleGoogleSignup = () => {
-    // Implement Google OAuth signup
+  const handleGoogleSignin = () => {
+    // TODO: Implement Google OAuth
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Header */}
         <div className="text-center mb-8">
           <Link
             href="/"
@@ -91,43 +116,36 @@ export default function SigninPage() {
             <ArrowLeft className="h-4 w-4" />
             <span>Back to home</span>
           </Link>
-
           <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
         </div>
 
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-xl">Sign In</CardTitle>
-            <Button
-              variant="outline"
-              onClick={handleGoogleSignup}
-              className="w-full bg-transparent"
-            >
-              <svg
-                className="mr-2 h-4 w-4"
-                viewBox="0 0 48 48"
-                // xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
-                  fill="#FFC107"
-                />
-                <path
-                  d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"
-                  fill="#FF3D00"
-                />
-                <path
-                  d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"
-                  fill="#4CAF50"
-                />
-                <path
-                  d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"
-                  fill="#1976D2"
-                />
-              </svg>
+            <Button variant="outline" onClick={handleGoogleSignin} className="w-full bg-white mt-2">
+              <span className="mr-2">
+                <svg className="h-4 w-4" viewBox="0 0 48 48">
+                  <path
+                    fill="#FFC107"
+                    d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-9 20-20 0-1.3-.1-2.6-.4-3.9z"
+                  />
+                  <path
+                    fill="#FF3D00"
+                    d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"
+                  />
+                  <path
+                    fill="#4CAF50"
+                    d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.1 34.6 26.6 36 24 36c-5.2 0-9.6-3.3-11.3-7.9L6.2 33.1C9.5 39.6 16.2 44 24 44z"
+                  />
+                  <path
+                    fill="#1976D2"
+                    d="M43.6 20.1H42V20H24v8h11.3c-1.1 3.1-3.6 5.8-6.5 7.5l6.2 5.2C39 37.2 44 31.3 44 24c0-1.3-.1-2.6-.4-3.9z"
+                  />
+                </svg>
+              </span>
               Continue with Google
             </Button>
-            <div className="relative">
+            <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
@@ -141,15 +159,15 @@ export default function SigninPage() {
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               {/* Email */}
-              <div className="space-y-2">
+              <div>
                 <Label htmlFor="email">Email Address</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
                     id="email"
                     type="email"
-                    autoComplete="email"
                     placeholder="Enter your email"
+                    autoComplete="email"
                     className="pl-10"
                     value={formData.email}
                     onChange={(e) => updateFormData('email', e.target.value)}
@@ -159,24 +177,23 @@ export default function SigninPage() {
               </div>
 
               {/* Password */}
-              <div className="space-y-2">
+              <div>
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
                     placeholder="Enter your password"
+                    autoComplete="current-password"
                     className="pl-10 pr-10"
                     value={formData.password}
                     onChange={(e) => updateFormData('password', e.target.value)}
                   />
                   <button
                     type="button"
-                    aria-label="Toggle password visibility"
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    onClick={() => setShowPassword((prev) => !prev)}
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>

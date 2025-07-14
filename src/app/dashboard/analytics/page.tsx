@@ -16,8 +16,10 @@ export default function AnalyticsPage() {
   const customerInsightsChartRef = useRef(null);
 
   useEffect(() => {
+    const chartInstances: Chart[] = [];
+
     if (revenueChartRef.current) {
-      new Chart(revenueChartRef.current, {
+      const chart = new Chart(revenueChartRef.current, {
         type: 'line',
         data: {
           labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
@@ -39,10 +41,11 @@ export default function AnalyticsPage() {
           ],
         },
       });
+      chartInstances.push(chart);
     }
 
     if (performanceChartRef.current) {
-      new Chart(performanceChartRef.current, {
+      const chart = new Chart(performanceChartRef.current, {
         type: 'bar',
         data: {
           labels: ['Phones', 'Shoes', 'Books', 'Watches'],
@@ -55,10 +58,11 @@ export default function AnalyticsPage() {
           ],
         },
       });
+      chartInstances.push(chart);
     }
 
     if (salesTrendChartRef.current) {
-      new Chart(salesTrendChartRef.current, {
+      const chart = new Chart(salesTrendChartRef.current, {
         type: 'line',
         data: {
           labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
@@ -72,10 +76,11 @@ export default function AnalyticsPage() {
           ],
         },
       });
+      chartInstances.push(chart);
     }
 
     if (topProductsChartRef.current) {
-      new Chart(topProductsChartRef.current, {
+      const chart = new Chart(topProductsChartRef.current, {
         type: 'doughnut',
         data: {
           labels: ['Product A', 'Product B', 'Product C'],
@@ -88,10 +93,11 @@ export default function AnalyticsPage() {
           ],
         },
       });
+      chartInstances.push(chart);
     }
 
     if (customerInsightsChartRef.current) {
-      new Chart(customerInsightsChartRef.current, {
+      const chart = new Chart(customerInsightsChartRef.current, {
         type: 'pie',
         data: {
           labels: ['New', 'Returning'],
@@ -104,7 +110,13 @@ export default function AnalyticsPage() {
           ],
         },
       });
+      chartInstances.push(chart);
     }
+
+    // ✅ Cleanup: destroy all charts on unmount
+    return () => {
+      chartInstances.forEach((chart) => chart.destroy());
+    };
   }, []);
 
   return (
