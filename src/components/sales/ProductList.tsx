@@ -1,57 +1,89 @@
-// "use client";
+'use client';
 
-// import React, { useState } from "react";
-// import ProductCard, { Product } from "./ProductCard";
-// import SearchBar from "./SearchBar";
-// import CategoryFilter from "./CategoryFilter";
-// import Cart from "./Cart";
+import React, { useState } from 'react';
+import ProductCard, { Product } from './ProductCard';
+import SearchBar from './SearchBar';
+import CategoryFilter from './CategoryFilter';
+import Cart from './Cart';
 
-// const mockProducts: Product[] = [
-//   { id: "1", name: "Wireless Headphones", price: 59.99 },
-//   { id: "2", name: "Smartphone", price: 499.99 },
-//   { id: "3", name: "Laptop", price: 899.99 },
-//   { id: "4", name: "Milk (1L)", price: 2.49 },
-//   { id: "5", name: "Bread", price: 1.99 },
-//   { id: "6", name: "Eggs (12)", price: 3.49 },
-//   { id: "7", name: "T-Shirt", price: 14.99 },
-//   { id: "8", name: "Jeans", price: 39.99 },
-// ];
+// Typage: produit avec quantité
+export type CartProduct = Product & { quantity: number };
 
-// const categories = ["All", "Electronics", "Groceries", "Clothing"];
+const mockProducts: Product[] = [
+  { id: '1', name: 'Wireless Headphones', price: 59.99 },
+  { id: '2', name: 'Smartphone', price: 499.99 },
+  { id: '3', name: 'Laptop', price: 899.99 },
+  { id: '4', name: 'Milk (1L)', price: 2.49 },
+  { id: '5', name: 'Bread', price: 1.99 },
+  { id: '6', name: 'Eggs (12)', price: 3.49 },
+  { id: '7', name: 'T-Shirt', price: 14.99 },
+  { id: '8', name: 'Jeans', price: 39.99 },
+];
 
-// export default function ProductList() {
-//   const [search, setSearch] = useState("");
-//   const [category, setCategory] = useState("All");
-//   const [cartItems, setCartItems] = useState<Product[]>([]);
+const categories = ['All', 'Electronics', 'Groceries', 'Clothing'];
 
-//   const handleAdd = (product: Product) => {
-//     setCartItems((prev) => [...prev, product]);
-//   };
+export default function ProductList() {
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('All');
+  const [cartItems, setCartItems] = useState<CartProduct[]>([]);
 
-//   const handleClearCart = () => {
-//     setCartItems([]);
-//   };
+  const handleAdd = (product: Product) => {
+    setCartItems((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
+      if (existing) {
+        return prev.map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      } else {
+        return [...prev, { ...product, quantity: 1 }];
+      }
+    });
+  };
 
-//   const filtered = mockProducts.filter((p) => {
-//     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
-//     const matchesCategory =
-//       category === "All" ||
-//       (category === "Electronics" && ["Wireless Headphones", "Smartphone", "Laptop"].includes(p.name)) ||
-//       (category === "Groceries" && ["Milk (1L)", "Bread", "Eggs (12)"].includes(p.name)) ||
-//       (category === "Clothing" && ["T-Shirt", "Jeans"].includes(p.name));
-//     return matchesSearch && matchesCategory;
-//   });
+  const handleClearCart = () => {
+    setCartItems([]);
+  };
 
-//   return (
-//     <div className="flex flex-col gap-4">
-//       <SearchBar value={search} onChange={setSearch} />
-//       <CategoryFilter categories={categories} active={category} onSelect={setCategory} />
-//       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-//         {filtered.map((product) => (
-//           <ProductCard key={product.id} product={product} onAdd={handleAdd} />
-//         ))}
-//       </div>
-//       <Cart items={cartItems} onClear={handleClearCart} />
-//     </div>
-//   );
-// }
+  const filtered = mockProducts.filter((p) => {
+    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory =
+      category === 'All' ||
+      (category === 'Electronics' &&
+        ['Wireless Headphones', 'Smartphone', 'Laptop'].includes(p.name)) ||
+      (category === 'Groceries' && ['Milk (1L)', 'Bread', 'Eggs (12)'].includes(p.name)) ||
+      (category === 'Clothing' && ['T-Shirt', 'Jeans'].includes(p.name));
+    return matchesSearch && matchesCategory;
+  });
+
+  return (
+    <section className="w-full p-4 md:p-6 bg-gray-50 min-h-screen">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* LEFT SIDE */}
+        <div className="lg:col-span-2 flex flex-col gap-4">
+          {/* Top bar: Search + Scan */}
+          <div className="flex flex-col md:flex-row md:items-center gap-2">
+            <SearchBar value={search} onChange={setSearch} />
+            <button className="flex-shrink-0 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+              Scan Barcode
+            </button>
+          </div>
+
+          {/* Category filter */}
+          <CategoryFilter categories={categories} active={category} onSelect={setCategory} />
+
+          {/* Product grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
+            {filtered.map((product) => (
+              <ProductCard key={product.id} product={product} onAdd={handleAdd} />
+            ))}
+          </div>
+        </div>
+
+        {/* RIGHT SIDE: Cart */}
+        <div className="lg:sticky lg:top-6">
+          <Cart items={cartItems} onClear={handleClearCart} />
+        </div>
+      </div>
+    </section>
+  );
+}

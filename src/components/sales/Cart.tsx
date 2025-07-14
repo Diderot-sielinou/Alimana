@@ -1,60 +1,130 @@
-// "use client";
+'use client';
 
-// import React from "react";
-// import { Product } from "./ProductCard";
+import React, { useState } from 'react';
+import { CartProduct } from './ProductCard';
+import Receipt from '@/components/sales/Receipt';
 
-// type Props = {
-//   items: Product[];
-//   onClear: () => void;
-// };
+type Props = {
+  items: CartProduct[];
+  onClear: () => void;
+};
 
-// export default function Cart({ items, onClear }: Props) {
-//   const subtotal = items.reduce((acc, item) => acc + item.price, 0);
-//   const tax = subtotal * 0.1;
-//   const total = subtotal + tax;
+export default function Cart({ items, onClear }: Props) {
+  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const tax = subtotal * 0.1;
+  const total = subtotal + tax;
+  const [showReceipt, setShowReceipt] = useState(false);
 
-//   return (
-//     <div className="border rounded p-4 mt-4">
-//       <h2 className="text-lg font-semibold mb-2">Current Sale</h2>
-//       {items.length === 0 ? (
-//         <p className="text-sm text-gray-500">Your basket is empty.</p>
-//       ) : (
-//         <ul className="text-sm mb-2">
-//           {items.map((item, idx) => (
-//             <li key={idx} className="flex justify-between">
-//               <span>{item.name}</span>
-//               <span>${item.price.toFixed(2)}</span>
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-//       <div className="text-sm border-t pt-2 flex flex-col gap-1">
-//         <div className="flex justify-between">
-//           <span>Subtotal:</span>
-//           <span>${subtotal.toFixed(2)}</span>
-//         </div>
-//         <div className="flex justify-between">
-//           <span>Tax (10%):</span>
-//           <span>${tax.toFixed(2)}</span>
-//         </div>
-//         <div className="flex justify-between font-semibold">
-//           <span>Total:</span>
-//           <span>${total.toFixed(2)}</span>
-//         </div>
-//       </div>
-//       <div className="flex gap-2 mt-3">
-//         <button
-//           onClick={onClear}
-//           className="flex-1 bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 text-sm"
-//         >
-//           Clear
-//         </button>
-//         <button
-//           className="flex-1 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
-//         >
-//           Pay Now
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }
+  const handlePayNow = () => {
+    if (items.length === 0) return;
+    setShowReceipt(true);
+  };
+
+  return (
+    <>
+      <div className="w-full bg-white rounded-lg shadow-md p-4 no-print mt-32px">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-gray-800">Current Sale</h2>
+          <span className="text-sm text-gray-600">#ORD-00123</span>
+        </div>
+
+        {/* Customer Info */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-medium text-gray-700">Customer</h3>
+            <button className="text-blue-600 text-sm hover:text-blue-800" type="button">
+              <i className="fas fa-plus mr-1"></i> Add
+            </button>
+          </div>
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <p className="text-gray-500 text-sm">Walk-in customer</p>
+          </div>
+        </div>
+
+        {/* Basket Items */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-medium text-gray-700">Items ({items.length})</h3>
+            <button
+              onClick={onClear}
+              className="text-red-600 text-sm hover:text-red-800"
+              type="button"
+            >
+              <i className="fas fa-trash-alt mr-1"></i> Clear
+            </button>
+          </div>
+          <div className="max-h-96 overflow-y-auto border rounded-lg">
+            {items.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">
+                <i className="fas fa-shopping-basket text-3xl mb-2"></i>
+                <p>Your basket is empty</p>
+              </div>
+            ) : (
+              items.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex justify-between items-center p-3 border-b last:border-b-0"
+                >
+                  <span>{item.name}</span>
+                  <span>${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Totals */}
+        <div className="mb-6">
+          <div className="flex justify-between py-2 border-b">
+            <span className="text-gray-600">Subtotal:</span>
+            <span className="font-medium">${subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between py-2 border-b">
+            <span className="text-gray-600">Tax (10%):</span>
+            <span className="font-medium">${tax.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between py-2">
+            <span className="text-gray-600 font-bold">Total:</span>
+            <span className="font-bold text-xl">${total.toFixed(2)}</span>
+          </div>
+        </div>
+
+        {/* Payment Buttons */}
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            className="px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition flex items-center justify-center"
+            type="button"
+          >
+            <i className="fas fa-pause mr-2"></i> Hold
+          </button>
+          <button
+            onClick={handlePayNow}
+            className="px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition flex items-center justify-center"
+            type="button"
+            disabled={items.length === 0}
+          >
+            <i className="fas fa-credit-card mr-2"></i> Pay Now
+          </button>
+        </div>
+      </div>
+
+      {/* Receipt outside the basket */}
+      {showReceipt && (
+        <div className="mt-6 w-full lg:w-2/3">
+          <Receipt
+            orderNumber="00123"
+            date={new Date().toLocaleString()}
+            customer="Walk-in"
+            items={items.map((item) => ({
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+            }))}
+            receiptId="123456"
+            closeReceipt={() => setShowReceipt(false)}
+          />
+        </div>
+      )}
+    </>
+  );
+}
