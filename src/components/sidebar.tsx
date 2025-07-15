@@ -1,15 +1,30 @@
-//src/components/sidebar
 'use client';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Store } from 'lucide-react';
+import { useUser } from '@/hooks/useUser';
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
   const pathname = usePathname();
+  const { user, isLoading } = useUser(); // Must provide user.role
+
+  // Define roles allowed to see specific links
+  const allowedPathsForEmployees = [
+    '/dashboard/products',
+    '/dashboard/sales',
+    '/dashboard/analytics',
+    '/dashboard/inventory',
+    '/logout',
+  ];
+
+  const filteredLinks =
+    !isLoading && user?.role !== 'admin'
+      ? links.filter((link) => allowedPathsForEmployees.includes(link.href))
+      : links;
 
   return (
     <>
-      {/* Overlay mobile */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
@@ -34,7 +49,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
 
         <nav className="mt-4">
           <ul className="space-y-1">
-            {links.map(({ href, label, icon: Icon }) => {
+            {filteredLinks.map(({ href, label, icon: Icon }) => {
               const isActive = pathname.startsWith(href) && pathname === href;
 
               return (
