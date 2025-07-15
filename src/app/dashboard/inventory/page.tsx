@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Sidebar from '@/components/sidebar';
+import { Sidebar } from 'lucide-react';
 import { sidebarLinks } from '@/constants/sidebarLinks';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
