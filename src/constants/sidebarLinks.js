@@ -1,3 +1,4 @@
+//constants/sidebarLinks.js
 import { LayoutDashboard, ShoppingCart, Box, BarChart3, Warehouse, Settings } from 'lucide-react';
 
 export const sidebarLinks = [
