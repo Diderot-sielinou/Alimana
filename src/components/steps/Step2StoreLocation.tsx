@@ -72,7 +72,7 @@ export default function Step2StoreLocation({
           Back
         </Button>
         <Button onClick={onNext} className="flex-1 bg-amber-600 hover:bg-amber-700">
-          Continue
+          Create Store
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>

@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
+import { signIn, signInWithGoogle } from '@/lib/auth';
 
 type SigninFormData = {
   email: string;
@@ -19,6 +20,11 @@ type SigninFormData = {
 };
 
 type SigninErrors = Partial<Record<keyof SigninFormData, string>>;
+
+type UserResponse = {
+  role: string;
+  stores?: { id: string; name: string }[];
+};
 
 export default function SigninPage() {
   const router = useRouter();
@@ -33,76 +39,49 @@ export default function SigninPage() {
 
   const updateFormData = <K extends keyof SigninFormData>(field: K, value: SigninFormData[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
+    if (errors[field as keyof SigninErrors]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const validateForm = (): boolean => {
     const newErrors: SigninErrors = {};
-
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
-
     if (!formData.password) {
       newErrors.password = 'Password is required';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-
     try {
-      const response = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          rememberMe: formData.rememberMe,
-        }),
-      });
+      const user = (await signIn(formData.email, formData.password)) as UserResponse;
 
-      if (!response.ok) {
-        const error = await response.json();
-        setErrors({ password: 'Invalid email or password' });
-        toast.error(error.message || 'Authentication failed');
-        return;
-      }
-
-      const user = await response.json();
-
-      // Example response: { stores: [...], role: 'cashier' }
       if (user.role === 'cashier') {
         router.push('/sales/create');
-      } else if (user.stores?.length > 1) {
+      } else if (Array.isArray(user.stores) && user.stores.length > 1) {
         router.push('/select-store');
-      } else if (user.stores?.length === 1) {
+      } else if (Array.isArray(user.stores) && user.stores.length === 1) {
         router.push('/dashboard');
       } else {
-        router.push('/create-store'); // Fallback (no store yet)
+        router.push('/create-store');
       }
-    } catch (error) {
-      console.error('Sign in error:', error);
-      setErrors({ password: 'Something went wrong. Please try again.' });
-      // toast.error('Sign in failed. Please try again.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
+      setErrors({ password: 'Invalid credentials' });
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleGoogleSignin = () => {
-    // TODO: Implement Google OAuth
   };
 
   return (
@@ -122,7 +101,7 @@ export default function SigninPage() {
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-xl">Sign In</CardTitle>
-            <Button variant="outline" onClick={handleGoogleSignin} className="w-full bg-white mt-2">
+            <Button variant="outline" onClick={signInWithGoogle} className="w-full bg-white mt-2">
               <span className="mr-2">
                 <svg className="h-4 w-4" viewBox="0 0 48 48">
                   <path
@@ -207,7 +186,7 @@ export default function SigninPage() {
                   <Checkbox
                     id="rememberMe"
                     checked={formData.rememberMe}
-                    onCheckedChange={(checked) => updateFormData('rememberMe', checked as boolean)}
+                    onCheckedChange={(checked) => updateFormData('rememberMe', Boolean(checked))}
                   />
                   <Label htmlFor="rememberMe" className="text-sm text-gray-600">
                     Remember me
