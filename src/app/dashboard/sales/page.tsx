@@ -5,10 +5,6 @@ import Sidebar from '@/components/sidebar';
 import { sidebarLinks } from '@/constants/sidebarLinks';
 
 import ProductList from '@/components/sales/ProductList';
-// import ProductCard from '@/components/sales/ProductCard';
-// import SearchBar from '@/components/sales/SearchBar';
-// import CategoryFilter from '@/components/sales/CategoryFilter';
-// import Cart from '@/components/sales/Cart';
 
 export default function SalesPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);

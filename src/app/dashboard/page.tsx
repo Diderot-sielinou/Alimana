@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Chart } from 'chart.js/auto';
 import Link from 'next/link';
 import { sidebarLinks } from '@/constants/sidebarLinks';
-
 import { Bell, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Sidebar from '@/components/sidebar';
