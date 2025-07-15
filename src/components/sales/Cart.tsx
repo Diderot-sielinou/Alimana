@@ -16,7 +16,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
-  const [item, setItem] = useState<CartProduct[]>([]);
+  // const [item, setItem] = useState<CartProduct[]>([]);
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptId, setReceiptId] = useState('');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -40,9 +40,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
       onClear();
     }, 2000);
 
-    const clearCart = () => {
-      setItem([]);
-    };
+    const clearCart = () => {};
 
     setTimeout(() => {
       setShowSuccessMessage(false);
@@ -98,7 +96,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
                 <p>Your basket is empty</p>
               </div>
             ) : (
-              item.map((item) => (
+              items.map((item) => (
                 <div
                   key={item.id}
                   className="flex justify-between items-center p-3 border-b last:border-b-0"
