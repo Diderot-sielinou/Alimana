@@ -11,10 +11,8 @@ export default function SalesPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
 
-      {/* Main Content */}
       <main className="flex-1 p-6 ml-0 md:ml-64">
         <div className="mb-4">
           <button
@@ -36,16 +34,6 @@ export default function SalesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2 flex gap-4">
-            {/* <SearchBar/> */}
-            {/* <CategoryFilter
-              categories={['All', 'Electronics', 'Groceries', 'Clothing']}
-              active="All"
-              onSelect={() => {}}
-            /> */}
-            {/* <ProductCard
-              product={{ id: 'sample', name: 'Sample Product', price: 0 }}
-              onAdd={() => {}}
-            /> */}
             <ProductList />
           </div>
           <div>{/* <Cart items={[]} onClear={() => {}} /> */}</div>
