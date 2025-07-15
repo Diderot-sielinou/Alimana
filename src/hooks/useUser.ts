@@ -6,7 +6,7 @@ export function useUser() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/me')
+    fetch('/api/auth/profile')
       .then((res) => res.json())
       .then((data) => setUser(data))
       .catch(() => setUser(null))
