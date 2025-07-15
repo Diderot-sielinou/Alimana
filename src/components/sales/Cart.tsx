@@ -3,22 +3,56 @@
 import React, { useState } from 'react';
 import { CartProduct } from './ProductCard';
 import Receipt from '@/components/sales/Receipt';
-import { Plus, Trash2, ShoppingBasket, Pause, CreditCard } from 'lucide-react';
+import { Plus, Trash2, ShoppingBasket, Pause, CreditCard, X } from 'lucide-react';
 
 type Props = {
   items: CartProduct[];
   onClear: () => void;
+  onUpdateQuantity: (id: string, quantity: number) => void;
+  onRemove: (id: string) => void;
 };
 
-export default function Cart({ items, onClear }: Props) {
+export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Props) {
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
+  const [item, setItem] = useState<CartProduct[]>([]);
   const [showReceipt, setShowReceipt] = useState(false);
+  const [receiptId, setReceiptId] = useState('');
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const handlePayNow = () => {
     if (items.length === 0) return;
+
+    const randomId = Math.floor(Math.random() * 900000 + 100000);
+    setReceiptId(randomId.toString());
+
     setShowReceipt(true);
+  };
+
+  const handleSaveReceipt = () => {
+    // Ici tu peux faire un appel API si tu veux sauvegarder réellement
+    setShowSuccessMessage(true);
+
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+      setShowReceipt(false);
+      onClear();
+    }, 2000);
+
+    const clearCart = () => {
+      setItem([]);
+    };
+
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+      setShowReceipt(false);
+      clearCart(); // tu peux vider le panier ici si tu veux
+    }, 2000);
+  };
+
+  const handleCancelReceipt = () => {
+    setShowReceipt(false);
   };
 
   return (
@@ -64,13 +98,45 @@ export default function Cart({ items, onClear }: Props) {
                 <p>Your basket is empty</p>
               </div>
             ) : (
-              items.map((item) => (
+              item.map((item) => (
                 <div
                   key={item.id}
                   className="flex justify-between items-center p-3 border-b last:border-b-0"
                 >
-                  <span>{item.name}</span>
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{item.name}</span>
+                    <div className="flex items-center gap-x-2 mt-1">
+                      <button
+                        onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                        className="px-3 py-1 border bg-black text-white rounded-l hover:bg-black"
+                        type="button"
+                      >
+                        -
+                      </button>
+                      <span className="px-3 border-t border-b">{item.quantity}</span>
+                      <button
+                        onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                        className="px-3 py-1 border bg-black text-white rounded-r hover:bg-black"
+                        type="button"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold">
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </span>
+                    <button
+                      onClick={() => onRemove(item.id)}
+                      className="text-red-600 hover:text-red-800"
+                      type="button"
+                      title="Remove item"
+                    >
+                      <X className="w-5 h-5" strokeWidth={3} />
+                    </button>
+                  </div>
                 </div>
               ))
             )}
@@ -113,19 +179,20 @@ export default function Cart({ items, onClear }: Props) {
       </div>
 
       {showReceipt && (
-        <div className="mt-6 w-full lg:w-2/3">
-          <Receipt
-            orderNumber="00123"
-            date={new Date().toLocaleString()}
-            customer="Walk-in"
-            items={items.map((item) => ({
-              name: item.name,
-              price: item.price,
-              quantity: item.quantity,
-            }))}
-            receiptId="123456"
-            closeReceipt={() => setShowReceipt(false)}
-          />
+        <Receipt
+          orderNumber="00123"
+          date={new Date().toLocaleString()}
+          customer="Walk-in"
+          items={items}
+          receiptId={receiptId}
+          onSave={handleSaveReceipt}
+          onCancel={handleCancelReceipt}
+        />
+      )}
+
+      {showSuccessMessage && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded shadow">
+          Saved successfully!
         </div>
       )}
     </>

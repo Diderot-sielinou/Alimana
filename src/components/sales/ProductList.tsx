@@ -44,6 +44,14 @@ export default function ProductList() {
     setCartItems([]);
   };
 
+  const handleUpdateQuantity = (id: string, quantity: number) => {
+    setCartItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity } : item)));
+  };
+
+  const handleRemove = (id: string) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
   const filtered = mockProducts.filter((p) => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory =
@@ -60,12 +68,9 @@ export default function ProductList() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT SIDE */}
         <div className="lg:col-span-2 flex flex-col gap-4">
-          {/* Top bar: Search + Scan */}
+          {/* Top bar: Search */}
           <div className="flex flex-col md:flex-row md:items-center gap-2">
             <SearchBar value={search} onChange={setSearch} />
-            {/* <button className="flex-shrink-0 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
-              Scan Barcode
-            </button> */}
           </div>
 
           {/* Category filter */}
@@ -81,7 +86,12 @@ export default function ProductList() {
 
         {/* RIGHT SIDE: Cart */}
         <div className="lg:sticky lg:top-6">
-          <Cart items={cartItems} onClear={handleClearCart} />
+          <Cart
+            items={cartItems}
+            onClear={handleClearCart}
+            onUpdateQuantity={handleUpdateQuantity}
+            onRemove={handleRemove}
+          />
         </div>
       </div>
     </section>
