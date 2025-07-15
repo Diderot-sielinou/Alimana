@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
   const pathname = usePathname();
   const router = useRouter();
-
   return (
     <>
       {/* Mobile overlay */}
