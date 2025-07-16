@@ -55,7 +55,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
 
   return (
     <>
-      <div className="w-full bg-white rounded-lg shadow-md p-4 no-print mt-32px">
+      <div className="w-full bg-white rounded-lg shadow-md p-4 no-print">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-800">Current Sale</h2>
           <span className="text-sm text-gray-600">#ORD-00123</span>

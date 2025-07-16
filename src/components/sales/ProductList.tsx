@@ -85,7 +85,7 @@ export default function ProductList() {
         </div>
 
         {/* RIGHT SIDE: Cart */}
-        <div className="lg:sticky lg:top-6">
+        <div className="lg:sticky lg:top-6 mt-[123px]">
           <Cart
             items={cartItems}
             onClear={handleClearCart}
