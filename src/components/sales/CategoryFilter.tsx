@@ -18,7 +18,7 @@ export default function CategoryFilter({ categories, active, onSelect }: Props) 
           className={`px-3 py-1 rounded text-sm ${
             active === category
               ? 'bg-orange-600 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              : 'bg-gray-200 text-gray-800 dark:bg-gray-400 hover:bg-gray-300'
           }`}
         >
           {category}

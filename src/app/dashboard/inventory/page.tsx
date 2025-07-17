@@ -242,7 +242,7 @@ export default function InventoryPage() {
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full md:w-1/3"
+            className="w-full md:w-1/3 dark:bg-gray-700"
           />
         </div>
 
@@ -266,7 +266,10 @@ export default function InventoryPage() {
 
             <tbody>
               {filteredInventory.map((product) => (
-                <tr key={product.id} className="border-t hover:bg-gray-50">
+                <tr
+                  key={product.id}
+                  className="border-t text-gray-450 dark:bg-gray-900 hover:bg-gray-50"
+                >
                   <td className="p-3">{product.name}</td>
                   <td className="p-3">{product.sku}</td>
                   <td className="p-3">{product.orderId}</td>

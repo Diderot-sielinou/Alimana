@@ -20,11 +20,11 @@ type Props = {
 export default function ProductCard({ product, onAdd }: Props) {
   return (
     <div className="border rounded-lg p-4 flex flex-col items-center shadow hover:shadow-md transition">
-      <div className="w-24 h-24 bg-gray-100 flex items-center justify-center mb-2">
+      <div className="w-24 h-24 bg-gray-200 dark:bg-gray-500 flex items-center justify-center mb-2">
         {product.image ? (
           <Image src={product.image} alt={product.name} className="object-cover" />
         ) : (
-          <span className="text-gray-400">No Image</span>
+          <span className="text-gray-400 dark:text-white">No Image</span>
         )}
       </div>
       <h3 className="text-sm font-medium text-center">{product.name}</h3>

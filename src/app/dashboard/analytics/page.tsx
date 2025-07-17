@@ -133,7 +133,9 @@ export default function AnalyticsPage() {
           </button>
         </div>
 
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Analytics Overview</h1>
+        <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+          Analytics Overview
+        </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="p-4">
