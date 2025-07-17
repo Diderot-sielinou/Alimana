@@ -28,7 +28,7 @@ const Receipt: React.FC<ReceiptProps> = ({
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
       <div className="w-full h-full flex items-center justify-center">
-        <div className="bg-white w-full max-w-sm rounded-lg shadow-lg p-6 max-h-[90vh] overflow-y-auto">
+        <div className="bg-white dark:bg-gray-900 w-full max-w-sm rounded-lg shadow-lg p-6 max-h-[90vh] overflow-y-auto">
           {/* Header */}
           <div className="text-center mb-4">
             <h2 className="text-2xl font-bold">ALIMANA MARKET</h2>

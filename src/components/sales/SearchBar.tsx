@@ -72,7 +72,7 @@ export default function SearchBar({ value, onChange }: Props) {
             type="text"
             id="product-search"
             placeholder="Search products..."
-            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
             value={value}
             onChange={(e) => onChange(e.target.value)}
           />

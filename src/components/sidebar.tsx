@@ -1,4 +1,3 @@
-// src/components/sidebar.tsx
 'use client';
 
 import Link from 'next/link';
@@ -21,23 +20,10 @@ interface SidebarProps {
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, links }: SidebarProps) {
   const pathname = usePathname();
-  const { user, isLoading } = useUser();
+  const { isLoading } = useUser();
 
   // Show nothing until user is loaded
   if (isLoading) return null;
-
-  const allowedPathsForEmployees = [
-    '/dashboard/products',
-    '/dashboard/sales',
-    '/dashboard/analytics',
-    '/dashboard/inventory',
-    '/logout',
-  ];
-
-  const filteredLinks =
-    user?.role !== 'admin'
-      ? links.filter((link) => allowedPathsForEmployees.includes(link.href))
-      : links;
 
   return (
     <>
@@ -68,7 +54,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }: SidebarP
         {/* Navigation Links */}
         <nav className="mt-4">
           <ul className="space-y-1">
-            {filteredLinks.map(({ href, label, icon: Icon }) => {
+            {links.map(({ href, label, icon: Icon }) => {
               const isActive = pathname === href;
               return (
                 <li key={href} className="relative">

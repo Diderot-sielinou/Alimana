@@ -1,4 +1,3 @@
-// app/dashboard/page.tsx
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
@@ -12,68 +11,90 @@ import { sidebarLinks } from '@/constants/sidebarLinks';
 
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const lineChartRef = useRef<HTMLCanvasElement | null>(null);
-  const doughnutChartRef = useRef<HTMLCanvasElement | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
+  const lineChartRef = useRef<HTMLCanvasElement>(null);
+  const doughnutChartRef = useRef<HTMLCanvasElement>(null);
+
+  // Setup dark mode on mount
   useEffect(() => {
-    if (lineChartRef.current) {
-      const chart = new Chart(lineChartRef.current, {
-        type: 'line',
-        data: {
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          datasets: [
-            {
-              label: 'Revenue (FCFA)',
-              data: [120000, 135000, 140000, 150000, 160000, 145000, 155000],
-              borderColor: '#F76605',
-              backgroundColor: 'rgba(255,123,0,0.2)',
-              tension: 0.3,
-            },
-            {
-              label: 'Profit (FCFA)',
-              data: [20000, 25000, 23000, 27000, 30000, 28000, 29000],
-              borderColor: '#10B981',
-              backgroundColor: 'rgba(16,185,129,0.2)',
-              tension: 0.3,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'top' },
-          },
-        },
-      });
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-      return () => chart.destroy();
-    }
+    const shouldUseDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+    setIsDarkMode(shouldUseDark);
+    document.documentElement.classList.toggle('dark', shouldUseDark);
   }, []);
 
-  useEffect(() => {
-    if (doughnutChartRef.current) {
-      const chart = new Chart(doughnutChartRef.current, {
-        type: 'doughnut',
-        data: {
-          labels: ['Cash', 'Credit Card', 'Mobile Money', 'Bank Transfer'],
-          datasets: [
-            {
-              data: [40, 25, 20, 15],
-              backgroundColor: ['#F97316', '#10B981', '#3B82F6', '#FACC15'],
-              borderWidth: 1,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'bottom' },
-          },
-        },
-      });
+  // Toggle dark mode manually
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    localStorage.setItem('theme', newMode ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', newMode);
+  };
 
-      return () => chart.destroy();
-    }
+  // Line chart (Sales Overview)
+  useEffect(() => {
+    if (!lineChartRef.current) return;
+
+    const chart = new Chart(lineChartRef.current, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [
+          {
+            label: 'Revenue (FCFA)',
+            data: [120000, 135000, 140000, 150000, 160000, 145000, 155000],
+            borderColor: '#F76605',
+            backgroundColor: 'rgba(255,123,0,0.2)',
+            tension: 0.3,
+          },
+          {
+            label: 'Profit (FCFA)',
+            data: [20000, 25000, 23000, 27000, 30000, 28000, 29000],
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16,185,129,0.2)',
+            tension: 0.3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+        },
+      },
+    });
+
+    return () => chart.destroy();
+  }, []);
+
+  // Doughnut chart (Payment Methods)
+  useEffect(() => {
+    if (!doughnutChartRef.current) return;
+
+    const chart = new Chart(doughnutChartRef.current, {
+      type: 'doughnut',
+      data: {
+        labels: ['Cash', 'Credit Card', 'Mobile Money', 'Bank Transfer'],
+        datasets: [
+          {
+            data: [40, 25, 20, 15],
+            backgroundColor: ['#F97316', '#10B981', '#3B82F6', '#FACC15'],
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' },
+        },
+      },
+    });
+
+    return () => chart.destroy();
   }, []);
 
   return (
@@ -82,36 +103,52 @@ export default function DashboardPage() {
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
 
       {/* Header */}
-      <header className="bg-white shadow-sm z-10 md:ml-64 max-w-full pr-2">
+      <header className="bg-white dark:bg-gray-900 shadow-sm z-10 md:ml-64 max-w-full pr-2">
         <div className="flex items-center justify-between px-6 py-3">
+          {/* Mobile menu */}
           <div className="flex items-center">
-            <button onClick={() => setSidebarOpen(true)} className="text-orange-700 mr-4 md:hidden">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="text-orange-700 dark:text-orange-400 mr-4 md:hidden"
+            >
               <Menu className="w-6 h-6" />
             </button>
-            <Link href="/" className="text-xl font-semibold text-orange-700 hover:text-orange-900">
+            <Link
+              href="/"
+              className="text-xl font-semibold text-orange-700 dark:text-orange-300 hover:text-orange-900"
+            >
               ALIMANA
             </Link>
           </div>
+
+          {/* Header right */}
           <div className="flex items-center space-x-4">
-            <button className="text-orange-700 relative">
+            <button onClick={toggleDarkMode} title="Toggle dark mode">
+              {isDarkMode ? '🌙' : '☀️'}
+            </button>
+            <button className="text-orange-700 dark:text-orange-300 relative">
               <Bell className="w-5 h-5" />
               <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
             </button>
             <div className="flex items-center space-x-2">
               <Image
-                src="https://images.unsplash.com/photo-1644904105846-095e45fca990?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YWRtaW5pc3RyYXRvciUyMGltYWdlfGVufDB8fDB8fHww"
+                src="https://images.unsplash.com/photo-1644904105846-095e45fca990?w=500&auto=format&fit=crop&q=60"
                 alt="User"
                 width={400}
                 height={300}
                 className="w-8 h-8 rounded-full"
               />
-              <span className="hidden md:inline text-orange-700 text-sm">Admin</span>
+              <span className="hidden md:inline text-orange-700 dark:text-orange-200 text-sm">
+                Admin
+              </span>
             </div>
           </div>
         </div>
-        <div className="px-6 py-2 bg-gray-50 border-t">
+
+        {/* Filters & Export */}
+        <div className="px-6 py-2 bg-gray-50 dark:bg-gray-800">
           <div className="flex justify-between">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               <span className="mr-1">🔄</span> Last updated: Just now
             </p>
             <div className="flex space-x-2">
@@ -127,10 +164,12 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Content */}
-      <main className="md:ml-64 min-h-screen bg-gray-50 px-6 py-4">
-        <h1 className="text-2xl font-bold text-orange-700 mb-4">📈 Dashboard</h1>
+      <main className="md:ml-64 min-h-screen bg-gray-50 dark:bg-gray-950 px-6 py-4">
+        <h1 className="text-2xl font-bold text-orange-700 dark:text-orange-300 mb-4">
+          📈 Dashboard
+        </h1>
 
-        {/* Revenue Cards */}
+        {/* Revenue Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           {[
             {
@@ -160,10 +199,10 @@ export default function DashboardPage() {
           ].map((card) => (
             <div
               key={card.title}
-              className="bg-white p-4 rounded-xl shadow hover:shadow-lg transition"
+              className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow hover:shadow-lg transition"
             >
-              <h2 className="text-sm text-gray-500">{card.title}</h2>
-              <p className="text-xl font-bold">{card.value}</p>
+              <h2 className="text-sm text-gray-500 dark:text-gray-400">{card.title}</h2>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{card.value}</p>
               <p className={`${card.color} text-xs`}>{card.change} from yesterday</p>
             </div>
           ))}
@@ -171,13 +210,16 @@ export default function DashboardPage() {
 
         {/* Charts */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="font-semibold text-lg mb-4">Sales Overview</h3>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow">
+            <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">
+              Sales Overview
+            </h3>
             <canvas ref={lineChartRef} />
           </div>
-
-          <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="font-semibold text-lg mb-4">Payment Methods</h3>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow">
+            <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">
+              Payment Methods
+            </h3>
             <canvas ref={doughnutChartRef} />
           </div>
         </div>
