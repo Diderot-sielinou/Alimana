@@ -9,16 +9,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import Step1StoreInfo from '@/components/steps/Step1StoreInfo';
 import Step2StoreLocation from '@/components/steps/Step2StoreLocation';
-
 export interface StoreData {
-  storeName: string;
-  storeDescription: string;
+  name: string;
+  description: string;
   currency: string;
   logo?: File | null;
   address: string;
   city: string;
   state: string;
   zipCode: string;
+  phone?: string;
+  email?: string;
+  websiteUrl?: string;
+  profileImageUrl?: string;
 }
 
 type StoreDataKey = keyof StoreData;
@@ -27,14 +30,18 @@ export default function CreateStorePage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<StoreData>({
-    storeName: '',
-    storeDescription: '',
+    name: '',
+    description: '',
     currency: '',
     logo: null,
     address: '',
     city: '',
     state: '',
     zipCode: '',
+    phone: '',
+    email: '',
+    websiteUrl: '',
+    profileImageUrl: '',
   });
   const [errors, setErrors] = useState<Partial<Record<StoreDataKey, string>>>({});
 
@@ -53,19 +60,46 @@ export default function CreateStorePage() {
   const handleFinalSubmit = async () => {
     const formPayload = new FormData();
 
-    (Object.entries(formData) as [StoreDataKey, string | File | null][]).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        formPayload.append(key, value instanceof File ? value : String(value));
-      }
-    });
-
     try {
-      const response = await fetch('/api/stores/create', {
+      // Debug: raw data
+
+      formPayload.append('name', String(formData.name));
+      if (formData.description) formPayload.append('description', String(formData.description));
+
+      if (formData.address && formData.city && formData.state && formData.zipCode) {
+        const fullAddress = `${formData.address}, ${formData.city}, ${formData.state}, ${formData.zipCode}`;
+        formPayload.append('address', fullAddress);
+      }
+
+      if (formData.phone) formPayload.append('phone', String(formData.phone));
+      if (formData.email) formPayload.append('email', String(formData.email));
+      if (formData.websiteUrl) formPayload.append('websiteUrl', String(formData.websiteUrl));
+      if (formData.profileImageUrl)
+        formPayload.append('profileImageUrl', String(formData.profileImageUrl));
+      if (formData.logo instanceof File) formPayload.append('logoUrl', formData.logo);
+
+      // Debug: show final payload
+      for (const [key, value] of formPayload.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      console.log(formPayload);
+
+      const response = await fetch('http://localhost:3000/api/store', {
         method: 'POST',
-        body: formPayload,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          description: formData.description,
+        }),
+        credentials: 'include',
       });
 
-      if (!response.ok) throw new Error('Store creation failed');
+      if (!response.ok) {
+        const errorRes = await response.json();
+        console.error('Backend error:', errorRes.message);
+        throw new Error(errorRes.message || 'Store creation failed');
+      }
 
       router.push('/dashboard');
     } catch (error) {

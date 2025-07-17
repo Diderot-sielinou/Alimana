@@ -2,7 +2,6 @@
 import { apiRequest } from './api';
 
 // 🔐 Login with email/password
-// ✅ Correct version of signIn
 export async function signIn(email: string, password: string) {
   return apiRequest('/api/auth/login', {
     method: 'POST',

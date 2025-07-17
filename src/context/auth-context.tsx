@@ -1,3 +1,4 @@
+// context/auth-context.tsx
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -6,19 +7,20 @@ import { refreshToken, getUserProfile } from '@/lib/auth';
 interface User {
   email: string;
   canCreateStore: boolean;
-  // Add other user fields if needed
 }
 
 interface AuthContextProps {
   user: User | null;
   isAuthenticated: boolean;
   loading: boolean;
+  logout: () => void; // ✅ Add logout to the context
 }
 
 const AuthContext = createContext<AuthContextProps>({
   user: null,
   isAuthenticated: false,
   loading: true,
+  logout: () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -29,8 +31,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async function initSession() {
       try {
         await refreshToken();
-
-        // Explicitly type the result as User
         const profile = (await getUserProfile()) as User;
         setUser(profile);
       } catch (error) {
@@ -44,12 +44,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initSession();
   }, []);
 
+  // ✅ Logout function
+  function logout() {
+    localStorage.removeItem('access_token');
+    setUser(null);
+  }
+
   return (
     <AuthContext.Provider
       value={{
         user,
         isAuthenticated: !!user,
         loading,
+        logout, // ✅ expose logout in context
       }}
     >
       {children}

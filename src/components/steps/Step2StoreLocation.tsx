@@ -23,23 +23,23 @@ export default function Step2StoreLocation({
 }: Props) {
   return (
     <div className="space-y-6">
+      {/* Full Address */}
       <div className="space-y-2">
-        {' '}
-        <Label htmlFor="address">Address</Label>{' '}
+        <Label htmlFor="address">Street Address</Label>
         <div className="relative">
           <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="address"
             type="text"
-            placeholder="Enter address"
+            placeholder="Enter street address"
             className="pl-10"
             value={formData.address}
             onChange={(e) => updateFormData('address', e.target.value)}
           />
         </div>
-        {errors.address && <p className="text-sm text-red-600">{errors.address}</p>}{' '}
+        {errors.address && <p className="text-sm text-red-600">{errors.address}</p>}
       </div>
-      {/* City and State */}
+
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="city">City</Label>
@@ -64,6 +64,18 @@ export default function Step2StoreLocation({
           />
           {errors.state && <p className="text-sm text-red-600">{errors.state}</p>}
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="zipCode">Zip Code</Label>
+        <Input
+          id="zipCode"
+          type="text"
+          placeholder="Zip code"
+          value={formData.zipCode}
+          onChange={(e) => updateFormData('zipCode', e.target.value)}
+        />
+        {errors.zipCode && <p className="text-sm text-red-600">{errors.zipCode}</p>}
       </div>
 
       <div className="flex space-x-4">
