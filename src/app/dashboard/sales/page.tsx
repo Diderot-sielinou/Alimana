@@ -23,9 +23,9 @@ export default function SalesPage() {
           </button>
         </div>
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Sales Terminal</h1>
+          <h1 className="text-2xl font-bold text-black dark:text-white">Sales Terminal</h1>
           <div className="flex items-center space-x-2 mt-2 md:mt-0">
-            <span className="text-sm text-gray-600">Cashier: John Doe</span>
+            <span className="text-sm text-black dark:text-white">Cashier: John Doe</span>
             <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
               Shift: Morning
             </span>

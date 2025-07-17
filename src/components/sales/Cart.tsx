@@ -55,16 +55,16 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
 
   return (
     <>
-      <div className="w-full bg-white rounded-lg shadow-md p-4 no-print">
+      <div className="w-full bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 no-print">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-800">Current Sale</h2>
-          <span className="text-sm text-gray-600">#ORD-00123</span>
+          <h2 className="text-xl font-bold text-gray-700 dark:text-white">Current Sale</h2>
+          <span className="text-sm text-gray-700 dark:text-white">#ORD-00123</span>
         </div>
 
         {/* Customer Info */}
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="font-medium text-gray-700">Customer</h3>
+            <h3 className="font-medium text-gray-700 dark:text-white">Customer</h3>
             <button
               className="flex items-center text-blue-600 text-sm hover:text-blue-800"
               type="button"
@@ -72,8 +72,8 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
               <Plus className="w-4 h-4 mr-1" strokeWidth={3} /> Add
             </button>
           </div>
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <p className="text-gray-500 text-sm">Walk-in customer</p>
+          <div className="bg-gray-50 p-3 dark:bg-gray-500 rounded-lg">
+            <p className="text-gray-600 dark:text-white text-sm">Walk-in customer</p>
           </div>
         </div>
 
@@ -91,7 +91,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
           </div>
           <div className="max-h-96 overflow-y-auto border rounded-lg">
             {items.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 flex flex-col items-center">
+              <div className="p-4 text-center text-gray-500 dark:text-white flex flex-col items-center">
                 <ShoppingBasket className="w-8 h-8 mb-2" strokeWidth={3.5} />
                 <p>Your basket is empty</p>
               </div>
@@ -111,7 +111,9 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
                       >
                         -
                       </button>
-                      <span className="px-3 border-t border-b">{item.quantity}</span>
+                      <span className="px-3 border-t border-b text-white bg-black">
+                        {item.quantity}
+                      </span>
                       <button
                         onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
                         className="px-3 py-1 border bg-black text-white rounded-r hover:bg-black"
@@ -123,7 +125,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="font-semibold">
+                    <span className="font-semibold text-black">
                       ${(item.price * item.quantity).toFixed(2)}
                     </span>
                     <button
@@ -144,23 +146,25 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
         {/* Totals */}
         <div className="mb-6">
           <div className="flex justify-between py-2 border-b">
-            <span className="text-gray-600">Subtotal:</span>
-            <span className="font-medium">${subtotal.toFixed(2)}</span>
+            <span className="text-black dark:text-white">Subtotal:</span>
+            <span className="font-medium text-black dark:text-white">${subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between py-2 border-b">
-            <span className="text-gray-600">Tax (10%):</span>
-            <span className="font-medium">${tax.toFixed(2)}</span>
+            <span className="text-black dark:text-white">Tax (10%):</span>
+            <span className="font-medium text-black dark:text-white">${tax.toFixed(2)}</span>
           </div>
           <div className="flex justify-between py-2">
-            <span className="text-gray-600 font-bold">Total:</span>
-            <span className="font-bold text-xl">${total.toFixed(2)}</span>
+            <span className="text-black font-bold dark:text-white">Total:</span>
+            <span className="font-bold text-xl text-black dark:text-white">
+              ${total.toFixed(2)}
+            </span>
           </div>
         </div>
 
         {/* Payment Buttons */}
         <div className="grid grid-cols-2 gap-3">
           <button
-            className="flex items-center justify-center px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+            className="flex items-center justify-center px-4 py-3 dark:bg-gray-500 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition"
             type="button"
           >
             <Pause className="w-4 h-4 mr-2" strokeWidth={3.5} /> Hold

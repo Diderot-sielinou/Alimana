@@ -4,15 +4,44 @@ import { useEffect, useRef, useState } from 'react';
 import { Chart } from 'chart.js/auto';
 import Link from 'next/link';
 import { sidebarLinks } from '@/constants/sidebarLinks';
-import { Bell, Menu } from 'lucide-react';
+import { Bell, Menu, Moon, Sun } from 'lucide-react';
 import Image from 'next/image';
 import Sidebar from '@/components/sidebar';
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const lineChartRef = useRef<HTMLCanvasElement | null>(null);
   const doughnutChartRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Dark mode toggle
+  useEffect(() => {
+    // Check localStorage or prefers-color-scheme
+    const savedTheme = localStorage.getItem('theme');
+    if (
+      savedTheme === 'dark' ||
+      (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      document.documentElement.classList.add('dark');
+      setIsDarkMode(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      setIsDarkMode(false);
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    if (isDarkMode) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDarkMode(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDarkMode(true);
+    }
+  };
 
   useEffect(() => {
     let lineChart: Chart | undefined;
@@ -46,7 +75,6 @@ export default function Dashboard() {
         },
       });
     }
-
     return () => {
       lineChart?.destroy();
     };
@@ -89,21 +117,31 @@ export default function Dashboard() {
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
 
       {/* Header */}
-      <header className="bg-white shadow-sm z-10 md:ml-64 max-w-full pr-2">
+      <header className="bg-white dark:bg-gray-800 shadow-sm z-10 md:ml-64 max-w-full pr-2">
         <div className="flex items-center justify-between px-6 py-3">
           <div className="flex items-center">
-            <button onClick={() => setSidebarOpen(true)} className="text-orange-700 mr-4 md:hidden">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="text-orange-700 dark:text-orange-400 mr-4 md:hidden"
+            >
               <Menu className="w-6 h-6" />
             </button>
             <Link
               href="/"
-              className="text-xl font-semibold text-orange-700 hover:text-orange-900 transition-colors"
+              className="text-xl font-semibold text-orange-700 dark:text-orange-400 hover:text-orange-900 transition-colors"
             >
               ALIMANA
             </Link>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="text-orange-700 hover:text-orange-800 relative">
+            <button
+              onClick={toggleDarkMode}
+              className="text-orange-700 dark:text-orange-400 hover:text-orange-900"
+              aria-label="Toggle Dark Mode"
+            >
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            <button className="text-orange-700 dark:text-orange-400 hover:text-orange-900 relative">
               <Bell className="w-5 h-5" />
               <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
             </button>
@@ -115,13 +153,13 @@ export default function Dashboard() {
                 height={300}
                 className="w-8 h-8 rounded-full"
               />
-              <span className="hidden md:inline text-orange-700">Admin</span>
+              <span className="hidden md:inline text-orange-700 dark:text-orange-400">Admin</span>
             </button>
           </div>
         </div>
-        <div className="px-6 py-2 bg-gray-50 border-t">
+        <div className="px-6 py-2 bg-gray-50 dark:bg-gray-800 border-t dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               <span className="mr-1">🔄</span> Last updated: <span id="lastUpdated">Just now</span>
             </div>
             <div className="flex space-x-2">
@@ -131,8 +169,8 @@ export default function Dashboard() {
                 <option value="This Month">This Month</option>
                 <option value="Custom Range">Custom Range</option>
               </select>
-              <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-600">
-                <i className="fas fa-download mr-1"></i> Export
+              <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700">
+                Export
               </button>
             </div>
           </div>
@@ -140,11 +178,13 @@ export default function Dashboard() {
       </header>
 
       {/* Main */}
-      <main className="md:ml-64 min-h-screen bg-gray-50 max-w-full px-6 pb-2">
-        <h1 className="text-2xl font-bold text-orange-700 mb-4">📈 Dashboard</h1>
+      <main className="md:ml-64 min-h-screen bg-gray-50 dark:bg-gray-800 max-w-full px-6 pb-2">
+        <h1 className="text-2xl font-bold text-orange-700 dark:text-orange-400 mb-4">
+          📈 Dashboard
+        </h1>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 text-black">
           {[
             {
               title: 'Daily Revenue',
@@ -183,13 +223,13 @@ export default function Dashboard() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Sales Overview */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
             <h3 className="font-semibold text-lg mb-4">Sales Overview</h3>
             <canvas ref={lineChartRef} />
           </div>
 
           {/* Top Products */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg dark:bg-gray-900 shadow p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-lg">Top Selling Products</h3>
               <button className="text-indigo-600 text-sm">View All</button>
@@ -272,7 +312,7 @@ export default function Dashboard() {
         {/* Bottom Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
           {/* Inventory Alerts */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-lg">Inventory Alerts</h3>
               <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
@@ -303,7 +343,7 @@ export default function Dashboard() {
           </div>
 
           {/* Payment Methods */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-lg">Payment Methods</h3>
               <button className="text-indigo-600 text-sm">Details</button>
@@ -326,7 +366,7 @@ export default function Dashboard() {
           </div>
 
           {/* Recent Activities */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-lg">Recent Activities</h3>
               <button className="text-indigo-600 text-sm">View All</button>

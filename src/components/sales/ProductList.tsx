@@ -64,8 +64,8 @@ export default function ProductList() {
   });
 
   return (
-    <section className="w-full p-4 md:p-6 bg-gray-50 min-h-screen">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <section className="w-full p-4 md:p-6 dark:bg-gray-900 min-h-screen">
+      <div className="grid grid-cols-1 dark:bg-gray-900 lg:grid-cols-3 gap-6">
         {/* LEFT SIDE */}
         <div className="lg:col-span-2 flex flex-col gap-4">
           {/* Top bar: Search */}
@@ -77,7 +77,7 @@ export default function ProductList() {
           <CategoryFilter categories={categories} active={category} onSelect={setCategory} />
 
           {/* Product grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 dark:bg-gray-900 md:grid-cols-3 gap-4">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} onAdd={handleAdd} />
             ))}
