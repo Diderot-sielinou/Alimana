@@ -153,6 +153,7 @@ reviews:
     base_branches:
       - "main"
       - "master"
+      - "develop"
     ignore_title_keywords:
       - "wip"
       - "draft"
