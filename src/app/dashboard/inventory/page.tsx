@@ -248,7 +248,7 @@ export default function InventoryPage() {
 
         <div className="overflow-auto">
           <table className="min-w-full bg-white border rounded shadow-sm">
-            <thead className="bg-orange-600 text-white">
+            <thead className="bg-orange-600 dark:bg-white dark:text-black text-white">
               <tr>
                 <th className="text-left p-3">Product Name</th>
                 <th className="text-left p-3">SKU</th>
