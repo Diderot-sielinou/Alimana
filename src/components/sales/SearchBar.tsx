@@ -14,6 +14,15 @@ export default function SearchBar({ value, onChange }: Props) {
   const [isScanning, setIsScanning] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
 
+  useEffect(() => {
+    const theme = localStorage.getItem('theme');
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [scannerVisible]);
+
   const startScanner = async () => {
     setScannerVisible(true);
 

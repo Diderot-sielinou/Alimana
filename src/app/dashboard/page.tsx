@@ -16,28 +16,20 @@ export default function Dashboard() {
   const doughnutChartRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
+    const theme = localStorage.getItem('theme') || 'light';
+    const isDark = theme === 'dark';
 
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      setIsDarkMode(true);
-    } else {
-      // Par défaut, on reste en light mode
-      document.documentElement.classList.remove('dark');
-      setIsDarkMode(false);
-    }
+    setIsDarkMode(isDark);
+    document.documentElement.classList.toggle('dark', isDark);
   }, []);
 
   const toggleDarkMode = () => {
-    if (isDarkMode) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDarkMode(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setIsDarkMode(true);
-    }
+    setIsDarkMode((prev) => {
+      const newMode = !prev;
+      document.documentElement.classList.toggle('dark', newMode);
+      localStorage.setItem('theme', newMode ? 'dark' : 'light');
+      return newMode;
+    });
   };
 
   useEffect(() => {
