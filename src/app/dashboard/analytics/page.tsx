@@ -113,7 +113,6 @@ export default function AnalyticsPage() {
       chartInstances.push(chart);
     }
 
-    // ✅ Cleanup: destroy all charts on unmount
     return () => {
       chartInstances.forEach((chart) => chart.destroy());
     };
