@@ -15,17 +15,14 @@ export default function Dashboard() {
   const lineChartRef = useRef<HTMLCanvasElement | null>(null);
   const doughnutChartRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Dark mode toggle
   useEffect(() => {
-    // Check localStorage or prefers-color-scheme
     const savedTheme = localStorage.getItem('theme');
-    if (
-      savedTheme === 'dark' ||
-      (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ) {
+
+    if (savedTheme === 'dark') {
       document.documentElement.classList.add('dark');
       setIsDarkMode(true);
     } else {
+      // Par défaut, on reste en light mode
       document.documentElement.classList.remove('dark');
       setIsDarkMode(false);
     }
