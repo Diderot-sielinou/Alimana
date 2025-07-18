@@ -16,14 +16,17 @@ export default function DashboardPage() {
   const lineChartRef = useRef<HTMLCanvasElement>(null);
   const doughnutChartRef = useRef<HTMLCanvasElement>(null);
 
-  // Setup dark mode on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    const shouldUseDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
-    setIsDarkMode(shouldUseDark);
-    document.documentElement.classList.toggle('dark', shouldUseDark);
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+      setIsDarkMode(true);
+    } else {
+      // Par défaut, on reste en light mode
+      document.documentElement.classList.remove('dark');
+      setIsDarkMode(false);
+    }
   }, []);
 
   // Toggle dark mode manually

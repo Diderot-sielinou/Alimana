@@ -1,35 +1,47 @@
+// app/auth/callback/page.tsx
 'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function GoogleAuthCallback() {
+export default function AuthCallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const checkUserStore = async () => {
+    const checkUserProfile = async () => {
       try {
-        const res = await fetch('/api/me'); // get logged-in user & their store
-        if (!res.ok) throw new Error('Failed to fetch user');
-        const data = await res.json();
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
+          credentials: 'include',
+        });
 
-        if (data.store) {
-          router.replace('/dashboard'); // ✅ already has store
+        if (!res.ok) throw new Error('Failed to fetch user profile');
+
+        const user = await res.json();
+
+        if (!user.stores || user.stores.length === 0) {
+          // No store yet
+          router.replace('/create-store');
+        } else if (user.role === 'cashier') {
+          router.replace('/sales/create');
+        } else if (user.stores.length === 1) {
+          // Store already linked, go to dashboard
+          router.replace('/dashboard');
         } else {
-          router.replace('/create-store'); // 🚫 no store yet
+          // User has multiple stores
+          router.replace('/select-store');
         }
       } catch (error) {
-        console.error('Error checking user store:', error);
-        router.replace('/signin'); // fallback if something breaks
+        console.error('Error during Google Sign-In callback:', error);
+        router.replace('/signin'); // fallback
       }
     };
 
-    checkUserStore();
+    checkUserProfile();
   }, [router]);
 
   return (
-    <div className="h-screen flex items-center justify-center">
-      <p className="text-gray-600 text-sm">Redirecting...</p>
+    <div className="flex h-screen items-center justify-center">
+      <p className="text-lg text-gray-600">Signing you in, please wait...</p>
     </div>
   );
 }
