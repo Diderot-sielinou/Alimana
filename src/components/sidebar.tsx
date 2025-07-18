@@ -9,7 +9,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
 
   return (
     <>
-      {/* Overlay mobile */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
