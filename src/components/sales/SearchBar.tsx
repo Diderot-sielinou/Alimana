@@ -114,14 +114,16 @@ export default function SearchBar({ value, onChange }: Props) {
 
       {scannerVisible && (
         <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 w-full max-w-md relative">
             <button
               onClick={stopScanner}
               className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-xl font-bold mb-4 text-center">Scan Barcode</h3>
+            <h3 className="text-xl font-bold mb-4 text-center text-black dark:text-white">
+              Scan Barcode
+            </h3>
             <div id="scanner" className="w-full aspect-square bg-gray-200 rounded"></div>
             <p className="text-center text-sm mt-2 text-gray-600">
               Point your camera at the barcode
