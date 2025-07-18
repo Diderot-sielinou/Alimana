@@ -45,6 +45,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
                 {links.map(({ href, label, icon: Icon }) => {
                   const isActive = pathname.startsWith(href) && pathname === href;
 
+          <div className="px-4 py-4 border-t border-orange-500">
+            <button
+              onClick={() => router.push('/signin')}
+              className="w-full flex items-center px-3 py-2 rounded hover:bg-orange-500 text-white font-medium text-sm transition"
                   return (
                     <li key={href} className="relative">
                       <Link
@@ -76,12 +80,40 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
             <button
               onClick={() => router.push('/signin')}
               className="flex items-center px-3 py-2 rounded hover:bg-orange-500 dark:hover:bg-gray-700 text-white font-medium text-sm transition"
+
             >
               <LogOut className="w-5 h-5 mr-2" />
               Logout
             </button>
           </div>
         </div>
+
+              return (
+                <li key={href} className="relative">
+                  <Link
+                    href={isActive ? '#' : href}
+                    className={`flex items-center px-4 py-2 transition-all duration-200 rounded relative
+                    ${
+                      isActive
+                        ? 'bg-orange-500 font-semibold text-white ring-1 ring-orange-500'
+                        : 'hover:bg-orange-500'
+                    }
+                  `}
+                  >
+                    {isActive && (
+                      <span
+                        className="absolute left-0 top-1 bottom-1 w-1 bg-white rounded-r"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <Icon className="w-5 h-5 mr-2" />
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </aside>
     </>
   );
