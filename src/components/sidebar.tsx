@@ -70,6 +70,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
             </nav>
           </div>
 
+          {/* Bottom: Logout */}
           <div className="px-4 py-4 border-t border-orange-500">
             <button
               onClick={() => router.push('/signin')}

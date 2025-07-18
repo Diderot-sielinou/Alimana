@@ -1,3 +1,4 @@
+// layout.tsx
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
@@ -24,10 +25,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} font-sans font-mono`}
+      className={`dark ${geistSans.variable} ${geistMono.variable} font-sans font-mono`}
       suppressHydrationWarning
     >
-      <body className="antialiased" suppressHydrationWarning>
+      <body
+        className="antialiased bg-background text-foreground dark:bg-gray-900 dark:text-white"
+        suppressHydrationWarning
+      >
         <AuthProvider>
           <Toaster position="top-center" />
           <StoreProvider>{children}</StoreProvider>
