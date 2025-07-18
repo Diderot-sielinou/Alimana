@@ -17,6 +17,21 @@ export default function SearchBar({ value, onChange }: Props) {
   const startScanner = async () => {
     setScannerVisible(true);
 
+    try {
+      const permissions = await navigator.permissions.query({ name: 'camera' as PermissionName });
+
+      if (permissions.state === 'denied') {
+        alert(
+          "L'accès à la caméra a été refusé. Veuillez l'autoriser dans les paramètres de votre navigateur."
+        );
+        setScannerVisible(false);
+        return;
+      }
+    } catch (err) {
+      // Certains navigateurs ne supportent pas navigator.permissions pour la caméra
+      console.warn('Impossible de vérifier les permissions caméra :', err);
+    }
+
     if (!scannerRef.current) {
       const html5QrCode = new Html5Qrcode('scanner');
       scannerRef.current = html5QrCode;
@@ -31,7 +46,6 @@ export default function SearchBar({ value, onChange }: Props) {
           qrbox: { width: 250, height: 250 },
         },
         (decodedText) => {
-          // ✅ Ici on filtre pour n’accepter que des barcodes numériques
           if (/^\d{8,13}$/.test(decodedText)) {
             onChange(decodedText);
             stopScanner();
@@ -45,6 +59,7 @@ export default function SearchBar({ value, onChange }: Props) {
       );
     } catch (error) {
       console.error('Unable to start scanner', error);
+      alert("Impossible d'accéder à la caméra. Vérifiez les autorisations.");
     }
   };
 

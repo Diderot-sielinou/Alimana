@@ -70,15 +70,13 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
           </div>
 
           {/* Bottom: Logout */}
-          <div className="px-4 py-4 border-t border-orange-500">
-            <button
-              onClick={() => router.push('/signin')}
-              className="w-full flex items-center px-3 py-2 rounded hover:bg-orange-500 text-white font-medium text-sm transition"
-            >
-              <LogOut className="w-5 h-5 mr-2" />
-              Logout
-            </button>
-          </div>
+          <button
+            onClick={() => router.push('/signin')}
+            className="flex items-center px-3 py-2 rounded hover:bg-orange-500 dark:hover:bg-gray-700 text-white font-medium text-sm transition"
+          >
+            <LogOut className="w-5 h-5 mr-2" />
+            Logout
+          </button>
         </div>
       </aside>
     </>
