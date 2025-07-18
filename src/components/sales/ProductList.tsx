@@ -44,6 +44,14 @@ export default function ProductList() {
     setCartItems([]);
   };
 
+  const handleUpdateQuantity = (id: string, quantity: number) => {
+    setCartItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity } : item)));
+  };
+
+  const handleRemove = (id: string) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
   const filtered = mockProducts.filter((p) => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory =
@@ -56,23 +64,20 @@ export default function ProductList() {
   });
 
   return (
-    <section className="w-full p-4 md:p-6 bg-gray-50 min-h-screen">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <section className="w-full p-4 md:p-6 dark:bg-gray-900 min-h-screen">
+      <div className="grid grid-cols-1 dark:bg-gray-900 lg:grid-cols-3 gap-6">
         {/* LEFT SIDE */}
         <div className="lg:col-span-2 flex flex-col gap-4">
-          {/* Top bar: Search + Scan */}
+          {/* Top bar: Search */}
           <div className="flex flex-col md:flex-row md:items-center gap-2">
             <SearchBar value={search} onChange={setSearch} />
-            {/* <button className="flex-shrink-0 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
-              Scan Barcode
-            </button> */}
           </div>
 
           {/* Category filter */}
           <CategoryFilter categories={categories} active={category} onSelect={setCategory} />
 
           {/* Product grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 dark:bg-gray-900 md:grid-cols-3 gap-4">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} onAdd={handleAdd} />
             ))}
@@ -80,8 +85,13 @@ export default function ProductList() {
         </div>
 
         {/* RIGHT SIDE: Cart */}
-        <div className="lg:sticky lg:top-6">
-          <Cart items={cartItems} onClear={handleClearCart} />
+        <div className="lg:sticky lg:top-6 mt-[123px]">
+          <Cart
+            items={cartItems}
+            onClear={handleClearCart}
+            onUpdateQuantity={handleUpdateQuantity}
+            onRemove={handleRemove}
+          />
         </div>
       </div>
     </section>
