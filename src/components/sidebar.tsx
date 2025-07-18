@@ -1,16 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Store, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
   const pathname = usePathname();
   const router = useRouter();
+
   return (
     <>
-      {/* Mobile overlay */}
+      {/* Overlay mobile */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
@@ -23,9 +23,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } transition-transform duration-300 md:translate-x-0`}
       >
-        {/* Main sidebar layout */}
         <div className="flex flex-col h-full justify-between">
-          {/* Top: Logo and Nav */}
+          {/* Top: Logo and navigation */}
           <div>
             <div className="flex items-center justify-between h-16 border-b border-orange-500 px-4">
               <Link
@@ -47,17 +46,20 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
                   const isActive = pathname.startsWith(href) && pathname === href;
 
                   return (
-                    <li key={href}>
+                    <li key={href} className="relative">
                       <Link
-                        href={href}
-                        className={`flex items-center px-4 py-2 transition-all duration-200 rounded ${
+                        href={isActive ? '#' : href}
+                        className={`flex items-center px-4 py-2 transition-all duration-200 rounded relative ${
                           isActive
                             ? 'bg-orange-500 font-semibold text-white ring-1 ring-orange-500'
                             : 'hover:bg-orange-500'
                         }`}
                       >
                         {isActive && (
-                          <span className="absolute left-0 top-1 bottom-1 w-1 bg-white rounded-r" />
+                          <span
+                            className="absolute left-0 top-1 bottom-1 w-1 bg-white rounded-r"
+                            aria-hidden="true"
+                          />
                         )}
                         <Icon className="w-5 h-5 mr-2" />
                         {label}
@@ -70,13 +72,15 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
           </div>
 
           {/* Bottom: Logout */}
-          <button
-            onClick={() => router.push('/signin')}
-            className="flex items-center px-3 py-2 rounded hover:bg-orange-500 dark:hover:bg-gray-700 text-white font-medium text-sm transition"
-          >
-            <LogOut className="w-5 h-5 mr-2" />
-            Logout
-          </button>
+          <div className="px-4 py-4 border-t border-orange-500 flex justify-end">
+            <button
+              onClick={() => router.push('/signin')}
+              className="flex items-center px-3 py-2 rounded hover:bg-orange-500 dark:hover:bg-gray-700 text-white font-medium text-sm transition"
+            >
+              <LogOut className="w-5 h-5 mr-2" />
+              Logout
+            </button>
+          </div>
         </div>
       </aside>
     </>
