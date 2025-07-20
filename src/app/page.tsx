@@ -62,7 +62,7 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-amber-600 text-amber-600 dark:bg-white hover:bg-indigo-50 px-8 py-3 text-lg w-52 mr-2"
+                className="border-amber-600 text-amber-600 dark:bg-white  dark:hover:text-slate-900 hover:bg-indigo-50 px-8 py-3 text-lg w-52 mr-2"
               >
                 Learn More
               </Button>

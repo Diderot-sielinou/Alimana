@@ -36,8 +36,8 @@ export const sidebarLinks = [
     icon: Warehouse,
   },
   {
-    href: '/dashboard/invite-users',
-    label: 'Invite User',
+    href: '/dashboard/user-management',
+    label: 'User Management',
     icon: UserPlus,
   },
   {

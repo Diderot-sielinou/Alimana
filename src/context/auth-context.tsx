@@ -1,69 +1,81 @@
-// context/auth-context.tsx
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import { refreshToken, getUserProfile } from '@/lib/auth';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { type User, type UserRole, ROLE_PERMISSIONS } from '@/lib/auth';
 
-interface User {
-  email: string;
-  canCreateStore: boolean;
-}
-
-interface AuthContextProps {
+interface AuthContextType {
   user: User | null;
-  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
   loading: boolean;
-  logout: () => void; // ✅ Add logout to the context
 }
 
-const AuthContext = createContext<AuthContextProps>({
-  user: null,
-  isAuthenticated: false,
-  loading: true,
-  logout: () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function initSession() {
+    // Simulate loading user from localStorage or API
+    const loadUser = async () => {
       try {
-        await refreshToken();
-        const profile = (await getUserProfile()) as User;
-        setUser(profile);
+        // This would typically be an API call
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+          const userData = JSON.parse(savedUser);
+          // Add permissions based on role
+          userData.permissions = ROLE_PERMISSIONS[userData.role as UserRole] || [];
+          setUser(userData);
+        }
       } catch (error) {
-        console.error('Session init failed:', error);
-        setUser(null);
+        console.error('Error loading user:', error);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
-    initSession();
+    loadUser();
   }, []);
 
-  // ✅ Logout function
-  function logout() {
-    localStorage.removeItem('access_token');
+  const login = async (email: string, password: string) => {
+    try {
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setUser(data.user);
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('user');
     setUser(null);
-  }
+  };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        loading,
-        logout, // ✅ expose logout in context
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>{children}</AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }
