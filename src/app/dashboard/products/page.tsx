@@ -1,12 +1,13 @@
-//app/dashboard/products/pages
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 import Sidebar from '@/components/sidebar';
 import { sidebarLinks } from '@/constants/sidebarLinks';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableHeader,
@@ -46,14 +47,74 @@ const mockProducts = [
 export default function ProductsPage() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [scannedId, setScannedId] = useState<string | null>(null);
+  const scannerRef = useRef<HTMLDivElement | null>(null);
+  const flashRef = useRef<HTMLDivElement | null>(null);
+  const [showScanner, setShowScanner] = useState(true);
+
+  useEffect(() => {
+    if (!scannerRef.current || !showScanner) return;
+
+    const scanner = new Html5QrcodeScanner(
+      'scanner',
+      {
+        fps: 10,
+        qrbox: 250,
+      },
+      false
+    );
+
+    scanner.render(
+      (decodedText) => {
+        if (flashRef.current) {
+          flashRef.current.classList.remove('opacity-0');
+          flashRef.current.classList.add('opacity-100');
+          setTimeout(() => {
+            flashRef.current?.classList.remove('opacity-100');
+            flashRef.current?.classList.add('opacity-0');
+          }, 150);
+        }
+
+        const match = mockProducts.find((p) => p.id === decodedText);
+        if (match) {
+          setScannedId(decodedText);
+          router.push(`/dashboard/products/${decodedText}/edit`);
+        } else {
+          setScannedId(decodedText);
+        }
+
+        scanner.clear();
+      },
+      (error) => {
+        console.warn('Scanning error', error);
+      }
+    );
+
+    return () => {
+      scanner.clear().catch(console.error);
+    };
+  }, []);
+
+  const filteredProducts = mockProducts.filter((product) =>
+    product.name.toLowerCase().includes(search.toLowerCase())
+  );
+  const matchedProduct = mockProducts.find((p) => p.id === scannedId);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen relative">
+      {/* Flash effect */}
+      <div
+        ref={flashRef}
+        className="fixed inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-200 z-50"
+      />
+
       {/* Sidebar */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
 
       {/* Main Content */}
       <main className="flex-1 p-6 ml-0 md:ml-64">
+        {/* Mobile Toggle */}
         <div className="mb-4">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -63,7 +124,8 @@ export default function ProductsPage() {
           </button>
         </div>
 
-        <div className="flex justify-between items-center mb-6">
+        {/* Page Header */}
+        <div className="flex flex-wrap gap-4 justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Products</h1>
           <Button
             className="bg-amber-600 hover:bg-amber-700 text-white"
@@ -73,6 +135,44 @@ export default function ProductsPage() {
           </Button>
         </div>
 
+        {/* Barcode Scanner */}
+        <Card className="p-4 mb-4">
+          <h2 className="text-lg font-semibold mb-2">Scan Product Barcode</h2>
+
+          {showScanner ? (
+            <div className="w-full max-w-sm mx-auto">
+              <div ref={scannerRef} id="scanner" />
+              <p className="text-center text-sm text-gray-600 mt-2">
+                Place the barcode in front of your camera to scan.
+              </p>
+            </div>
+          ) : (
+            <div className="text-center">
+              {scannedId && !matchedProduct ? (
+                <p className="text-red-600 mb-2">
+                  ❌ No product found for ID: <strong>{scannedId}</strong>
+                </p>
+              ) : (
+                <p className="text-gray-600 mb-2">Scanner is inactive.</p>
+              )}
+              <Button onClick={() => setShowScanner(true)} className="bg-amber-600 text-white">
+                🔄 Scan Again
+              </Button>
+            </div>
+          )}
+        </Card>
+
+        {/* Search Input */}
+        <div className="mb-6">
+          <Input
+            placeholder="Search products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full md:w-1/3"
+          />
+        </div>
+
+        {/* Products Table */}
         <Card className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -85,7 +185,7 @@ export default function ProductsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockProducts.map((product) => (
+              {filteredProducts.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
