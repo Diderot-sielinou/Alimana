@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { type User, type UserRole, ROLE_PERMISSIONS } from '@/lib/auth';
+import { logout as serverLogout } from '@/lib/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -62,10 +63,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
-  };
+  async function logout() {
+    try {
+      await serverLogout(); // POST /api/auth/logout
+    } catch (err) {
+      console.error('Logout failed:', err);
+    } finally {
+      localStorage.removeItem('access_token');
+      setUser(null);
+    }
+  }
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>{children}</AuthContext.Provider>

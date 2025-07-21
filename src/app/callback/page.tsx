@@ -3,6 +3,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { getRedirectPath } from '@/lib/auth-redirect';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -18,18 +19,8 @@ export default function AuthCallbackPage() {
 
         const user = await res.json();
 
-        if (!user.stores || user.stores.length === 0) {
-          // No store yet
-          router.replace('/create-store');
-        } else if (user.role === 'cashier') {
-          router.replace('/sales/create');
-        } else if (user.stores.length === 1) {
-          // Store already linked, go to dashboard
-          router.replace('/dashboard');
-        } else {
-          // User has multiple stores
-          router.replace('/select-store');
-        }
+        const redirectPath = getRedirectPath(user);
+        router.replace(redirectPath);
       } catch (error) {
         console.error('Error during Google Sign-In callback:', error);
         router.replace('/signin');

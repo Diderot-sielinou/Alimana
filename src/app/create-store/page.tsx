@@ -78,20 +78,15 @@ export default function CreateStorePage() {
         formPayload.append('profileImageUrl', String(formData.profileImageUrl));
       if (formData.logo instanceof File) formPayload.append('logoUrl', formData.logo);
 
-      // Debug: show final payload
-      for (const [key, value] of formPayload.entries()) {
-        console.log(`${key}:`, value);
-      }
-
-      console.log(formPayload);
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formPayload.append(key, value instanceof File ? value : String(value));
+        }
+      });
 
       const response = await fetch('http://localhost:3000/api/store', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          description: formData.description,
-        }),
+        body: formPayload,
         credentials: 'include',
       });
 

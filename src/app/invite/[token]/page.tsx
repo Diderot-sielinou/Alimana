@@ -190,7 +190,7 @@ export default function InvitePage() {
           <div className="text-center mb-8">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Store className="h-8 w-8 text-amber-600" />
-              <span className="text-2xl font-bold text-gray-900">StoreHub</span>
+              <span className="text-2xl font-bold text-gray-900">ALIMANA</span>
             </div>
           </div>
 
