@@ -30,12 +30,14 @@ export default function SearchBar({ value, onChange }: Props) {
       const permissions = await navigator.permissions.query({ name: 'camera' as PermissionName });
 
       if (permissions.state === 'denied') {
-        alert('Acces to camera was denied. approve it in your parameter.');
+        alert(
+          'Camera access was denied. Please enable camera permissions in your browser settings.'
+        );
         setScannerVisible(false);
         return;
       }
     } catch (err) {
-      console.warn('Impossible to verify camera permissions :', err);
+      console.warn('Unable to access camera. Please check camera permission settings:', err);
     }
 
     if (!scannerRef.current) {
