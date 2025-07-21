@@ -24,7 +24,7 @@ export async function GET(request: NextRequest, { params }: { params: { token: s
         role: invitation.role,
         name: invitation.name,
         invitedAt: invitation.invitedAt,
-        expiredAt: invitation.invitedAt,
+        expiredAt: invitation.expiresAt,
       },
     });
   } catch (error) {
