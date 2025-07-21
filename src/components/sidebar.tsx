@@ -24,9 +24,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } transition-transform duration-300 md:translate-x-0`}
       >
-        {/* Main sidebar layout */}
         <div className="flex flex-col h-full justify-between">
-          {/* Top: Logo and Nav */}
           <div>
             <div className="flex items-center justify-between h-16 border-b border-orange-500 px-4">
               <Link
