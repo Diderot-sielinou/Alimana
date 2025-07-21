@@ -68,7 +68,9 @@ export default function SearchBar({ value, onChange }: Props) {
       );
     } catch (error) {
       console.error('Unable to start scanner', error);
-      toast.error('Impossible to access camera. Verify autorizations.');
+      toast.error(
+        'Unable to access camera. Please check camera permissions in your browser settings..'
+      );
     }
   };
 
