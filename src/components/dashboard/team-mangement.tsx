@@ -240,7 +240,7 @@ export function TeamManagement() {
                 <Button variant="outline" onClick={() => setIsInviteOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleInvite} className="bg-amber-600 hover:bg-amber-700">
+                <Button onClick={handleInvite} className="bg-blue-600 hover:bg-blue-700">
                   <Mail className="h-4 w-4 mr-2" />
                   Send Invitation
                 </Button>

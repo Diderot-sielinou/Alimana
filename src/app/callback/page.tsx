@@ -4,7 +4,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getRedirectPath } from '@/lib/auth-redirect';
-import { logError } from '../utils/logger';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -23,7 +22,7 @@ export default function AuthCallbackPage() {
         const redirectPath = getRedirectPath(user);
         router.replace(redirectPath);
       } catch (error) {
-        logError(error, 'path error, check the path and try again');
+        console.error('Error during Google Sign-In callback:', error);
         router.replace('/signin');
       }
     };
