@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+// import { Html5Qrcode } from 'html5-qrcode';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,6 +30,58 @@ export default function NewProductPage() {
     category: '',
   });
 
+  // const [scannedId, setScannedId] = useState<string | null>(null);
+  // const scannerRef = useRef<HTMLDivElement | null>(null);
+  // const flashRef = useRef<HTMLDivElement | null>(null);
+  // const [showScanner, setShowScanner] = useState(true);
+
+  // const [scannerActive, setScannerActive] = useState(true);
+
+  // useEffect(() => {
+  //   if (!scannerRef.current || !scannerActive) return;
+
+  //   // Prevent duplicate rendering
+  //   if (document.getElementById('scanner')?.hasChildNodes()) return;
+
+  //   const scanner = new Html5QrcodeScanner(
+  //     'scanner',
+  //     { fps: 10, qrbox: 250 },
+  //     false
+  //   );
+
+  //   scanner.render(
+  //     (decodedText) => {
+  //       if (flashRef.current) {
+  //         flashRef.current.classList.remove('opacity-0');
+  //         flashRef.current.classList.add('opacity-100');
+  //         setTimeout(() => {
+  //           flashRef.current?.classList.remove('opacity-100');
+  //           flashRef.current?.classList.add('opacity-0');
+  //         }, 150);
+  //       }
+
+  //       const match = mockProducts.find((p) => p.id === decodedText);
+  //       setScannedId(decodedText);
+
+  //       if (match) {
+  //         setScannerActive(false);
+  //         router.push(`/dashboard/products/${decodedText}/edit`);
+  //       }
+
+  //       scanner.clear();
+  //     },
+  //     (error) => {
+  //       console.warn('Scanning error', error);
+  //     }
+  //   );
+
+  //   return () => {
+  //     scanner.clear().catch(console.error);
+  //   };
+  // }, [scannerActive]);
+
+  // const matchedProduct = mockProducts.find((p) => p.id === scannedId);
+
   const handleChange = (field: string, value: string) => {
     setProduct((prev) => ({ ...prev, [field]: value }));
   };
@@ -41,6 +94,12 @@ export default function NewProductPage() {
 
   return (
     <div className="flex min-h-screen">
+      {/* Flash effect */}
+      {/* <div
+        ref={flashRef}
+        className="fixed inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-200 z-50"
+      /> */}
+
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
 
       <main className="flex-1 p-6 ml-0 md:ml-64">
@@ -61,6 +120,39 @@ export default function NewProductPage() {
             <CardHeader>
               <CardTitle>Add New Product</CardTitle>
             </CardHeader>
+
+            {/* Barcode Scanner */}
+            {/* <Card className="p-4 mb-4">
+          <h2 className="text-lg font-semibold mb-2">Scan Product Barcode</h2>
+
+          {showScanner ? (
+            <div className="w-full max-w-sm mx-auto">
+              <div ref={scannerRef} id="scanner" />
+              <p className="text-center text-sm text-gray-600 mt-2">
+                Place the barcode in front of your camera to scan.
+              </p>
+            </div>
+          ) : (
+            <div className="text-center">
+              {scannedId && !matchedProduct ? (
+                <p className="text-red-600 mb-2">
+                  ❌ No product found for ID: <strong>{scannedId}</strong>
+                </p>
+              ) : (
+                <p className="text-gray-600 mb-2">Scanner is inactive.</p>
+              )}
+              <Button variant="outline"
+                className="mt-2"
+                onClick={() => {
+                  setScannedId(null);
+                  setShowScanner(false);
+                  setTimeout(() => setShowScanner(true), 100); // Re-trigger scanner
+                }}>
+                🔄 Scan Again
+              </Button>
+            </div>
+          )}
+        </Card> */}
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
