@@ -1,4 +1,3 @@
-// hooks/useUser.ts
 import { useEffect, useState } from 'react';
 
 interface User {
@@ -10,7 +9,7 @@ interface User {
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [newError, setNewError] = useState<Error | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -18,15 +17,16 @@ export function useUser() {
     fetch('/api/auth/profile', { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => setUser(data))
-      .catch((err) => {
-        if (err.name !== 'AbortError') {
-          setError(error);
+      .catch((newError) => {
+        if (newError.name !== 'AbortError') {
+          setNewError(newError);
           setUser(null);
         }
       })
       .finally(() => setIsLoading(false));
+
     return () => controller.abort();
   }, []);
 
-  return { user, isLoading };
+  return { user, isLoading, error: newError };
 }

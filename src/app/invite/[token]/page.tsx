@@ -234,7 +234,7 @@ export default function InvitePage() {
           </Link>
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Store className="h-8 w-8 text-amber-600" />
-            <span className="text-2xl font-bold text-gray-900">ALIMANA</span>
+            <span className="text-2xl font-bold text-gray-900">StoreHub</span>
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Join {invitation?.name}</h1>
           <p className="text-gray-600 mt-2">Create your account to get started</p>

@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { isInvitationValid } from '@/lib/invitation';
 import { invitations } from '../send/route';
+import { logError } from '@/app/utils/logger';
 
 export async function GET(request: NextRequest, { params }: { params: { token: string } }) {
   try {
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest, { params }: { params: { token: s
       },
     });
   } catch (error) {
-    console.error('Error fetching invitation:', error);
+    logError(error, 'Error fetching invitation');
     return NextResponse.json({ error: 'Internal server error occurred, try again later' });
   }
 }

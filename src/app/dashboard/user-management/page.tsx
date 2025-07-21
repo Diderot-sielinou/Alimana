@@ -41,6 +41,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import * as Sentry from '@sentry/nextjs';
 
 interface TeamMember {
   id: string;
@@ -136,11 +137,10 @@ export default function TeamManagement() {
       const data = await response.json();
 
       if (!response.ok) {
-        console.error('Failed to send invitation:', data.error);
+        Sentry.captureException('Failed to send invitation:', data.error);
         return;
       }
 
-      console.log('Invitation sent successfully:', data);
       setIsInviteOpen(false);
       setInviteForm({ email: '', fullName: '', role: UserRole.CASHIER });
 

@@ -1,4 +1,5 @@
 import type { UserRole } from './auth';
+import { randomUUID } from 'crypto';
 
 export interface Invitation {
   id: string;
@@ -31,7 +32,7 @@ export interface InvitationEmailData {
 }
 
 export const generateInviteToken = (): string => {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+  return randomUUID(); // 64-char token
 };
 
 export const createInviteUrl = (token: string): string => {
