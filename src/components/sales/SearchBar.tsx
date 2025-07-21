@@ -31,10 +31,9 @@ export default function SearchBar({ value, onChange }: Props) {
       const permissions = await navigator.permissions.query({ name: 'camera' as PermissionName });
 
       if (permissions.state === 'denied') {
-        toast.error('camera blocked', {
-          description: 'enable camera permissions in your browser settings.',
-          duration: 5000,
-        });
+        toast.error(
+          'Camera access was denied. Please enable camera permissions in your browser settings.'
+        );
         setScannerVisible(false);
         return;
       }
@@ -69,7 +68,7 @@ export default function SearchBar({ value, onChange }: Props) {
       );
     } catch (error) {
       console.error('Unable to start scanner', error);
-      alert('Impossible to access camera. Verify autorizations.');
+      toast.error('Impossible to access camera. Verify autorizations.');
     }
   };
 
