@@ -262,7 +262,7 @@ export default function InvitePage() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Role:</span>
-                  <RoleBadge role={invitation.role} />
+                  <RoleBadge role={invitation!.role} />
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Expires:</span>
