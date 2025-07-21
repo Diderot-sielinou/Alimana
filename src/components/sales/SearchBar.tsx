@@ -32,7 +32,7 @@ export default function SearchBar({ value, onChange }: Props) {
 
       if (permissions.state === 'denied') {
         toast.error(
-          'Camera access was denied. Please enable camera permissions in your browser settings.'
+          'Camera access blocked. Please enable camera permissions in your browser settings to use barcode scanning.'
         );
         setScannerVisible(false);
         return;
