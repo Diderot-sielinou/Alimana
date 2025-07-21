@@ -30,15 +30,12 @@ export default function SearchBar({ value, onChange }: Props) {
       const permissions = await navigator.permissions.query({ name: 'camera' as PermissionName });
 
       if (permissions.state === 'denied') {
-        alert(
-          "L'accès à la caméra a été refusé. Veuillez l'autoriser dans les paramètres de votre navigateur."
-        );
+        alert('Acces to camera was denied. approve it in your parameter.');
         setScannerVisible(false);
         return;
       }
     } catch (err) {
-      // Certains navigateurs ne supportent pas navigator.permissions pour la caméra
-      console.warn('Impossible de vérifier les permissions caméra :', err);
+      console.warn('Impossible to verify camera permissions :', err);
     }
 
     if (!scannerRef.current) {
@@ -68,7 +65,7 @@ export default function SearchBar({ value, onChange }: Props) {
       );
     } catch (error) {
       console.error('Unable to start scanner', error);
-      alert("Impossible d'accéder à la caméra. Vérifiez les autorisations.");
+      alert('Impossible to access camera. Verify autorizations.');
     }
   };
 
@@ -118,6 +115,7 @@ export default function SearchBar({ value, onChange }: Props) {
             <button
               onClick={stopScanner}
               className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+              type="button"
             >
               <X className="w-5 h-5" />
             </button>
