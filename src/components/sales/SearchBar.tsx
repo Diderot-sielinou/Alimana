@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Search, Barcode, X } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
+import { toast } from 'sonner';
 
 type Props = {
   value: string;
@@ -30,9 +31,10 @@ export default function SearchBar({ value, onChange }: Props) {
       const permissions = await navigator.permissions.query({ name: 'camera' as PermissionName });
 
       if (permissions.state === 'denied') {
-        alert(
-          'Camera access was denied. Please enable camera permissions in your browser settings.'
-        );
+        toast.error('camera blocked', {
+          description: 'enable camera permissions in your browser settings.',
+          duration: 5000,
+        });
         setScannerVisible(false);
         return;
       }
@@ -121,9 +123,9 @@ export default function SearchBar({ value, onChange }: Props) {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-xl font-bold mb-4 text-center text-black dark:text-white">
+            <h2 className="text-xl font-bold mb-4 text-center text-black dark:text-white">
               Scan Barcode
-            </h3>
+            </h2>
             <div id="scanner" className="w-full aspect-square bg-gray-200 rounded"></div>
             <p className="text-center text-sm mt-2 text-gray-600">
               Point your camera at the barcode
