@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-// import { Html5Qrcode } from 'html5-qrcode';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -30,57 +30,55 @@ export default function NewProductPage() {
     category: '',
   });
 
-  // const [scannedId, setScannedId] = useState<string | null>(null);
-  // const scannerRef = useRef<HTMLDivElement | null>(null);
-  // const flashRef = useRef<HTMLDivElement | null>(null);
-  // const [showScanner, setShowScanner] = useState(true);
+  const [scannedId, setScannedId] = useState<string | null>(null);
+  const [showScanner, setShowScanner] = useState(false);
+  const scannerRef = useRef<HTMLDivElement | null>(null);
 
-  // const [scannerActive, setScannerActive] = useState(true);
+  const mockBarcodeDatabase: Record<string, typeof product> = {
+    '123456': {
+      name: 'Mock Product A',
+      description: 'Auto-filled from barcode A',
+      price: '29.99',
+      stock: '10',
+      category: 'shoes',
+    },
+    '789101': {
+      name: 'Mock Product B',
+      description: 'Auto-filled from barcode B',
+      price: '49.99',
+      stock: '5',
+      category: 'clothing',
+    },
+  };
 
-  // useEffect(() => {
-  //   if (!scannerRef.current || !scannerActive) return;
+  useEffect(() => {
+    if (!showScanner || !scannerRef.current) return;
 
-  //   // Prevent duplicate rendering
-  //   if (document.getElementById('scanner')?.hasChildNodes()) return;
+    if (document.getElementById('scanner')?.hasChildNodes()) return;
 
-  //   const scanner = new Html5QrcodeScanner(
-  //     'scanner',
-  //     { fps: 10, qrbox: 250 },
-  //     false
-  //   );
+    const scanner = new Html5QrcodeScanner('scanner', { fps: 10, qrbox: 250 }, false);
 
-  //   scanner.render(
-  //     (decodedText) => {
-  //       if (flashRef.current) {
-  //         flashRef.current.classList.remove('opacity-0');
-  //         flashRef.current.classList.add('opacity-100');
-  //         setTimeout(() => {
-  //           flashRef.current?.classList.remove('opacity-100');
-  //           flashRef.current?.classList.add('opacity-0');
-  //         }, 150);
-  //       }
+    scanner.render(
+      (decodedText) => {
+        setScannedId(decodedText);
+        const productData = mockBarcodeDatabase[decodedText];
+        if (productData) {
+          setProduct(productData);
+        } else {
+          alert('No product found for this barcode.');
+        }
+        setShowScanner(false);
+        scanner.clear();
+      },
+      (error) => {
+        console.warn('Scanning error', error);
+      }
+    );
 
-  //       const match = mockProducts.find((p) => p.id === decodedText);
-  //       setScannedId(decodedText);
-
-  //       if (match) {
-  //         setScannerActive(false);
-  //         router.push(`/dashboard/products/${decodedText}/edit`);
-  //       }
-
-  //       scanner.clear();
-  //     },
-  //     (error) => {
-  //       console.warn('Scanning error', error);
-  //     }
-  //   );
-
-  //   return () => {
-  //     scanner.clear().catch(console.error);
-  //   };
-  // }, [scannerActive]);
-
-  // const matchedProduct = mockProducts.find((p) => p.id === scannedId);
+    return () => {
+      scanner.clear().catch(console.error);
+    };
+  }, [showScanner]);
 
   const handleChange = (field: string, value: string) => {
     setProduct((prev) => ({ ...prev, [field]: value }));
@@ -88,18 +86,25 @@ export default function NewProductPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting Product:', product);
+
+    // Retrieve existing products from localStorage
+    const existingProducts = JSON.parse(localStorage.getItem('products') || '[]');
+
+    // Assign a simple unique ID
+    const newProduct = {
+      ...product,
+      id: Date.now().toString(), // Use timestamp as ID
+    };
+
+    // Save the new list
+    localStorage.setItem('products', JSON.stringify([...existingProducts, newProduct]));
+
+    // Redirect
     router.push('/dashboard/products');
   };
 
   return (
     <div className="flex min-h-screen">
-      {/* Flash effect */}
-      {/* <div
-        ref={flashRef}
-        className="fixed inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-200 z-50"
-      /> */}
-
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
 
       <main className="flex-1 p-6 ml-0 md:ml-64">
@@ -120,41 +125,29 @@ export default function NewProductPage() {
             <CardHeader>
               <CardTitle>Add New Product</CardTitle>
             </CardHeader>
-
-            {/* Barcode Scanner */}
-            {/* <Card className="p-4 mb-4">
-          <h2 className="text-lg font-semibold mb-2">Scan Product Barcode</h2>
-
-          {showScanner ? (
-            <div className="w-full max-w-sm mx-auto">
-              <div ref={scannerRef} id="scanner" />
-              <p className="text-center text-sm text-gray-600 mt-2">
-                Place the barcode in front of your camera to scan.
-              </p>
-            </div>
-          ) : (
-            <div className="text-center">
-              {scannedId && !matchedProduct ? (
-                <p className="text-red-600 mb-2">
-                  ❌ No product found for ID: <strong>{scannedId}</strong>
-                </p>
-              ) : (
-                <p className="text-gray-600 mb-2">Scanner is inactive.</p>
-              )}
-              <Button variant="outline"
-                className="mt-2"
-                onClick={() => {
-                  setScannedId(null);
-                  setShowScanner(false);
-                  setTimeout(() => setShowScanner(true), 100); // Re-trigger scanner
-                }}>
-                🔄 Scan Again
-              </Button>
-            </div>
-          )}
-        </Card> */}
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="flex justify-end">
+                  <Button type="button" variant="secondary" onClick={() => setShowScanner(true)}>
+                    📷 Scan Barcode
+                  </Button>
+                </div>
+
+                {showScanner && (
+                  <div className="mt-4">
+                    <div ref={scannerRef} id="scanner" className="w-full max-w-sm mx-auto" />
+                    <p className="text-center text-sm text-gray-600 mt-2">
+                      Place the barcode in front of your camera.
+                    </p>
+                  </div>
+                )}
+
+                {scannedId && (
+                  <p className="text-sm text-green-600 text-center mt-2">
+                    ✅ Scanned ID: <strong>{scannedId}</strong>
+                  </p>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="name">Product Name</Label>
                   <Input
@@ -201,7 +194,10 @@ export default function NewProductPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
-                  <Select onValueChange={(val) => handleChange('category', val)}>
+                  <Select
+                    value={product.category}
+                    onValueChange={(val) => handleChange('category', val)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>

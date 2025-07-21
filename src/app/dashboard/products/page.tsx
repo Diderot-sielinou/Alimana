@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from '@/components/sidebar';
 import { sidebarLinks } from '@/constants/sidebarLinks';
 import { useRouter } from 'next/navigation';
@@ -16,39 +16,30 @@ import {
   TableHead,
 } from '@/components/ui/table';
 
-const mockProducts = [
-  {
-    id: '1',
-    name: 'Wireless Headphones',
-    category: 'Electronics',
-    price: 99.99,
-    stock: 24,
-    status: 'In Stock',
-  },
-  {
-    id: '2',
-    name: 'Running Shoes',
-    category: 'Footwear',
-    price: 59.99,
-    stock: 0,
-    status: 'Out of Stock',
-  },
-  {
-    id: '3',
-    name: 'Smart Watch',
-    category: 'Electronics',
-    price: 149.99,
-    stock: 12,
-    status: 'In Stock',
-  },
-];
-
 export default function ProductsPage() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [products, setProducts] = useState<Product[]>([]);
 
-  const filteredProducts = mockProducts.filter((product) =>
+  type Product = {
+    id: string;
+    name: string;
+    category: string;
+    price: number;
+    stock: number;
+    status: string;
+  };
+
+  // Load products from localStorage on mount
+  useEffect(() => {
+    const storedProducts = localStorage.getItem('products');
+    if (storedProducts) {
+      setProducts(JSON.parse(storedProducts));
+    }
+  }, []);
+
+  const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -103,23 +94,31 @@ export default function ProductsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredProducts.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell>${product.price.toFixed(2)}</TableCell>
-                  <TableCell>{product.stock}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`text-sm font-medium ${
-                        product.status === 'In Stock' ? 'text-green-600' : 'text-red-600'
-                      }`}
-                    >
-                      {product.status}
-                    </span>
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell>{product.name}</TableCell>
+                    <TableCell>{product.category}</TableCell>
+                    <TableCell>${Number(product.price).toFixed(2)}</TableCell>
+                    <TableCell>{product.stock}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`text-sm font-medium ${
+                          product.stock > 0 ? 'text-green-600' : 'text-red-600'
+                        }`}
+                      >
+                        {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-gray-500 py-6">
+                    No products found.
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </Card>
