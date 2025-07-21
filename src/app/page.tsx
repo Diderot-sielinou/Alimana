@@ -4,6 +4,13 @@ import Footer from '@/components/pagefooter';
 import TestimonialSection from '@/components/testimonials';
 import { Package, ShoppingBag, Users, Barcode } from 'lucide-react';
 
+/**
+ * Renders the ALIMANA landing page, presenting a multi-section marketing site for a store management platform.
+ *
+ * This Next.js page component includes navigation, a hero section, feature highlights, customer benefits, testimonials, a call-to-action, and a footer. It uses client-side routing via Next.js `Link` components for seamless navigation between authentication and informational pages. The layout is responsive and styled with Tailwind CSS, including support for dark mode.
+ *
+ * As a Next.js App Router page, this component is rendered on the server by default for optimal SEO and performance. All content is static and presentational, with no data fetching or dynamic logic. The page structure and metadata support discoverability and accessibility best practices.
+ */
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">

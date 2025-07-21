@@ -30,6 +30,13 @@ interface SignupErrors {
   acceptTerms?: string;
 }
 
+/**
+ * Renders the user signup page with a registration form, validation, and authentication options.
+ *
+ * This Next.js App Router page provides a user registration interface, including email/password signup, Google authentication, and client-side validation. On successful registration, users are redirected to the store creation page. The form enforces required fields, password strength, and terms acceptance, and displays contextual error messages. The page uses Next.js routing for navigation and leverages server/client rendering as per App Router conventions.
+ *
+ * The component is structured for optimal SEO and accessibility, with semantic markup and ARIA attributes. It follows the Next.js pages architecture, supporting both static and dynamic rendering strategies as determined by the app router configuration.
+ */
 export default function SignupPage() {
   const router = useRouter();
 

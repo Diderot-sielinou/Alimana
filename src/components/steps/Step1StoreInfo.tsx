@@ -24,6 +24,16 @@ interface Props {
   onNext: () => void;
 }
 
+/**
+ * Renders the first step of a multi-step form for collecting store information.
+ *
+ * Displays input fields for store name, description, preferred currency, email, phone, website URL, profile image URL, and logo upload. Each field shows validation errors if present. User input is propagated via the provided update callback. A "Continue" button advances to the next step.
+ *
+ * @param formData - The current values for all store information fields in this step
+ * @param errors - Validation error messages for each field, keyed by field name
+ * @param updateFormData - Callback to update a specific field in the form data
+ * @param onNext - Callback to proceed to the next step of the form
+ */
 export default function Step1StoreInfo({ formData, errors, updateFormData, onNext }: Props) {
   return (
     <div className="space-y-6">

@@ -18,6 +18,19 @@ interface SidebarProps {
   links: SidebarLink[];
 }
 
+/**
+ * Renders a responsive sidebar navigation component for a Next.js application.
+ *
+ * The sidebar displays a logo, a close button (on mobile), and a list of navigation links with icons.
+ * It highlights the active link based on the current pathname and provides an overlay to close the sidebar on mobile devices.
+ * The sidebar remains visible on medium and larger screens, while its visibility on smaller screens is controlled by the `sidebarOpen` prop.
+ *
+ * @param sidebarOpen - Whether the sidebar is currently visible (used for mobile responsiveness)
+ * @param setSidebarOpen - Function to toggle the sidebar's open state
+ * @param links - Array of navigation links, each with a label, href, and icon
+ *
+ * @returns The sidebar navigation UI, or `null` while user state is loading
+ */
 export default function Sidebar({ sidebarOpen, setSidebarOpen, links }: SidebarProps) {
   const pathname = usePathname();
   const { isLoading } = useUser();

@@ -26,6 +26,13 @@ export interface StoreData {
 
 type StoreDataKey = keyof StoreData;
 
+/**
+ * Renders the multi-step store creation page, managing form state, navigation, and submission.
+ *
+ * This Next.js page component implements a two-step form for creating a new store, handling user input, validation errors, and navigation between steps. On successful submission, it sends store data to the backend API and redirects to the dashboard. If store creation is not permitted, the user is redirected to a 403 page.
+ *
+ * The component uses the Next.js App Router for navigation and leverages client-side rendering for interactive form handling. It demonstrates the recommended pages architecture for multi-step forms in Next.js, with clear separation of UI steps and submission logic.
+ */
 export default function CreateStorePage() {
   const router = useRouter();
   const [step, setStep] = useState(1);

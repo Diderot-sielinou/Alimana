@@ -26,6 +26,13 @@ type UserResponse = {
   stores?: { id: string; name: string }[];
 };
 
+/**
+ * Renders the sign-in page UI and handles user authentication, validation, and conditional navigation.
+ *
+ * This Next.js page component provides a sign-in form with email and password fields, Google authentication, and error handling. Upon successful authentication, users are redirected based on their role and store associations. The component leverages Next.js app router for navigation and supports both light and dark mode styling.
+ *
+ * The page is rendered as a server component by default in the Next.js app directory structure, supporting static or dynamic rendering strategies as configured by the application. SEO considerations such as metadata should be handled in a parallel `metadata` export or layout file.
+ */
 export default function SigninPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);

@@ -1,7 +1,13 @@
 // src/lib/auth.api.ts
 import { apiRequest } from './api';
 
-// 🔐 Login with email/password
+/**
+ * Authenticates a user by sending their email and password to the backend login endpoint.
+ *
+ * @param email - The user's email address
+ * @param password - The user's password
+ * @returns The response from the authentication API, typically including user data and authentication tokens
+ */
 export async function signIn(email: string, password: string) {
   return apiRequest('/api/auth/login', {
     method: 'POST',

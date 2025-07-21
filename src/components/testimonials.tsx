@@ -54,6 +54,13 @@ const testimonials = [
   },
 ];
 
+/**
+ * Renders a responsive testimonial carousel section featuring customer quotes.
+ *
+ * Displays a visually styled section with a heading and a Swiper-based carousel of testimonials. Each slide presents a customer's quote, avatar, name, and role. The component adapts to different screen sizes, supports autoplay, navigation, and pagination, and includes dark mode styling for accessibility and visual consistency.
+ *
+ * No props are required. All testimonial data is sourced internally.
+ */
 export default function TestimonialSection() {
   return (
     <section id="testimonial" className="py-20 bg-background text-foreground dark:bg-white">

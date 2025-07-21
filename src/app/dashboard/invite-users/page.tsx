@@ -9,6 +9,13 @@ import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useState } from 'react';
 
+/**
+ * Renders a page for admin users to invite new users by email and assign them a role.
+ *
+ * This Next.js app router page restricts access to admin users, redirecting others to the dashboard. It provides a form for entering an email and selecting a role, then sends an invite request to the backend API. Displays feedback messages based on the invite result.
+ *
+ * The page is rendered on the client and uses client-side routing and data fetching. No explicit SEO metadata is set; for SEO customization, consider adding metadata exports or Head components.
+ */
 export default function InviteUsersPage() {
   const router = useRouter();
   const { user, isLoading } = useUser(); // custom hook from your auth logic

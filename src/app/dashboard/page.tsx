@@ -9,6 +9,13 @@ import Link from 'next/link';
 import Sidebar from '@/components/sidebar';
 import { sidebarLinks } from '@/constants/sidebarLinks';
 
+/**
+ * Renders the main dashboard page with sidebar navigation, header, summary cards, and interactive charts.
+ *
+ * This Next.js app router page provides a responsive dashboard interface for business analytics, including revenue summaries and visualizations of sales and payment methods. It supports dark mode toggling, persists theme preference, and adapts layout for mobile and desktop. Charts are rendered client-side using Chart.js.
+ *
+ * The page is statically rendered by default, following Next.js app directory conventions. For dynamic data or SEO customization, consider using Next.js data fetching methods or metadata exports.
+ */
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);

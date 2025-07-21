@@ -14,6 +14,19 @@ interface Props {
   onNext: () => void;
 }
 
+/**
+ * A React component that renders a form step for entering and validating store location details.
+ *
+ * Displays controlled input fields for street address, city, state, and zip code, each with associated labels and validation error messages. The component provides navigation buttons to move back or proceed to store creation. Accessibility is supported through proper labeling and input associations. The street address input includes a location icon for visual context, and city/state fields are arranged side by side for a compact layout.
+ *
+ * @param formData - The current values for address, city, state, and zip code fields.
+ * @param errors - Validation error messages for each form field, displayed below the corresponding input.
+ * @param updateFormData - Callback to update individual form field values.
+ * @param onBack - Callback triggered when the "Back" button is clicked.
+ * @param onNext - Callback triggered when the "Create Store" button is clicked.
+ *
+ * @returns The rendered form step for store location entry.
+ */
 export default function Step2StoreLocation({
   formData,
   errors,

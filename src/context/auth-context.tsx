@@ -23,6 +23,13 @@ const AuthContext = createContext<AuthContextProps>({
   logout: () => {},
 });
 
+/**
+ * Provides authentication context and state management to its child components.
+ *
+ * Initializes the user session on mount, manages authentication state, and exposes authentication data and actions through context.
+ *
+ * @param children - The React components that will have access to the authentication context.
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
