@@ -14,4 +14,4 @@ export const allNavItems: NavItem[] = [
   { label: 'Inventory', path: '/dashboard/inventory' },
   { label: 'Settings', path: '/dashboard/settings' },
   { label: 'Users', path: '/dashboard/users' },
-];
+] as const;
