@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { invitations } from '../send/route';
 import { isInvitationValid, InvitationStatus } from '@/lib/invitation';
 import { ROLE_PERMISSIONS, type User } from '@/lib/auth';
+import * as Sentry from '@sentry/nextjs';
 
 // In a real app, this would be your user database
 const users: User[] = [];
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
       storeId: invitation.storeId,
       name: invitation.name,
       isActive: true,
+
       permissions: ROLE_PERMISSIONS[invitation.role],
     };
 
@@ -59,7 +61,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error accepting invitation:', error);
+    Sentry.captureException(new Error(`Failed to send invitation: ${error}`));
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
