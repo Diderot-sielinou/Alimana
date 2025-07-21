@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -29,13 +30,76 @@ export default function NewProductPage() {
     category: '',
   });
 
+  const [scannedId, setScannedId] = useState<string | null>(null);
+  const [showScanner, setShowScanner] = useState(false);
+  const scannerRef = useRef<HTMLDivElement | null>(null);
+
+  const mockBarcodeDatabase: Record<string, typeof product> = {
+    '123456': {
+      name: 'Mock Product A',
+      description: 'Auto-filled from barcode A',
+      price: '29.99',
+      stock: '10',
+      category: 'shoes',
+    },
+    '789101': {
+      name: 'Mock Product B',
+      description: 'Auto-filled from barcode B',
+      price: '49.99',
+      stock: '5',
+      category: 'clothing',
+    },
+  };
+
+  useEffect(() => {
+    if (!showScanner || !scannerRef.current) return;
+
+    if (document.getElementById('scanner')?.hasChildNodes()) return;
+
+    const scanner = new Html5QrcodeScanner('scanner', { fps: 10, qrbox: 250 }, false);
+
+    scanner.render(
+      (decodedText) => {
+        setScannedId(decodedText);
+        const productData = mockBarcodeDatabase[decodedText];
+        if (productData) {
+          setProduct(productData);
+        } else {
+          alert('No product found for this barcode.');
+        }
+        setShowScanner(false);
+        scanner.clear();
+      },
+      (error) => {
+        console.warn('Scanning error', error);
+      }
+    );
+
+    return () => {
+      scanner.clear().catch(console.error);
+    };
+  }, [showScanner]);
+
   const handleChange = (field: string, value: string) => {
     setProduct((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting Product:', product);
+
+    // Retrieve existing products from localStorage
+    const existingProducts = JSON.parse(localStorage.getItem('products') || '[]');
+
+    // Assign a simple unique ID
+    const newProduct = {
+      ...product,
+      id: Date.now().toString(), // Use timestamp as ID
+    };
+
+    // Save the new list
+    localStorage.setItem('products', JSON.stringify([...existingProducts, newProduct]));
+
+    // Redirect
     router.push('/dashboard/products');
   };
 
@@ -63,6 +127,27 @@ export default function NewProductPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="flex justify-end">
+                  <Button type="button" variant="secondary" onClick={() => setShowScanner(true)}>
+                    📷 Scan Barcode
+                  </Button>
+                </div>
+
+                {showScanner && (
+                  <div className="mt-4">
+                    <div ref={scannerRef} id="scanner" className="w-full max-w-sm mx-auto" />
+                    <p className="text-center text-sm text-gray-600 mt-2">
+                      Place the barcode in front of your camera.
+                    </p>
+                  </div>
+                )}
+
+                {scannedId && (
+                  <p className="text-sm text-green-600 text-center mt-2">
+                    ✅ Scanned ID: <strong>{scannedId}</strong>
+                  </p>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="name">Product Name</Label>
                   <Input
@@ -109,7 +194,10 @@ export default function NewProductPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
-                  <Select onValueChange={(val) => handleChange('category', val)}>
+                  <Select
+                    value={product.category}
+                    onValueChange={(val) => handleChange('category', val)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
