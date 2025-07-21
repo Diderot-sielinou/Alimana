@@ -184,7 +184,7 @@ export default function TeamManagement() {
 
         <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-amber-600 hover:bg-amber-700">
               <UserPlus className="h-4 w-4 mr-2" />
               Invite Team Member
             </Button>
