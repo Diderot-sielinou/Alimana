@@ -10,7 +10,7 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const checkUserProfile = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile`, {
           credentials: 'include',
         });
 
@@ -32,7 +32,7 @@ export default function AuthCallbackPage() {
         }
       } catch (error) {
         console.error('Error during Google Sign-In callback:', error);
-        router.replace('/signin'); // fallback
+        router.replace('/signin');
       }
     };
 
