@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Search, Barcode, X } from 'lucide-react';
-import { Html5Qrcode } from 'html5-qrcode';
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import { toast } from 'sonner';
 
 type Props = {
@@ -12,83 +12,79 @@ type Props = {
 
 export default function SearchBar({ value, onChange }: Props) {
   const [scannerVisible, setScannerVisible] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
 
+  // Ce hook gère l'initialisation et le nettoyage du scanner
   useEffect(() => {
-    const theme = localStorage.getItem('theme');
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    // Si le scanner n'est pas visible, on ne fait rien
+    if (!scannerVisible) {
+      return;
     }
-  }, [scannerVisible]);
 
-  const startScanner = async () => {
-    setScannerVisible(true);
+    const html5QrCode = new Html5Qrcode('scanner');
+    scannerRef.current = html5QrCode;
 
-    try {
-      const permissions = await navigator.permissions.query({ name: 'camera' as PermissionName });
+    const config = {
+      fps: 10,
+      qrbox: { width: 250, height: 250 },
+      // Cette configuration permet de scanner tous les types de codes-barres
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.QR_CODE,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.CODE_93,
+        Html5QrcodeSupportedFormats.CODE_128,
+      ],
+    };
 
-      if (permissions.state === 'denied') {
+    const start = async () => {
+      try {
+        await html5QrCode.start(
+          { facingMode: 'environment' },
+          config,
+          (decodedText: string) => {
+            console.log('Barcode scanned:', decodedText);
+            if (/^\d{8,13}$/.test(decodedText)) {
+              onChange(decodedText);
+              setScannerVisible(false);
+            } else {
+              console.log('Non-barcode detected, ignoring:', decodedText);
+            }
+          },
+          () => {
+            // Log d'erreur optionnel
+          }
+        );
+      } catch (err) {
+        console.error('Unable to start scanner', err);
         toast.error(
-          'Camera access blocked. Please enable camera permissions in your browser settings to use barcode scanning.'
+          'Unable to access camera. Please check camera permissions in your browser settings.'
         );
         setScannerVisible(false);
-        return;
-      }
-    } catch (err) {
-      console.warn('Unable to access camera. Please check camera permission settings:', err);
-    }
-
-    if (!scannerRef.current) {
-      const html5QrCode = new Html5Qrcode('scanner');
-      scannerRef.current = html5QrCode;
-    }
-
-    try {
-      setIsScanning(true);
-      await scannerRef.current.start(
-        { facingMode: 'environment' },
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-        },
-        (decodedText) => {
-          if (/^\d{8,13}$/.test(decodedText)) {
-            onChange(decodedText);
-            stopScanner();
-          } else {
-            console.log('Non-barcode detected, ignoring:', decodedText);
-          }
-        },
-        (errorMessage) => {
-          console.log('Scan error:', errorMessage);
-        }
-      );
-    } catch (error) {
-      console.error('Unable to start scanner', error);
-      toast.error(
-        'Unable to access camera. Please check camera permissions in your browser settings..'
-      );
-    }
-  };
-
-  const stopScanner = async () => {
-    if (scannerRef.current && isScanning) {
-      await scannerRef.current.stop();
-      setIsScanning(false);
-    }
-    setScannerVisible(false);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (scannerRef.current && isScanning) {
-        scannerRef.current.stop();
       }
     };
-  }, [isScanning]);
+
+    start();
+
+    return () => {
+      if (html5QrCode.isScanning) {
+        html5QrCode.stop().catch((err) => {
+          console.warn('Failed to stop scanner:', err);
+        });
+      }
+    };
+  }, [scannerVisible, onChange]);
+
+  const startScanner = () => {
+    setScannerVisible(true);
+  };
+
+  const stopScanner = () => {
+    setScannerVisible(false);
+  };
 
   return (
     <div className="mb-6">
