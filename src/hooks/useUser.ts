@@ -28,5 +28,5 @@ export function useUser() {
     return () => controller.abort();
   }, []);
 
-  return { user, isLoading };
+  return { user, isLoading, error };
 }

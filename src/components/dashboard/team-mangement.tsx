@@ -42,6 +42,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import * as Sentry from '@sentry/nextjs';
 
 interface TeamMember {
   id: string;
@@ -137,25 +138,44 @@ export function TeamManagement() {
       const data = await response.json();
 
       if (!response.ok) {
-        console.error('Failed to send invitation:', data.error);
+        Sentry.captureException(new Error('Failed to send invitation:', data.error));
         return;
       }
 
-      console.log('Invitation sent successfully:', data);
       setIsInviteOpen(false);
       setInviteForm({ email: '', fullName: '', role: UserRole.CASHIER });
 
-      // You could show a success toast here
-      alert('Invitation sent successfully!');
+      Sentry.captureMessage('Invitation sent successfully!');
     } catch (error) {
-      console.error('Error sending invitation:', error);
-      alert('Failed to send invitation. Please try again.');
+      if (error) {
+        Sentry.captureException(new Error('Error sending invitation:', error));
+        Sentry.captureMessage('Failed to send invitation. Please try again.');
+        return;
+      }
     }
   };
 
-  const toggleUserStatus = (userId: string) => {
-    console.log('Toggling user status:', userId);
-    // Here you would update user status
+  const toggleUserStatus = async (userId: string) => {
+    try {
+      const res = await fetch(`/api/users/${userId}/toggle-status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to toggle status for user ${userId}`);
+      }
+
+      const updatedUser = await res.json();
+      Sentry.captureMessage('Updated user:', updatedUser);
+    } catch (err) {
+      if (err) {
+        Sentry.captureException(new Error('Error toggling user status'));
+        return;
+      }
+    }
   };
 
   const getStatusBadge = (isActive: boolean) => {

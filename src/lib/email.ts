@@ -1,5 +1,10 @@
 import { Resend } from 'resend';
 import type { InvitationEmailData } from './invitation';
+import * as Sentry from '@sentry/nextjs';
+
+if (!process.env.RESEND_API_KEY) {
+  throw new Error('RESEND_API_KEY is not set in the environment variables');
+}
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -16,13 +21,15 @@ export const sendInvitationEmail = async (
     });
 
     if (error) {
-      console.error('Email sending error:', error);
+      Sentry.captureException(new Error('Email sending error'));
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error) {
-    console.error('Email sending error:', error);
+    if (error) {
+      Sentry.captureException(new Error('Email sending error'));
+    }
     return { success: false, error: 'Failed to send invitation email' };
   }
 };
