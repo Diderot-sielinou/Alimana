@@ -1,10 +1,10 @@
 export interface StoreData {
-  storeName: string;
-  storeDescription: string;
+  name: string;
+  description: string;
   address: string;
+  currency: string;
   city: string;
   state: string;
-  streetaddress: string;
   zipCode: string;
   password: string;
   confirmPassword: string;

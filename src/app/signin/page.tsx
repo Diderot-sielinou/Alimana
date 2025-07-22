@@ -98,10 +98,14 @@ export default function SigninPage() {
           <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
         </div>
 
-        <Card className="shadow-xl border-0">
+        <Card className="shadow-xl border-0 dark:bg-white text-gray-800">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-xl">Sign In</CardTitle>
-            <Button variant="outline" onClick={signInWithGoogle} className="w-full bg-white mt-2">
+            <Button
+              variant="outline"
+              onClick={signInWithGoogle}
+              className="w-full bg-white mt-2 dark:hover:bg-slate-300 dark:text-black"
+            >
               <span className="mr-2">
                 <svg className="h-4 w-4" viewBox="0 0 48 48">
                   <path
@@ -202,16 +206,16 @@ export default function SigninPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-amber-600 hover:bg-amber-700"
+                className="w-full bg-amber-600 hover:bg-amber-700 dark:bg-amber dark:text-white"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Signing In...' : 'Sign In'}
               </Button>
             </form>
 
-            <div className="text-center text-sm text-gray-600">
+            <div className="text-center text-sm text-gray-600 ">
               Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-amber-600 hover:text-amber-700 font-medium">
+              <Link href="/signup" className="text-amber-600 hover:text-amber-700 font-medium ">
                 Create account
               </Link>
             </div>

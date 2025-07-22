@@ -1,16 +1,34 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { useUser } from '@/hooks/useUser';
+import type { LucideIcon } from 'lucide-react';
 import { Store, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
+export interface SidebarLink {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+}
+
+interface SidebarProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+  links: SidebarLink[];
+}
+
+export default function Sidebar({ sidebarOpen, setSidebarOpen, links }: SidebarProps) {
   const pathname = usePathname();
+  const { isLoading } = useUser();
   const router = useRouter();
+
+  if (isLoading) return null;
 
   return (
     <>
-      {/* Overlay mobile */}
+      {/* Overlay for mobile when sidebar is open */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
@@ -19,13 +37,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
       )}
 
       <aside
-        className={`fixed top-0 left-0 h-screen w-64 bg-orange-600 text-white shadow-lg z-30 transform ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-300 md:translate-x-0`}
+        className={`fixed top-0 left-0 h-screen w-64 bg-orange-600 text-white shadow-lg z-30 transform
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        transition-transform duration-300 md:translate-x-0`}
       >
         <div className="flex flex-col h-full justify-between">
-          {/* Top: Logo and Nav */}
+          {/* Top: Logo and Navigation */}
           <div>
+            {/* Header */}
             <div className="flex items-center justify-between h-16 border-b border-orange-500 px-4">
               <Link
                 href="/dashboard"
@@ -34,7 +53,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
                 <Store className="w-6 h-6" />
                 <span>STORE</span>
               </Link>
-              <button onClick={() => setSidebarOpen(false)} className="md:hidden">
+              <button onClick={() => setSidebarOpen(false)} className="md:hidden text-2xl">
                 ✕
               </button>
             </div>
@@ -49,17 +68,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }) {
                     <li key={href} className="relative">
                       <Link
                         href={href}
-                        className={`flex items-center px-4 py-2 transition-all duration-200 rounded relative ${
+                        className={`flex items-center px-4 py-2 transition-all duration-200 rounded ${
                           isActive
                             ? 'bg-orange-500 font-semibold text-white ring-1 ring-orange-500'
                             : 'hover:bg-orange-500'
                         }`}
                       >
                         {isActive && (
-                          <span
-                            className="absolute left-0 top-1 bottom-1 w-1 bg-white rounded-r"
-                            aria-hidden="true"
-                          />
+                          <span className="absolute left-0 top-1 bottom-1 w-1 bg-white rounded-r" />
                         )}
                         <Icon className="w-5 h-5 mr-2" />
                         {label}
