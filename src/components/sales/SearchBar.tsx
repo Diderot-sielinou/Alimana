@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Search, Barcode, X } from 'lucide-react';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation'; // ✅ Import du routeur
 
 type Props = {
   value: string;
@@ -13,13 +14,10 @@ type Props = {
 export default function SearchBar({ value, onChange }: Props) {
   const [scannerVisible, setScannerVisible] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const router = useRouter(); // ✅ Initialisation du routeur
 
-  // Ce hook gère l'initialisation et le nettoyage du scanner
   useEffect(() => {
-    // Si le scanner n'est pas visible, on ne fait rien
-    if (!scannerVisible) {
-      return;
-    }
+    if (!scannerVisible) return;
 
     const html5QrCode = new Html5Qrcode('scanner');
     scannerRef.current = html5QrCode;
@@ -27,7 +25,6 @@ export default function SearchBar({ value, onChange }: Props) {
     const config = {
       fps: 10,
       qrbox: { width: 250, height: 250 },
-      // Cette configuration permet de scanner tous les types de codes-barres
       formatsToSupport: [
         Html5QrcodeSupportedFormats.EAN_13,
         Html5QrcodeSupportedFormats.EAN_8,
@@ -47,22 +44,25 @@ export default function SearchBar({ value, onChange }: Props) {
           config,
           (decodedText: string) => {
             console.log('Barcode scanned:', decodedText);
+
             if (/^\d{8,13}$/.test(decodedText)) {
               onChange(decodedText);
               setScannerVisible(false);
+
+              // ✅ Redirection vers la page produit
+              router.push(`/products/${decodedText}`);
             } else {
               console.log('Non-barcode detected, ignoring:', decodedText);
+              toast.info('Le code scanné est invalide. Veuillez réessayer.');
             }
           },
           () => {
-            // Log d'erreur optionnel
+            // Optionnel : gestion continue
           }
         );
       } catch (err) {
         console.error('Unable to start scanner', err);
-        toast.error(
-          'Unable to access camera. Please check camera permissions in your browser settings.'
-        );
+        toast.error("Impossible d'accéder à la caméra. Vérifiez les permissions du navigateur.");
         setScannerVisible(false);
       }
     };
@@ -76,7 +76,7 @@ export default function SearchBar({ value, onChange }: Props) {
         });
       }
     };
-  }, [scannerVisible, onChange]);
+  }, [scannerVisible, onChange, router]);
 
   const startScanner = () => {
     setScannerVisible(true);
@@ -125,7 +125,7 @@ export default function SearchBar({ value, onChange }: Props) {
             </h2>
             <div id="scanner" className="w-full aspect-square bg-gray-200 rounded"></div>
             <p className="text-center text-sm mt-2 text-gray-600">
-              Point your camera at the barcode
+              Pointez la caméra vers le code-barres
             </p>
           </div>
         </div>
