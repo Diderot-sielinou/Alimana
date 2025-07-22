@@ -56,9 +56,9 @@ const testimonials = [
 
 export default function TestimonialSection() {
   return (
-    <section id="testimonial" className="py-20 bg-background text-foreground">
+    <section id="testimonial" className="py-20 bg-background text-foreground dark:bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl font-bold sm:text-4xl mb-12">
+        <h2 className="text-3xl font-bold sm:text-4xl mb-12 dark:text-black">
           Loved by store owners across Cameroon
         </h2>
 
@@ -78,8 +78,10 @@ export default function TestimonialSection() {
         >
           {testimonials.map((testimonial, index) => (
             <SwiperSlide key={index}>
-              <div className="bg-card p-6 rounded-2xl border h-full flex flex-col justify-between">
-                <p className="mb-6 text-muted-foreground italic">“{testimonial.quote}”</p>
+              <div className="bg-card p-6 rounded-2xl border h-full flex flex-col justify-between dark:bg-white dark:text-black">
+                <p className="mb-6 text-muted-foreground italic dark:text-black">
+                  “{testimonial.quote}”
+                </p>
                 <div className="flex items-center gap-3 mt-auto">
                   <Avatar>
                     <AvatarImage src={testimonial.image} alt={testimonial.name} />
@@ -87,7 +89,9 @@ export default function TestimonialSection() {
                   </Avatar>
                   <div className="text-left">
                     <p className="font-medium">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    <p className="text-sm text-muted-foreground dark:text-slate-500">
+                      {testimonial.role}
+                    </p>
                   </div>
                 </div>
               </div>

@@ -62,7 +62,7 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-amber-600 text-amber-600 hover:bg-indigo-50 px-8 py-3 text-lg w-52 mr-2"
+                className="border-amber-600 text-amber-600 dark:bg-white  dark:hover:text-slate-900 hover:bg-indigo-50 px-8 py-3 text-lg w-52 mr-2"
               >
                 Learn More
               </Button>
@@ -115,59 +115,67 @@ export default function LandingPage() {
       {/* section why choose us */}
       <section id="whyus" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-primary">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-primary dark:text-black">
             Why Choose ALIMANA?
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="mt-4 text-lg text-muted-foreground dark:text-slate-600 ">
             Empowering store owners with tools to manage, grow, and succeed—without the stress.
           </p>
 
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
             <div>
-              <p className="text-4xl font-bold text-foreground">99.9%</p>
-              <p className="mt-2 text-muted-foreground">Uptime Guarantee</p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-4xl font-bold text-foreground dark:text-black">99.9%</p>
+              <p className="mt-2 text-muted-foreground dark:text-slate-600">Uptime Guarantee</p>
+              <p className="mt-1 text-sm text-muted-foreground dark:text-slate-600">
                 Your business is always open. We ensure consistent performance, day and night.
               </p>
             </div>
 
             <div>
-              <p className="text-4xl font-bold text-foreground">10,000+</p>
-              <p className="mt-2 text-muted-foreground">Happy Customers</p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-4xl font-bold text-foreground dark:text-black">10,000+</p>
+              <p className="mt-2 text-muted-foreground dark:text-slate-600">Happy Customers</p>
+              <p className="mt-1 text-sm text-muted-foreground dark:text-slate-600">
                 Trusted by thousands of store owners worldwide to streamline operations and boost
                 sales.
               </p>
             </div>
 
             <div>
-              <p className="text-4xl font-bold text-foreground">24/7</p>
-              <p className="mt-2 text-muted-foreground">Customer Support</p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-4xl font-bold text-foreground dark:text-black">24/7</p>
+              <p className="mt-2 text-muted-foreground dark:text-slate-600">Customer Support</p>
+              <p className="mt-1 text-sm text-muted-foreground dark:text-slate-600">
                 Get help whenever you need it—from real humans who care about your success.
               </p>
             </div>
 
             <div>
-              <p className="text-4xl font-bold text-foreground">Fast Setup</p>
-              <p className="mt-2 text-muted-foreground">Get Started in Minutes</p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-4xl font-bold text-foreground dark:text-black">Fast Setup</p>
+              <p className="mt-2 text-muted-foreground dark:text-slate-600">
+                Get Started in Minutes
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground dark:text-slate-600">
                 No tech skills? No problem. Launch your store fast with our intuitive onboarding.
               </p>
             </div>
 
             <div>
-              <p className="text-4xl font-bold text-foreground">Secure & Compliant</p>
-              <p className="mt-2 text-muted-foreground">Enterprise-Grade Protection</p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-4xl font-bold text-foreground dark:text-black">
+                Secure & Compliant
+              </p>
+              <p className="mt-2 text-muted-foreground dark:text-slate-600">
+                Enterprise-Grade Protection
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground dark:text-slate-600">
                 We safeguard your data with the latest encryption and compliance standards.
               </p>
             </div>
 
             <div>
-              <p className="text-4xl font-bold text-foreground">All-in-One</p>
-              <p className="mt-2 text-muted-foreground">Complete Management Suite</p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-4xl font-bold text-foreground dark:text-black">All-in-One</p>
+              <p className="mt-2 text-muted-foreground dark:text-slate-600">
+                Complete Management Suite
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground dark:text-slate-600">
                 From inventory to sales to analytics, manage everything in one clean dashboard.
               </p>
             </div>
@@ -181,15 +189,15 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section id="#getstarted" className=" py-16 px-4 sm:px-6 lg:px-8 rounded-2xl text-center">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl dark:text-black">
             Ready to transform your store management?
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="mt-4 text-lg text-muted-foreground dark:text-slate-600">
             Join thousands of store owners who have streamlined their operations with ALIMANA.
           </p>
           <div className="mt-8">
             <Link href="/signup">
-              <Button size="lg" className="bg-amber-600 hover:bg-amber-700">
+              <Button size="lg" className="bg-amber-600 hover:bg-amber-700 dark:text-white">
                 Get Started
               </Button>
             </Link>

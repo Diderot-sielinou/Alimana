@@ -1,12 +1,12 @@
+//context/store-context
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 export type StoreSession = {
   id: string;
-  role: 'Admin' | 'Cashier' | 'Manager';
+  role: 'admin' | 'cashier' | 'store_manager' | 'salesperson';
 };
-
 interface StoreContextType {
   store: StoreSession | null;
   setStore: (store: StoreSession) => void;

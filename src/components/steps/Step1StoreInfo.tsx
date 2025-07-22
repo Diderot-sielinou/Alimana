@@ -1,6 +1,6 @@
 'use client';
 
-import { Store, ArrowRight } from 'lucide-react';
+import { Store, ArrowRight, Mail, Phone, Globe, Image as ImageIcon } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,7 +8,17 @@ import { Button } from '@/components/ui/button';
 import { StoreData } from '@/app/create-store/page';
 
 interface Props {
-  formData: Pick<StoreData, 'storeName' | 'storeDescription' | 'currency' | 'logo'>;
+  formData: Pick<
+    StoreData,
+    | 'name'
+    | 'description'
+    | 'currency'
+    | 'logo'
+    | 'email'
+    | 'phone'
+    | 'websiteUrl'
+    | 'profileImageUrl'
+  >;
   errors: Partial<Record<keyof StoreData, string>>;
   updateFormData: (field: keyof StoreData, value: string | File | null) => void;
   onNext: () => void;
@@ -17,22 +27,21 @@ interface Props {
 export default function Step1StoreInfo({ formData, errors, updateFormData, onNext }: Props) {
   return (
     <div className="space-y-6">
+      {/* Store Name */}
       <div className="space-y-2">
-        {' '}
-        <Label htmlFor="storeName">Store Name</Label>{' '}
+        <Label htmlFor="name">Store Name</Label>
         <div className="relative">
-          {' '}
           <Store className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
-            id="storeName"
+            id="name"
             type="text"
             placeholder="Enter your store name"
             className="pl-10"
-            value={formData.storeName}
-            onChange={(e) => updateFormData('storeName', e.target.value)}
-          />{' '}
+            value={formData.name}
+            onChange={(e) => updateFormData('name', e.target.value)}
+          />
         </div>
-        {errors.storeName && <p className="text-sm text-red-600">{errors.storeName}</p>}
+        {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
       </div>
 
       {/* Store Description */}
@@ -40,17 +49,15 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
         <Label htmlFor="storeDescription">Store Description</Label>
         <Textarea
           id="storeDescription"
-          placeholder="Describe what your store sells..."
+          placeholder="Describe your store"
           className="min-h-[100px]"
-          value={formData.storeDescription}
-          onChange={(e) => updateFormData('storeDescription', e.target.value)}
+          value={formData.description}
+          onChange={(e) => updateFormData('description', e.target.value)}
         />
-        {errors.storeDescription && (
-          <p className="text-sm text-red-600">{errors.storeDescription}</p>
-        )}
+        {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
       </div>
 
-      {/* Currency Dropdown */}
+      {/* Currency */}
       <div className="space-y-2">
         <Label htmlFor="currency">Preferred Currency</Label>
         <select
@@ -69,17 +76,83 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
         {errors.currency && <p className="text-sm text-red-600">{errors.currency}</p>}
       </div>
 
+      {/* Email */}
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <div className="relative">
+          <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            id="email"
+            type="email"
+            placeholder="example@store.com"
+            className="pl-10"
+            value={formData.email || ''}
+            onChange={(e) => updateFormData('email', e.target.value)}
+          />
+        </div>
+        {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
+      </div>
+
+      {/* Phone */}
+      <div className="space-y-2">
+        <Label htmlFor="phone">Phone</Label>
+        <div className="relative">
+          <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            id="phone"
+            type="tel"
+            placeholder="+237600000000"
+            className="pl-10"
+            value={formData.phone || ''}
+            onChange={(e) => updateFormData('phone', e.target.value)}
+          />
+        </div>
+        {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
+      </div>
+
+      {/* Website */}
+      <div className="space-y-2">
+        <Label htmlFor="websiteUrl">Website</Label>
+        <div className="relative">
+          <Globe className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            id="websiteUrl"
+            type="url"
+            placeholder="https://mystore.com"
+            className="pl-10"
+            value={formData.websiteUrl || ''}
+            onChange={(e) => updateFormData('websiteUrl', e.target.value)}
+          />
+        </div>
+        {errors.websiteUrl && <p className="text-sm text-red-600">{errors.websiteUrl}</p>}
+      </div>
+
+      {/* Profile Image URL */}
+      <div className="space-y-2">
+        <Label htmlFor="profileImageUrl">Profile Image URL</Label>
+        <div className="relative">
+          <ImageIcon className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            id="profileImageUrl"
+            type="url"
+            placeholder="https://cdn.store.com/profile.jpg"
+            className="pl-10"
+            value={formData.profileImageUrl || ''}
+            onChange={(e) => updateFormData('profileImageUrl', e.target.value)}
+          />
+        </div>
+        {errors.profileImageUrl && <p className="text-sm text-red-600">{errors.profileImageUrl}</p>}
+      </div>
+
       {/* Logo Upload */}
       <div className="space-y-2">
         <Label htmlFor="logo">Store Logo</Label>
-        <div className="relative">
-          <Input
-            id="logo"
-            type="file"
-            accept="image/*"
-            onChange={(e) => updateFormData('logo', e.target.files?.[0] || null)}
-          />
-        </div>
+        <Input
+          id="logo"
+          type="file"
+          accept="image/*"
+          onChange={(e) => updateFormData('logo', e.target.files?.[0] || null)}
+        />
         {errors.logo && <p className="text-sm text-red-600">{errors.logo}</p>}
       </div>
 
