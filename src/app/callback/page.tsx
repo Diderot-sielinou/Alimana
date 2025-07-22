@@ -23,10 +23,8 @@ export default function AuthCallbackPage() {
         const redirectPath = getRedirectPath(user);
         router.replace(redirectPath);
       } catch (error) {
-        if (error) {
-          Sentry.captureMessage('Error during Google Sign-In callback');
-        }
-
+        Sentry.captureException(error);
+        Sentry.captureMessage('Error during Google Sign-In callback');
         router.replace('/signin');
       }
     };
