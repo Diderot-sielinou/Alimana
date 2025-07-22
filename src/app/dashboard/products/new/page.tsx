@@ -87,19 +87,15 @@ export default function NewProductPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Retrieve existing products from localStorage
     const existingProducts = JSON.parse(localStorage.getItem('products') || '[]');
 
-    // Assign a simple unique ID
     const newProduct = {
       ...product,
       id: Date.now().toString(), // Use timestamp as ID
     };
 
-    // Save the new list
     localStorage.setItem('products', JSON.stringify([...existingProducts, newProduct]));
 
-    // Redirect
     router.push('/dashboard/products');
   };
 
