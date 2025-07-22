@@ -12,7 +12,7 @@ interface Store {
   storeUserId: number;
   name: string;
   logo?: string;
-  role: 'Admin' | 'Cashier' | 'Manager';
+  role: 'admin' | 'store_manager' | 'cashier' | 'salesperson';
 }
 
 export default function SelectStorePage() {
@@ -50,7 +50,7 @@ export default function SelectStorePage() {
       });
       if (!res.ok) throw new Error('Failed to select store');
       setStore({ id: store.storeId, role: store.role });
-      router.push(store.role === 'Cashier' ? '/sales/create' : '/dashboard');
+      router.push(store.role === 'cashier' ? '/sales/create' : '/dashboard');
     } catch (err) {
       console.error(err);
       alert('Failed to select store');

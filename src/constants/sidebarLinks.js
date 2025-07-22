@@ -1,4 +1,13 @@
-import { LayoutDashboard, ShoppingCart, Box, BarChart3, Warehouse, Settings } from 'lucide-react';
+//constants/sidebarLinks.js
+import {
+  LayoutDashboard,
+  ShoppingCart,
+  Box,
+  BarChart3,
+  Warehouse,
+  Settings,
+  UserPlus,
+} from 'lucide-react';
 
 export const sidebarLinks = [
   {
@@ -25,6 +34,11 @@ export const sidebarLinks = [
     href: '/dashboard/inventory',
     label: 'Inventory',
     icon: Warehouse,
+  },
+  {
+    href: '/dashboard/user-management',
+    label: 'User Management',
+    icon: UserPlus,
   },
   {
     href: '/dashboard/settings',

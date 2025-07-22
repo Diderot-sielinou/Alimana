@@ -131,11 +131,15 @@ export default function SignupPage() {
           </Link>
         </div>
 
-        <Card className="shadow-xl border-0">
+        <Card className="shadow-xl border-0 dark:bg-white text-gray-800">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-xl">Sign Up</CardTitle>
             <CardDescription>Create your account to get started with Alimana</CardDescription>
-            <Button variant="outline" onClick={signUpWithGoogle} className="w-full bg-transparent">
+            <Button
+              variant="outline"
+              onClick={signUpWithGoogle}
+              className="w-full bg-transparent dark:hover:bg-slate-200 dark:text-slate-900"
+            >
               <svg height="20" width="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
@@ -336,7 +340,7 @@ export default function SignupPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-amber-600 hover:bg-amber-700"
+                className="w-full bg-amber-600 hover:bg-amber-700 dark:bg-amber text-white"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Creating Account...' : 'Create Account'}
