@@ -8,13 +8,13 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
       {/* Header/Navbar */}
-      <header className="w-full bg-white shadow-sm py-4 md:px-24 flex justify-between items-center z-10">
+      <header className="w-full bg-slate-900 shadow-sm py-4 md:px-24 flex justify-between items-center z-10">
         <Link
           href="/"
           className="flex items-center space-x-2 text-2xl font-bold text-amber-700 hover:text-amber-900 transition-colors"
         >
           <ShoppingBag className="w-8 h-8" />
-          <span>ALIMANA</span>
+          <span className="text-white">ALIMANA</span>
         </Link>
 
         {/* Navigation */}
@@ -22,14 +22,14 @@ export default function LandingPage() {
           <Link href="/signin" passHref>
             <Button
               variant="ghost"
-              className="text-amber-700 hover:bg-indigo-50 hover:text-amber-800"
+              className="text-white border-2 border-slate-200 hover:bg-indigo-50 hover:text-black"
             >
               {' '}
               Login{' '}
             </Button>
           </Link>
           <Link href="/signup" passHref>
-            <Button className="bg-amber-600 hover:bg-amber-700 text-white shadow-md">SignUp</Button>
+            <Button className="bg-amber-600 hover:bg-amber-700 text-black shadow-md">SignUp</Button>
           </Link>
         </nav>
       </header>
@@ -77,7 +77,7 @@ export default function LandingPage() {
           <h2 className="text-4xl font-bold text-gray-800 mb-12">Powerful Features, Simplified</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Feature Card 1 */}
-            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
+            <div className="p-6 rounded-lg border border-slate-300 hover:shadow-lg transition-shadow duration-300">
               <Package className="w-12 h-12 text-amber-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Product Management</h3>
               <p className="text-gray-600">
@@ -85,7 +85,7 @@ export default function LandingPage() {
               </p>
             </div>
             {/* Feature Card 2 */}
-            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
+            <div className="p-6 rounded-lg border border-slate-300 hover:shadow-lg transition-shadow duration-300">
               <ShoppingBag className="w-12 h-12 text-amber-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Efficient Sales</h3>
               <p className="text-gray-600">
@@ -93,7 +93,7 @@ export default function LandingPage() {
               </p>
             </div>
             {/* Feature Card 3 */}
-            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
+            <div className="p-6 rounded-lg border border-slate-300 hover:shadow-lg transition-shadow duration-300">
               <Users className="w-12 h-12 text-amber-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-800 mb-2">User & Role Control</h3>
               <p className="text-gray-600">
@@ -101,7 +101,7 @@ export default function LandingPage() {
               </p>
             </div>
             {/* Feature Card 4 */}
-            <div className="p-6 rounded-lg border hover:shadow-lg transition-shadow duration-300">
+            <div className="p-6 rounded-lg border border-slate-300 hover:shadow-lg transition-shadow duration-300">
               <Barcode className="w-12 h-12 text-amber-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Smart Reporting</h3>
               <p className="text-gray-600">
