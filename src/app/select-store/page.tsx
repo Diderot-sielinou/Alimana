@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useStore } from '@/context/store-context';
+import * as Sentry from '@sentry/nextjs';
 
 interface Store {
   storeId: string;
@@ -32,7 +33,8 @@ export default function SelectStorePage() {
         const data = await res.json();
         setStores(data);
       } catch (err) {
-        console.error(err);
+        Sentry.captureException(err);
+        return;
       } finally {
         setLoading(false);
       }
@@ -52,8 +54,9 @@ export default function SelectStorePage() {
       setStore({ id: store.storeId, role: store.role });
       router.push(store.role === 'cashier' ? '/sales/create' : '/dashboard');
     } catch (err) {
-      console.error(err);
-      alert('Failed to select store');
+      Sentry.captureException(err);
+      Sentry.captureMessage('Failed to select store');
+      return;
     }
   };
 
