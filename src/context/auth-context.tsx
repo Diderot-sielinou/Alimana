@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { type User, type UserRole, ROLE_PERMISSIONS } from '@/lib/auth';
 import { logout as serverLogout } from '@/lib/auth';
+import * as Sentry from '@sentry/nextjs';
 
 interface AuthContextType {
   user: User | null;
@@ -30,7 +31,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(userData);
         }
       } catch (error) {
-        console.error('Error loading user:', error);
+        if (error) {
+          Sentry.captureException(new Error('Error loading user'));
+          return;
+        }
       } finally {
         setLoading(false);
       }
@@ -58,7 +62,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
     } catch (error) {
-      console.error('Login error:', error);
+      if (error) {
+        Sentry.captureException(new Error('Login error'));
+        return;
+      }
       throw error;
     }
   };
@@ -66,8 +73,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function logout() {
     try {
       await serverLogout(); // POST /api/auth/logout
-    } catch (err) {
-      console.error('Logout failed:', err);
+    } catch (error) {
+      if (error) {
+        Sentry.captureException(new Error('Logout failed'));
+        return;
+      }
     } finally {
       localStorage.removeItem('access_token');
       setUser(null);

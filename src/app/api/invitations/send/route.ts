@@ -7,6 +7,7 @@ import {
   InvitationStatus,
 } from '@/lib/invitation';
 import { type UserRole, getRoleDisplayName } from '@/lib/auth';
+import * as Sentry from '@sentry/nextjs';
 
 // In a real app, this would be stored in your database
 const invitations: Invitation[] = [];
@@ -78,7 +79,8 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error sending invitation:', error);
+    Sentry.captureException(error);
+    Sentry.captureMessage('Error sending invitation:');
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,4 +1,3 @@
-//constants/sidebarLinks.js
 import {
   LayoutDashboard,
   ShoppingCart,

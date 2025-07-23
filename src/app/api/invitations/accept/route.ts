@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
       storeId: invitation.storeId,
       name: invitation.name,
       isActive: true,
-
       permissions: ROLE_PERMISSIONS[invitation.role],
     };
 
