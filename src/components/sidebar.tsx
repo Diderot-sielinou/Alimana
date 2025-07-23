@@ -80,60 +80,16 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, links }: SidebarP
             })}
           </ul>
         </nav>
-        <div className="flex flex-col h-full justify-between">
-          <div>
-            <div className="flex items-center justify-between h-16 border-b border-orange-500 px-4">
-              <Link
-                href="/dashboard"
-                className="flex items-center gap-2 text-xl font-bold text-white"
-              >
-                <Store className="w-6 h-6" />
-                <span>STORE</span>
-              </Link>
-              <button onClick={() => setSidebarOpen(false)} className="md:hidden">
-                ✕
-              </button>
-            </div>
 
-            {/* Navigation */}
-            <nav className="mt-4">
-              <ul className="space-y-1">
-                {links.map(({ href, label, icon: Icon }) => {
-                  const isActive = pathname.startsWith(href) && pathname === href;
-
-                  return (
-                    <li key={href}>
-                      <Link
-                        href={href}
-                        className={`flex items-center px-4 py-2 transition-all duration-200 rounded ${
-                          isActive
-                            ? 'bg-orange-500 font-semibold text-white ring-1 ring-orange-500'
-                            : 'hover:bg-orange-500'
-                        }`}
-                      >
-                        {isActive && (
-                          <span className="absolute left-0 top-1 bottom-1 w-1 bg-white rounded-r" />
-                        )}
-                        <Icon className="w-5 h-5 mr-2" />
-                        {label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
-          </div>
-
-          {/* Bottom: Logout */}
-          <div className="px-4 py-4 border-t border-orange-500">
-            <button
-              onClick={() => router.push('/signin')}
-              className="w-full flex items-center px-3 py-2 rounded hover:bg-orange-500 text-white font-medium text-sm transition"
-            >
-              <LogOut className="w-5 h-5 mr-2" />
-              Logout
-            </button>
-          </div>
+        {/* Bottom: Logout */}
+        <div className="px-4 py-4 border-t border-orange-500">
+          <button
+            onClick={() => router.push('/signin')}
+            className="w-full flex items-center px-3 py-2 rounded hover:bg-orange-500 text-white font-medium text-sm transition"
+          >
+            <LogOut className="w-5 h-5 mr-2" />
+            Logout
+          </button>
         </div>
       </aside>
     </>
