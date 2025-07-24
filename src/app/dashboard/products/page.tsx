@@ -31,7 +31,6 @@ export default function ProductsPage() {
     status: string;
   };
 
-  // Load products from localStorage on mount
   useEffect(() => {
     const storedProducts = localStorage.getItem('products');
     if (storedProducts) {
@@ -50,7 +49,6 @@ export default function ProductsPage() {
 
       {/* Main Content */}
       <main className="flex-1 p-6 ml-0 md:ml-64">
-        {/* Mobile Toggle */}
         <div className="mb-4">
           <button
             onClick={() => setSidebarOpen(true)}
