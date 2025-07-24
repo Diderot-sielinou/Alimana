@@ -78,7 +78,7 @@ export default function TestimonialSection() {
         >
           {testimonials.map((testimonial, index) => (
             <SwiperSlide key={index}>
-              <div className="bg-card p-6 rounded-2xl border h-full flex flex-col justify-between dark:bg-white dark:text-black">
+              <div className="bg-card p-6 rounded-2xl border border-slate-300 h-full flex flex-col justify-between dark:bg-white dark:text-black">
                 <p className="mb-6 text-muted-foreground italic dark:text-black">
                   “{testimonial.quote}”
                 </p>

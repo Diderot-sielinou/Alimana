@@ -4,6 +4,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getRedirectPath } from '@/lib/auth-redirect';
+import * as Sentry from '@sentry/nextjs';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -22,7 +23,8 @@ export default function AuthCallbackPage() {
         const redirectPath = getRedirectPath(user);
         router.replace(redirectPath);
       } catch (error) {
-        console.error('Error during Google Sign-In callback:', error);
+        Sentry.captureException(error);
+        Sentry.captureMessage('Error during Google Sign-In callback');
         router.replace('/signin');
       }
     };
