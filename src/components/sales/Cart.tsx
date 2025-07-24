@@ -193,8 +193,10 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
             <h4 className="font-semibold mb-3 text-black dark:text-white">
               Select Payment Method:
             </h4>
+
             <div className="flex gap-3 mb-4">
               <button
+                type="button"
                 onClick={() => setSelectedMethod('mobile')}
                 className={`px-4 py-2 rounded-lg ${
                   selectedMethod === 'mobile' ? 'bg-blue-500 text-white' : 'bg-white'
@@ -203,6 +205,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
                 <Smartphone className="inline w-4 h-4 mr-1" /> Mobile
               </button>
               <button
+                type="button"
                 onClick={() => setSelectedMethod('card')}
                 className={`px-4 py-2 rounded-lg ${
                   selectedMethod === 'card' ? 'bg-blue-500 text-white' : 'bg-white'
@@ -211,6 +214,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
                 <CreditCard className="inline w-4 h-4 mr-1" /> Card
               </button>
               <button
+                type="button"
                 onClick={() => setSelectedMethod('cash')}
                 className={`px-4 py-2 rounded-lg ${
                   selectedMethod === 'cash' ? 'bg-blue-500 text-white' : 'bg-white'
@@ -224,52 +228,55 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
             {errorMessage && <div className="mb-3 text-red-600 font-medium">{errorMessage}</div>}
 
             {/* Payment Action Buttons */}
-            {selectedMethod === 'cash' && (
-              <div className="flex gap-3 items-center">
-                <input
-                  type="number"
-                  placeholder="Cash given"
-                  value={cashAmount}
-                  onChange={(e) => setCashAmount(e.target.value)}
-                  className="p-2 border rounded-lg w-40"
-                />
+            <div className="flex gap-3 items-center">
+              {selectedMethod === 'cash' && (
+                <>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    aria-label="Cash amount received"
+                    placeholder={`Cash given (Total: $${total.toFixed(2)})`}
+                    value={cashAmount}
+                    onChange={(e) => setCashAmount(e.target.value)}
+                    className="p-2 border rounded-lg w-40"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSavePayment}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCashAmount('')}
+                    className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
 
-                <button
-                  type="button"
-                  onClick={handleSavePayment}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg"
-                >
-                  Save
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setCashAmount('')}
-                  className="px-4 py-2 bg-gray-400 text-white rounded-lg"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-
-            {selectedMethod !== 'cash' && selectedMethod !== '' && (
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={handleSavePayment}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg"
-                >
-                  Confirm Payment
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCancelPayment}
-                  className="px-4 py-2 bg-gray-400 text-white rounded-lg"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
+              {selectedMethod !== 'cash' && selectedMethod !== '' && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleSavePayment}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                  >
+                    Confirm Payment
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancelPayment}
+                    className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         )}
       </div>
