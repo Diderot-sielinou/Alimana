@@ -2,8 +2,16 @@
 
 import React, { useState } from 'react';
 import { CartProduct } from './ProductCard';
-import Receipt from '@/components/sales/Receipt';
-import { Plus, Trash2, ShoppingBasket, Pause, CreditCard, X } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  ShoppingBasket,
+  Pause,
+  CreditCard,
+  X,
+  Smartphone,
+  DollarSign,
+} from 'lucide-react';
 
 type Props = {
   items: CartProduct[];
@@ -16,39 +24,41 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
-  const [showReceipt, setShowReceipt] = useState(false);
-  const [receiptId, setReceiptId] = useState('');
+
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState('');
+  const [cashAmount, setCashAmount] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handlePayNow = () => {
     if (items.length === 0) return;
-
-    const randomId = Math.floor(Math.random() * 900000 + 100000);
-    setReceiptId(randomId.toString());
-
-    setShowReceipt(true);
+    setShowPaymentOptions(true);
   };
 
-  const handleSaveReceipt = () => {
+  const handleCancelPayment = () => {
+    setSelectedMethod('');
+    setCashAmount('');
+    setShowPaymentOptions(false);
+    setErrorMessage('');
+  };
+
+  const handleSavePayment = () => {
+    if (selectedMethod === 'cash' && (!cashAmount || parseFloat(cashAmount) < total)) {
+      setErrorMessage('The cash amount is insufficient.');
+      return;
+    }
+
     setShowSuccessMessage(true);
+    setShowPaymentOptions(false);
+    setSelectedMethod('');
+    setCashAmount('');
+    setErrorMessage('');
 
     setTimeout(() => {
       setShowSuccessMessage(false);
-      setShowReceipt(false);
       onClear();
     }, 2000);
-
-    const clearCart = () => {};
-
-    setTimeout(() => {
-      setShowSuccessMessage(false);
-      setShowReceipt(false);
-      clearCart();
-    }, 2000);
-  };
-
-  const handleCancelReceipt = () => {
-    setShowReceipt(false);
   };
 
   return (
@@ -176,23 +186,93 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
             <CreditCard className="w-4 h-4 mr-2" strokeWidth={3.5} /> Pay Now
           </button>
         </div>
-      </div>
 
-      {showReceipt && (
-        <Receipt
-          orderNumber="00123"
-          date={new Date().toLocaleString()}
-          customer="Walk-in"
-          items={items}
-          receiptId={receiptId}
-          onSave={handleSaveReceipt}
-          onCancel={handleCancelReceipt}
-        />
-      )}
+        {/* Payment Method Options */}
+        {showPaymentOptions && (
+          <div className="mt-6 bg-gray-100 dark:bg-gray-600 p-4 rounded-lg">
+            <h4 className="font-semibold mb-3 text-black dark:text-white">
+              Select Payment Method:
+            </h4>
+            <div className="flex gap-3 mb-4">
+              <button
+                onClick={() => setSelectedMethod('mobile')}
+                className={`px-4 py-2 rounded-lg ${
+                  selectedMethod === 'mobile' ? 'bg-blue-500 text-white' : 'bg-white'
+                }`}
+              >
+                <Smartphone className="inline w-4 h-4 mr-1" /> Mobile
+              </button>
+              <button
+                onClick={() => setSelectedMethod('card')}
+                className={`px-4 py-2 rounded-lg ${
+                  selectedMethod === 'card' ? 'bg-blue-500 text-white' : 'bg-white'
+                }`}
+              >
+                <CreditCard className="inline w-4 h-4 mr-1" /> Card
+              </button>
+              <button
+                onClick={() => setSelectedMethod('cash')}
+                className={`px-4 py-2 rounded-lg ${
+                  selectedMethod === 'cash' ? 'bg-blue-500 text-white' : 'bg-white'
+                }`}
+              >
+                <DollarSign className="inline w-4 h-4 mr-1" /> Cash
+              </button>
+            </div>
+
+            {/* Error Message */}
+            {errorMessage && <div className="mb-3 text-red-600 font-medium">{errorMessage}</div>}
+
+            {/* Payment Action Buttons */}
+            {selectedMethod === 'cash' && (
+              <div className="flex gap-3 items-center">
+                <input
+                  type="number"
+                  placeholder="Cash given"
+                  value={cashAmount}
+                  onChange={(e) => setCashAmount(e.target.value)}
+                  className="p-2 border rounded-lg w-40"
+                />
+
+                <button
+                  onClick={handleSavePayment}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                >
+                  Save
+                </button>
+
+                <button
+                  onClick={() => setCashAmount('')}
+                  className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+
+            {selectedMethod !== 'cash' && selectedMethod !== '' && (
+              <div className="flex gap-3">
+                <button
+                  onClick={handleSavePayment}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                >
+                  Confirm Payment
+                </button>
+                <button
+                  onClick={handleCancelPayment}
+                  className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {showSuccessMessage && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded shadow">
-          Saved successfully!
+          Payment saved successfully!
         </div>
       )}
     </>
