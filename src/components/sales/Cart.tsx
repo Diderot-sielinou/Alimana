@@ -235,6 +235,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
                 />
 
                 <button
+                  type="button"
                   onClick={handleSavePayment}
                   className="px-4 py-2 bg-green-600 text-white rounded-lg"
                 >
@@ -242,6 +243,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
                 </button>
 
                 <button
+                  type="button"
                   onClick={() => setCashAmount('')}
                   className="px-4 py-2 bg-gray-400 text-white rounded-lg"
                 >
@@ -253,12 +255,14 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
             {selectedMethod !== 'cash' && selectedMethod !== '' && (
               <div className="flex gap-3">
                 <button
+                  type="button"
                   onClick={handleSavePayment}
                   className="px-4 py-2 bg-green-600 text-white rounded-lg"
                 >
                   Confirm Payment
                 </button>
                 <button
+                  type="button"
                   onClick={handleCancelPayment}
                   className="px-4 py-2 bg-gray-400 text-white rounded-lg"
                 >
