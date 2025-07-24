@@ -6,7 +6,6 @@ import SearchBar from './SearchBar';
 import CategoryFilter from './CategoryFilter';
 import Cart from './Cart';
 
-// Typage: produit avec quantité
 export type CartProduct = Product & { quantity: number };
 
 const mockProducts: Product[] = [

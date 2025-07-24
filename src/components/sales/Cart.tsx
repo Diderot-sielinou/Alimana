@@ -16,7 +16,6 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
-  // const [item, setItem] = useState<CartProduct[]>([]);
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptId, setReceiptId] = useState('');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -31,7 +30,6 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
   };
 
   const handleSaveReceipt = () => {
-    // Ici tu peux faire un appel API si tu veux sauvegarder réellement
     setShowSuccessMessage(true);
 
     setTimeout(() => {
@@ -45,7 +43,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
     setTimeout(() => {
       setShowSuccessMessage(false);
       setShowReceipt(false);
-      clearCart(); // tu peux vider le panier ici si tu veux
+      clearCart();
     }, 2000);
   };
 

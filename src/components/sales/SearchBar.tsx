@@ -1,10 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Search, Barcode, X } from 'lucide-react';
-import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation'; // ✅ Import du routeur
+import React from 'react';
+import { Search } from 'lucide-react';
 
 type Props = {
   value: string;
@@ -12,80 +9,6 @@ type Props = {
 };
 
 export default function SearchBar({ value, onChange }: Props) {
-  const [scannerVisible, setScannerVisible] = useState(false);
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const router = useRouter(); // ✅ Initialisation du routeur
-
-  useEffect(() => {
-    if (!scannerVisible) return;
-
-    const html5QrCode = new Html5Qrcode('scanner');
-    scannerRef.current = html5QrCode;
-
-    const config = {
-      fps: 10,
-      qrbox: { width: 250, height: 250 },
-      formatsToSupport: [
-        Html5QrcodeSupportedFormats.EAN_13,
-        Html5QrcodeSupportedFormats.EAN_8,
-        Html5QrcodeSupportedFormats.UPC_A,
-        Html5QrcodeSupportedFormats.UPC_E,
-        Html5QrcodeSupportedFormats.QR_CODE,
-        Html5QrcodeSupportedFormats.CODE_39,
-        Html5QrcodeSupportedFormats.CODE_93,
-        Html5QrcodeSupportedFormats.CODE_128,
-      ],
-    };
-
-    const start = async () => {
-      try {
-        await html5QrCode.start(
-          { facingMode: 'environment' },
-          config,
-          (decodedText: string) => {
-            console.log('Barcode scanned:', decodedText);
-
-            if (/^\d{8,13}$/.test(decodedText)) {
-              onChange(decodedText);
-              setScannerVisible(false);
-
-              // ✅ Redirection vers la page produit
-              router.push(`/products/${decodedText}`);
-            } else {
-              console.log('Non-barcode detected, ignoring:', decodedText);
-              toast.info('Le code scanné est invalide. Veuillez réessayer.');
-            }
-          },
-          () => {
-            // Optionnel : gestion continue
-          }
-        );
-      } catch (err) {
-        console.error('Unable to start scanner', err);
-        toast.error("Impossible d'accéder à la caméra. Vérifiez les permissions du navigateur.");
-        setScannerVisible(false);
-      }
-    };
-
-    start();
-
-    return () => {
-      if (html5QrCode.isScanning) {
-        html5QrCode.stop().catch((err) => {
-          console.warn('Failed to stop scanner:', err);
-        });
-      }
-    };
-  }, [scannerVisible, onChange, router]);
-
-  const startScanner = () => {
-    setScannerVisible(true);
-  };
-
-  const stopScanner = () => {
-    setScannerVisible(false);
-  };
-
   return (
     <div className="mb-6">
       <div className="flex flex-col md:flex-row gap-3">
@@ -100,36 +23,7 @@ export default function SearchBar({ value, onChange }: Props) {
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
         </div>
-        <button
-          onClick={startScanner}
-          className="flex items-center justify-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-500 transition"
-          type="button"
-        >
-          <Barcode className="w-5 h-5 mr-2" />
-          Scan Barcode
-        </button>
       </div>
-
-      {scannerVisible && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center">
-          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 w-full max-w-md relative">
-            <button
-              onClick={stopScanner}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
-              type="button"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <h2 className="text-xl font-bold mb-4 text-center text-black dark:text-white">
-              Scan Barcode
-            </h2>
-            <div id="scanner" className="w-full aspect-square bg-gray-200 rounded"></div>
-            <p className="text-center text-sm mt-2 text-gray-600">
-              Pointez la caméra vers le code-barres
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

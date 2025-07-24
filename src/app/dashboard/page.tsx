@@ -24,7 +24,6 @@ export default function DashboardPage() {
     document.documentElement.classList.toggle('dark', isDark);
   }, []);
 
-  // Toggle dark mode manually
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
@@ -32,7 +31,6 @@ export default function DashboardPage() {
     localStorage.setItem('theme', newMode ? 'dark' : 'light');
   };
 
-  // Line chart (Sales Overview)
   useEffect(() => {
     if (!lineChartRef.current) return;
 
@@ -68,7 +66,6 @@ export default function DashboardPage() {
     return () => chart.destroy();
   }, []);
 
-  // Doughnut chart (Payment Methods)
   useEffect(() => {
     if (!doughnutChartRef.current) return;
 
