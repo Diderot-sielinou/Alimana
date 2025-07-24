@@ -9,11 +9,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import Step1StoreInfo from '@/components/steps/Step1StoreInfo';
 import Step2StoreLocation from '@/components/steps/Step2StoreLocation';
+
 export interface StoreData {
   name: string;
   description: string;
   currency: string;
-  logo?: File | null;
   address: string;
   city: string;
   state: string;
@@ -22,6 +22,7 @@ export interface StoreData {
   email?: string;
   websiteUrl?: string;
   profileImageUrl?: string;
+  logo?: string;
 }
 
 type StoreDataKey = keyof StoreData;
@@ -29,11 +30,11 @@ type StoreDataKey = keyof StoreData;
 export default function CreateStorePage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+
   const [formData, setFormData] = useState<StoreData>({
     name: '',
     description: '',
     currency: '',
-    logo: null,
     address: '',
     city: '',
     state: '',
@@ -42,7 +43,9 @@ export default function CreateStorePage() {
     email: '',
     websiteUrl: '',
     profileImageUrl: '',
+    logo: '',
   });
+
   const [errors, setErrors] = useState<Partial<Record<StoreDataKey, string>>>({});
 
   useEffect(() => {
@@ -50,38 +53,42 @@ export default function CreateStorePage() {
     if (!canCreateStore) router.push('/403');
   }, [router]);
 
-  const updateFormData = (field: StoreDataKey, value: string | File | null) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const updateFormData = (field: keyof StoreData, value: string | File | null) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value as never, // we'll type-cast safely here
+    }));
+
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const handleFinalSubmit = async () => {
-    const formPayload = new FormData();
-
     try {
-      // Debug: raw data
+      // Construct address string
+      const fullAddress = `${formData.address}, ${formData.city}, ${formData.state}, ${formData.zipCode}`;
 
-      formPayload.append('name', String(formData.name));
-      if (formData.description) formPayload.append('description', String(formData.description));
-
-      if (formData.address && formData.city && formData.state && formData.zipCode) {
-        const fullAddress = `${formData.address}, ${formData.city}, ${formData.state}, ${formData.zipCode}`;
-        formPayload.append('address', fullAddress);
-      }
-
-      if (formData.phone) formPayload.append('phone', String(formData.phone));
-      if (formData.email) formPayload.append('email', String(formData.email));
-      if (formData.websiteUrl) formPayload.append('websiteUrl', String(formData.websiteUrl));
-      if (formData.profileImageUrl)
-        formPayload.append('profileImageUrl', String(formData.profileImageUrl));
-      if (formData.logo instanceof File) formPayload.append('logoUrl', formData.logo);
+      // Build JSON payload
+      const payload = {
+        name: formData.name,
+        description: formData.description,
+        currency: formData.currency,
+        address: fullAddress,
+        ...(formData.phone && { phone: formData.phone }),
+        ...(formData.email && { email: formData.email }),
+        ...(formData.websiteUrl && { websiteUrl: formData.websiteUrl }),
+        ...(formData.profileImageUrl && { profileImageUrl: formData.profileImageUrl }),
+        ...(formData.logo && { logo: formData.logo }),
+      };
 
       const response = await fetch('http://localhost:3000/api/store', {
         method: 'POST',
-        body: formPayload,
+        headers: {
+          'Content-Type': 'application/json',
+        },
         credentials: 'include',
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -104,7 +111,7 @@ export default function CreateStorePage() {
           <Link href="/dashboard">Back to Dashboard</Link>
         </div>
 
-        <Card className="shadow-xl border-0">
+        <Card className="shadow-xl border-0 dark:bg-white dark:text-black">
           <CardHeader className="text-center">
             <CardTitle className="text-xl">Create Store</CardTitle>
             <CardDescription>Follow the steps to get your store up and running</CardDescription>

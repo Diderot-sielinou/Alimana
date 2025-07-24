@@ -28,33 +28,28 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
   return (
     <div className="space-y-6">
       {/* Store Name */}
-      <div className="space-y-2">
-        <Label htmlFor="name">Store Name</Label>
-        <div className="relative">
-          <Store className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <Input
-            id="name"
-            type="text"
-            placeholder="Enter your store name"
-            className="pl-10"
-            value={formData.name}
-            onChange={(e) => updateFormData('name', e.target.value)}
-          />
-        </div>
-        {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
-      </div>
+      <FormField
+        label="Store Name"
+        icon={<Store className="h-4 w-4 text-gray-400" />}
+        id="name"
+        type="text"
+        value={formData.name}
+        placeholder="Enter your store name"
+        error={errors.name}
+        onChange={(e) => updateFormData('name', e.target.value)}
+      />
 
       {/* Store Description */}
       <div className="space-y-2">
-        <Label htmlFor="storeDescription">Store Description</Label>
+        <Label htmlFor="description">Store Description</Label>
         <Textarea
-          id="storeDescription"
+          id="description"
           placeholder="Describe your store"
           className="min-h-[100px]"
           value={formData.description}
           onChange={(e) => updateFormData('description', e.target.value)}
         />
-        {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
+        {errors.description && <ErrorText>{errors.description}</ErrorText>}
       </div>
 
       {/* Currency */}
@@ -73,76 +68,56 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
           <option value="NGN">NGN - Nigerian Naira</option>
           <option value="KES">KES - Kenyan Shilling</option>
         </select>
-        {errors.currency && <p className="text-sm text-red-600">{errors.currency}</p>}
+        {errors.currency && <ErrorText>{errors.currency}</ErrorText>}
       </div>
 
       {/* Email */}
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <div className="relative">
-          <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <Input
-            id="email"
-            type="email"
-            placeholder="example@store.com"
-            className="pl-10"
-            value={formData.email || ''}
-            onChange={(e) => updateFormData('email', e.target.value)}
-          />
-        </div>
-        {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
-      </div>
+      <FormField
+        label="Email"
+        icon={<Mail className="h-4 w-4 text-gray-400" />}
+        id="email"
+        type="email"
+        value={formData.email || ''}
+        placeholder="example@store.com"
+        error={errors.email}
+        onChange={(e) => updateFormData('email', e.target.value)}
+      />
 
       {/* Phone */}
-      <div className="space-y-2">
-        <Label htmlFor="phone">Phone</Label>
-        <div className="relative">
-          <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <Input
-            id="phone"
-            type="tel"
-            placeholder="+237600000000"
-            className="pl-10"
-            value={formData.phone || ''}
-            onChange={(e) => updateFormData('phone', e.target.value)}
-          />
-        </div>
-        {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
-      </div>
+      <FormField
+        label="Phone"
+        icon={<Phone className="h-4 w-4 text-gray-400" />}
+        id="phone"
+        type="tel"
+        value={formData.phone || ''}
+        placeholder="+237600000000"
+        error={errors.phone}
+        onChange={(e) => updateFormData('phone', e.target.value)}
+      />
 
       {/* Website */}
-      <div className="space-y-2">
-        <Label htmlFor="websiteUrl">Website</Label>
-        <div className="relative">
-          <Globe className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <Input
-            id="websiteUrl"
-            type="url"
-            placeholder="https://mystore.com"
-            className="pl-10"
-            value={formData.websiteUrl || ''}
-            onChange={(e) => updateFormData('websiteUrl', e.target.value)}
-          />
-        </div>
-        {errors.websiteUrl && <p className="text-sm text-red-600">{errors.websiteUrl}</p>}
-      </div>
+      <FormField
+        label="Website"
+        icon={<Globe className="h-4 w-4 text-gray-400" />}
+        id="websiteUrl"
+        type="url"
+        value={formData.websiteUrl || ''}
+        placeholder="https://mystore.com"
+        error={errors.websiteUrl}
+        onChange={(e) => updateFormData('websiteUrl', e.target.value)}
+      />
 
       {/* Profile Image URL */}
-      <div className="space-y-2">
-        <Label htmlFor="profileImageUrl">Profile Image URL</Label>
-        <div className="relative">
-          <ImageIcon className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <Input
-            id="profileImageUrl"
-            type="url"
-            placeholder="https://cdn.store.com/profile.jpg"
-            className="pl-10"
-            value={formData.profileImageUrl || ''}
-            onChange={(e) => updateFormData('profileImageUrl', e.target.value)}
-          />
-        </div>
-        {errors.profileImageUrl && <p className="text-sm text-red-600">{errors.profileImageUrl}</p>}
-      </div>
+      <FormField
+        label="Profile Image URL"
+        icon={<ImageIcon className="h-4 w-4 text-gray-400" />}
+        id="profileImageUrl"
+        type="url"
+        value={formData.profileImageUrl || ''}
+        placeholder="https://cdn.store.com/profile.jpg"
+        error={errors.profileImageUrl}
+        onChange={(e) => updateFormData('profileImageUrl', e.target.value)}
+      />
 
       {/* Logo Upload */}
       <div className="space-y-2">
@@ -153,7 +128,7 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
           accept="image/*"
           onChange={(e) => updateFormData('logo', e.target.files?.[0] || null)}
         />
-        {errors.logo && <p className="text-sm text-red-600">{errors.logo}</p>}
+        {errors.logo && <ErrorText>{errors.logo}</ErrorText>}
       </div>
 
       <Button onClick={onNext} className="w-full bg-amber-600 hover:bg-amber-700">
@@ -162,4 +137,48 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
       </Button>
     </div>
   );
+}
+
+/** ✅ Reusable form field component */
+function FormField({
+  label,
+  icon,
+  id,
+  type,
+  placeholder,
+  value,
+  error,
+  onChange,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  id: string;
+  type: string;
+  placeholder?: string;
+  value: string;
+  error?: string;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <div className="relative">
+        <div className="absolute left-3 top-3">{icon}</div>
+        <Input
+          id={id}
+          type={type}
+          placeholder={placeholder}
+          className="pl-10"
+          value={value}
+          onChange={onChange}
+        />
+      </div>
+      {error && <ErrorText>{error}</ErrorText>}
+    </div>
+  );
+}
+
+/** ✅ Error text wrapper */
+function ErrorText({ children }: { children: React.ReactNode }) {
+  return <p className="text-sm text-red-600">{children}</p>;
 }
