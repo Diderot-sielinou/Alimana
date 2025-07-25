@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -65,7 +64,6 @@ export default function SigninPage() {
     setIsSubmitting(true);
     try {
       const user = (await signIn(formData.email, formData.password)) as UserResponse;
-
       if (user.role === 'cashier') {
         router.push('/sales/create');
       } else if (Array.isArray(user.stores) && user.stores.length > 1) {
