@@ -14,7 +14,6 @@ import { createStoreValidationSchema } from '@/schema/validation-schema';
 export interface StoreData {
   name: string;
   description: string;
-  currency: string;
   logo?: File | null;
   address: string;
   city: string;
@@ -34,7 +33,6 @@ export default function CreateStorePage() {
     initialValues: {
       name: '',
       description: '',
-      currency: '',
       logo: null,
       address: '',
       city: '',
@@ -48,24 +46,22 @@ export default function CreateStorePage() {
     validationSchema: createStoreValidationSchema,
     onSubmit: async (values) => {
       try {
-        const formPayload = new FormData();
-        formPayload.append('name', values.name);
-        formPayload.append('description', values.description);
-
-        if (values.address && values.city && values.state && values.zipCode) {
-          const fullAddress = `${values.address}, ${values.city}, ${values.state}, ${values.zipCode}`;
-          formPayload.append('address', fullAddress);
-        }
-
-        if (values.phone) formPayload.append('phone', values.phone);
-        if (values.email) formPayload.append('email', values.email);
-        if (values.websiteUrl) formPayload.append('websiteUrl', values.websiteUrl);
-        if (values.profileImageUrl) formPayload.append('profileImageUrl', values.profileImageUrl);
-        if (values.logo instanceof File) formPayload.append('logoUrl', values.logo);
-
+        const payload = {
+          name: values.name,
+          description: values.description,
+          address:
+            values.address && values.city && values.state && values.zipCode
+              ? `${values.address}, ${values.city}, ${values.state}, ${values.zipCode}`
+              : null,
+          phone: values.phone || null,
+          email: values.email || null,
+          websiteUrl: values.websiteUrl || null,
+          logoUrl: values.logo || null,
+          profileImageUrl: values.profileImageUrl || null,
+        };
         const response = await fetch('http://localhost:3000/api/store', {
           method: 'POST',
-          body: formPayload,
+          body: JSON.stringify(payload),
           credentials: 'include',
         });
 
@@ -79,7 +75,7 @@ export default function CreateStorePage() {
 
   const handleNextStep = async () => {
     const fieldsToValidate =
-      step === 1 ? ['name', 'description', 'currency'] : ['address', 'city', 'state', 'zipCode'];
+      step === 1 ? ['name', 'description'] : ['address', 'city', 'state', 'zipCode'];
 
     await formik.validateForm();
 

@@ -2,6 +2,7 @@
 
 import { Store, ArrowRight, Mail, Phone, Globe, Image as ImageIcon } from 'lucide-react';
 import { Label } from '@/components/ui/label';
+import { RequiredLabel } from '../ui/required-label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -10,7 +11,6 @@ import { FormikProps } from 'formik';
 export interface StoreFormValues {
   name: string;
   description: string;
-  currency: string;
   logo?: File | null;
   address: string;
   city: string;
@@ -32,7 +32,7 @@ export default function Step1StoreInfo({ formik, onNext }: Props) {
     <div className="space-y-6">
       {/* Store Name */}
       <div className="space-y-2">
-        <Label htmlFor="name">Store Name</Label>
+        <RequiredLabel htmlFor="name">Store Name</RequiredLabel>
         <div className="relative">
           <Store className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
