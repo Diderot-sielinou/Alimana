@@ -57,7 +57,7 @@ export default function CreateStorePage() {
           email: values.email || null,
           websiteUrl: values.websiteUrl || null,
           logoUrl: values.logo || null,
-          profileImageUrl: values.profileImageUrl || null,
+          // profileImageUrl: values.profileImageUrl || null,
         };
         const response = await fetch('http://localhost:3000/api/store', {
           method: 'POST',
