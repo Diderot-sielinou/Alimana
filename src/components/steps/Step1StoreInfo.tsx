@@ -5,26 +5,29 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { StoreData } from '@/app/create-store/page';
+import { FormikProps } from 'formik';
+
+export interface StoreFormValues {
+  name: string;
+  description: string;
+  currency: string;
+  logo?: File | null;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  phone?: string;
+  email?: string;
+  websiteUrl?: string;
+  profileImageUrl?: string;
+}
 
 interface Props {
-  formData: Pick<
-    StoreData,
-    | 'name'
-    | 'description'
-    | 'currency'
-    | 'logo'
-    | 'email'
-    | 'phone'
-    | 'websiteUrl'
-    | 'profileImageUrl'
-  >;
-  errors: Partial<Record<keyof StoreData, string>>;
-  updateFormData: (field: keyof StoreData, value: string | File | null) => void;
+  formik: FormikProps<StoreFormValues>;
   onNext: () => void;
 }
 
-export default function Step1StoreInfo({ formData, errors, updateFormData, onNext }: Props) {
+export default function Step1StoreInfo({ formik, onNext }: Props) {
   return (
     <div className="space-y-6">
       {/* Store Name */}
@@ -37,11 +40,11 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
             type="text"
             placeholder="Enter your store name"
             className="pl-10"
-            value={formData.name}
-            onChange={(e) => updateFormData('name', e.target.value)}
+            value={formik.values.name}
+            onChange={formik.handleChange}
           />
         </div>
-        {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
+        {formik.errors.name && <p className="text-sm text-red-600">{formik.errors.name}</p>}
       </div>
 
       {/* Store Description */}
@@ -51,29 +54,12 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
           id="storeDescription"
           placeholder="Describe your store"
           className="min-h-[100px]"
-          value={formData.description}
-          onChange={(e) => updateFormData('description', e.target.value)}
+          value={formik.values.description}
+          onChange={formik.handleChange}
         />
-        {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
-      </div>
-
-      {/* Currency */}
-      <div className="space-y-2">
-        <Label htmlFor="currency">Preferred Currency</Label>
-        <select
-          id="currency"
-          className="w-full border rounded-md px-3 py-2 text-sm"
-          value={formData.currency}
-          onChange={(e) => updateFormData('currency', e.target.value)}
-        >
-          <option value="">Select currency</option>
-          <option value="XAF">XAF - Central African Franc</option>
-          <option value="USD">USD - US Dollar</option>
-          <option value="EUR">EUR - Euro</option>
-          <option value="NGN">NGN - Nigerian Naira</option>
-          <option value="KES">KES - Kenyan Shilling</option>
-        </select>
-        {errors.currency && <p className="text-sm text-red-600">{errors.currency}</p>}
+        {formik.errors.description && (
+          <p className="text-sm text-red-600">{formik.errors.description}</p>
+        )}
       </div>
 
       {/* Email */}
@@ -86,11 +72,11 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
             type="email"
             placeholder="example@store.com"
             className="pl-10"
-            value={formData.email || ''}
-            onChange={(e) => updateFormData('email', e.target.value)}
+            value={formik.values.email}
+            onChange={formik.handleChange}
           />
         </div>
-        {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
+        {formik.errors.email && <p className="text-sm text-red-600">{formik.errors.email}</p>}
       </div>
 
       {/* Phone */}
@@ -103,11 +89,11 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
             type="tel"
             placeholder="+237600000000"
             className="pl-10"
-            value={formData.phone || ''}
-            onChange={(e) => updateFormData('phone', e.target.value)}
+            value={formik.values.phone}
+            onChange={formik.handleChange}
           />
         </div>
-        {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
+        {formik.errors.phone && <p className="text-sm text-red-600">{formik.errors.phone}</p>}
       </div>
 
       {/* Website */}
@@ -120,11 +106,13 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
             type="url"
             placeholder="https://mystore.com"
             className="pl-10"
-            value={formData.websiteUrl || ''}
-            onChange={(e) => updateFormData('websiteUrl', e.target.value)}
+            value={formik.values.websiteUrl}
+            onChange={formik.handleChange}
           />
         </div>
-        {errors.websiteUrl && <p className="text-sm text-red-600">{errors.websiteUrl}</p>}
+        {formik.errors.websiteUrl && (
+          <p className="text-sm text-red-600">{formik.errors.websiteUrl}</p>
+        )}
       </div>
 
       {/* Profile Image URL */}
@@ -137,23 +125,20 @@ export default function Step1StoreInfo({ formData, errors, updateFormData, onNex
             type="url"
             placeholder="https://cdn.store.com/profile.jpg"
             className="pl-10"
-            value={formData.profileImageUrl || ''}
-            onChange={(e) => updateFormData('profileImageUrl', e.target.value)}
+            value={formik.values.profileImageUrl}
+            onChange={formik.handleChange}
           />
         </div>
-        {errors.profileImageUrl && <p className="text-sm text-red-600">{errors.profileImageUrl}</p>}
+        {formik.errors.profileImageUrl && (
+          <p className="text-sm text-red-600">{formik.errors.profileImageUrl}</p>
+        )}
       </div>
 
       {/* Logo Upload */}
       <div className="space-y-2">
         <Label htmlFor="logo">Store Logo</Label>
-        <Input
-          id="logo"
-          type="file"
-          accept="image/*"
-          onChange={(e) => updateFormData('logo', e.target.files?.[0] || null)}
-        />
-        {errors.logo && <p className="text-sm text-red-600">{errors.logo}</p>}
+        <Input id="logo" type="file" accept="image/*" onChange={formik.handleChange} />
+        {formik.errors.logo && <p className="text-sm text-red-600">{formik.errors.logo}</p>}
       </div>
 
       <Button onClick={onNext} className="w-full bg-amber-600 hover:bg-amber-700">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import Step1StoreInfo from '@/components/steps/Step1StoreInfo';
 import Step2StoreLocation from '@/components/steps/Step2StoreLocation';
+import { useFormik } from 'formik';
+import { createStoreValidationSchema } from '@/schema/validation-schema';
 export interface StoreData {
   name: string;
   description: string;
@@ -24,76 +26,65 @@ export interface StoreData {
   profileImageUrl?: string;
 }
 
-type StoreDataKey = keyof StoreData;
-
 export default function CreateStorePage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<StoreData>({
-    name: '',
-    description: '',
-    currency: '',
-    logo: null,
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    phone: '',
-    email: '',
-    websiteUrl: '',
-    profileImageUrl: '',
+
+  const formik = useFormik<StoreData>({
+    initialValues: {
+      name: '',
+      description: '',
+      currency: '',
+      logo: null,
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      phone: '',
+      email: '',
+      websiteUrl: '',
+      profileImageUrl: '',
+    },
+    validationSchema: createStoreValidationSchema,
+    onSubmit: async (values) => {
+      try {
+        const formPayload = new FormData();
+        formPayload.append('name', values.name);
+        formPayload.append('description', values.description);
+
+        if (values.address && values.city && values.state && values.zipCode) {
+          const fullAddress = `${values.address}, ${values.city}, ${values.state}, ${values.zipCode}`;
+          formPayload.append('address', fullAddress);
+        }
+
+        if (values.phone) formPayload.append('phone', values.phone);
+        if (values.email) formPayload.append('email', values.email);
+        if (values.websiteUrl) formPayload.append('websiteUrl', values.websiteUrl);
+        if (values.profileImageUrl) formPayload.append('profileImageUrl', values.profileImageUrl);
+        if (values.logo instanceof File) formPayload.append('logoUrl', values.logo);
+
+        const response = await fetch('http://localhost:3000/api/store', {
+          method: 'POST',
+          body: formPayload,
+          credentials: 'include',
+        });
+
+        if (!response.ok) throw new Error('Store creation failed');
+        router.push('/dashboard');
+      } catch (error) {
+        console.error('Store creation error:', error);
+      }
+    },
   });
-  const [errors, setErrors] = useState<Partial<Record<StoreDataKey, string>>>({});
 
-  useEffect(() => {
-    const canCreateStore = true;
-    if (!canCreateStore) router.push('/403');
-  }, [router]);
+  const handleNextStep = async () => {
+    const fieldsToValidate =
+      step === 1 ? ['name', 'description', 'currency'] : ['address', 'city', 'state', 'zipCode'];
 
-  const updateFormData = (field: StoreDataKey, value: string | File | null) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
-  };
+    await formik.validateForm();
 
-  const handleFinalSubmit = async () => {
-    const formPayload = new FormData();
-
-    try {
-      // Debug: raw data
-
-      formPayload.append('name', String(formData.name));
-      if (formData.description) formPayload.append('description', String(formData.description));
-
-      if (formData.address && formData.city && formData.state && formData.zipCode) {
-        const fullAddress = `${formData.address}, ${formData.city}, ${formData.state}, ${formData.zipCode}`;
-        formPayload.append('address', fullAddress);
-      }
-
-      if (formData.phone) formPayload.append('phone', String(formData.phone));
-      if (formData.email) formPayload.append('email', String(formData.email));
-      if (formData.websiteUrl) formPayload.append('websiteUrl', String(formData.websiteUrl));
-      if (formData.profileImageUrl)
-        formPayload.append('profileImageUrl', String(formData.profileImageUrl));
-      if (formData.logo instanceof File) formPayload.append('logoUrl', formData.logo);
-
-      const response = await fetch('http://localhost:3000/api/store', {
-        method: 'POST',
-        body: formPayload,
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        const errorRes = await response.json();
-        console.error('Backend error:', errorRes.message);
-        throw new Error(errorRes.message || 'Store creation failed');
-      }
-
-      router.push('/dashboard');
-    } catch (error) {
-      console.error('Store creation error:', error);
-    }
+    const hasErrors = fieldsToValidate.some((field) => formik.errors[field as keyof StoreData]);
+    if (!hasErrors) setStep(step + 1);
   };
 
   return (
@@ -113,22 +104,13 @@ export default function CreateStorePage() {
           <CardContent className="space-y-6">
             <Progress value={(step / 2) * 100} className="h-2" />
 
-            {step === 1 && (
-              <Step1StoreInfo
-                formData={formData}
-                errors={errors}
-                updateFormData={updateFormData}
-                onNext={() => setStep(2)}
-              />
-            )}
+            {step === 1 && <Step1StoreInfo formik={formik} onNext={handleNextStep} />}
 
             {step === 2 && (
               <Step2StoreLocation
-                formData={formData}
-                errors={errors}
-                updateFormData={updateFormData}
+                formik={formik}
                 onBack={() => setStep(1)}
-                onNext={handleFinalSubmit}
+                onNext={formik.handleSubmit}
               />
             )}
           </CardContent>

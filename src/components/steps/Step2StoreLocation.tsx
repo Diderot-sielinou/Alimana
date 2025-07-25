@@ -4,23 +4,16 @@ import { MapPin, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { StoreData } from '@/app/create-store/page';
+import { FormikProps } from 'formik';
+import { StoreFormValues } from './Step1StoreInfo';
 
 interface Props {
-  formData: Pick<StoreData, 'address' | 'city' | 'state' | 'zipCode'>;
-  errors: Partial<Record<keyof StoreData, string>>;
-  updateFormData: (field: keyof StoreData, value: string) => void;
+  formik: FormikProps<StoreFormValues>;
   onBack: () => void;
   onNext: () => void;
 }
 
-export default function Step2StoreLocation({
-  formData,
-  errors,
-  updateFormData,
-  onBack,
-  onNext,
-}: Props) {
+export default function Step2StoreLocation({ formik, onBack, onNext }: Props) {
   return (
     <div className="space-y-6">
       {/* Full Address */}
@@ -33,11 +26,11 @@ export default function Step2StoreLocation({
             type="text"
             placeholder="Enter street address"
             className="pl-10"
-            value={formData.address}
-            onChange={(e) => updateFormData('address', e.target.value)}
+            value={formik.values.address}
+            onChange={formik.handleChange}
           />
         </div>
-        {errors.address && <p className="text-sm text-red-600">{errors.address}</p>}
+        {formik.errors.address && <p className="text-sm text-red-600">{formik.errors.address}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -47,10 +40,10 @@ export default function Step2StoreLocation({
             id="city"
             type="text"
             placeholder="City"
-            value={formData.city}
-            onChange={(e) => updateFormData('city', e.target.value)}
+            value={formik.values.city}
+            onChange={formik.handleChange}
           />
-          {errors.city && <p className="text-sm text-red-600">{errors.city}</p>}
+          {formik.errors.city && <p className="text-sm text-red-600">{formik.errors.city}</p>}
         </div>
 
         <div className="space-y-2">
@@ -59,10 +52,10 @@ export default function Step2StoreLocation({
             id="state"
             type="text"
             placeholder="State"
-            value={formData.state}
-            onChange={(e) => updateFormData('state', e.target.value)}
+            value={formik.values.state}
+            onChange={formik.handleChange}
           />
-          {errors.state && <p className="text-sm text-red-600">{errors.state}</p>}
+          {formik.errors.state && <p className="text-sm text-red-600">{formik.errors.state}</p>}
         </div>
       </div>
 
@@ -72,10 +65,10 @@ export default function Step2StoreLocation({
           id="zipCode"
           type="text"
           placeholder="Zip code"
-          value={formData.zipCode}
-          onChange={(e) => updateFormData('zipCode', e.target.value)}
+          value={formik.values.zipCode}
+          onChange={formik.handleChange}
         />
-        {errors.zipCode && <p className="text-sm text-red-600">{errors.zipCode}</p>}
+        {formik.errors.zipCode && <p className="text-sm text-red-600">{formik.errors.zipCode}</p>}
       </div>
 
       <div className="flex space-x-4">

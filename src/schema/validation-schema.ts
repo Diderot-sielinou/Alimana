@@ -14,10 +14,12 @@ export const registerValidationSchema = Yup.object().shape({
       /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).*$/,
       'Password must contain at least 1 uppercase letter, 1 number, and 1 special character'
     ),
-  phone: Yup.string().matches(
-    /^(\+?[1-9]\d{1,14}|0\d{9})$/,
-    'Phone number must be valid international or local format'
-  ),
+  phone: Yup.string()
+    .matches(
+      /^(\+?[1-9]\d{1,14}|0\d{9})$/,
+      'Phone number must be valid international or local format'
+    )
+    .optional(),
   acceptTerms: Yup.boolean()
     .oneOf([true], 'You must accept the terms and conditions')
     .required('You must accept the terms and conditions'),
@@ -26,4 +28,22 @@ export const registerValidationSchema = Yup.object().shape({
 export const loginValidationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
   password: Yup.string().required('Password is required'),
+});
+
+export const createStoreValidationSchema = Yup.object().shape({
+  name: Yup.string()
+    .max(100, 'Name can not exceed 100 characters')
+    .required('Name of the store is required'),
+  description: Yup.string().max(250, 'Description cannot exceed 250 characters').optional(),
+  address: Yup.string().optional(),
+  city: Yup.string().optional(),
+  state: Yup.string().optional(),
+  zipCode: Yup.number().optional(),
+  phone: Yup.string().matches(
+    /^(\+?[1-9]\d{1,14}|0\d{9})$/,
+    'Phone number must be valid international or local format'
+  ),
+  email: Yup.string().email('Invalid email').optional(),
+  websiteUrl: Yup.string().url().optional(),
+  profileImageUrl: Yup.string().url().optional(),
 });
