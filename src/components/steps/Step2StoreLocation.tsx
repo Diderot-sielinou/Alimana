@@ -76,8 +76,13 @@ export default function Step2StoreLocation({ formik, onBack, onNext }: Props) {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
-        <Button onClick={onNext} className="flex-1 bg-amber-600 hover:bg-amber-700">
-          Create Store
+        <Button
+          onClick={onNext}
+          type="submit"
+          disabled={formik.isSubmitting}
+          className="flex-1 bg-amber-600 hover:bg-amber-700"
+        >
+          {formik.isSubmitting ? 'Submitting...' : 'Create Store'}
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
