@@ -274,7 +274,9 @@ export default function SignupPage() {
                     id="acceptTerms"
                     name="acceptTerms"
                     checked={formik.values.acceptTerms}
-                    onCheckedChange={(checked) => formik.setFieldValue('acceptTerms', checked)}
+                    onCheckedChange={(checked) =>
+                      formik.setFieldValue('acceptTerms', Boolean(checked))
+                    }
                     onBlur={formik.handleBlur}
                     className="mt-1"
                     aria-invalid={!!(formik.touched.acceptTerms && formik.errors.acceptTerms)}

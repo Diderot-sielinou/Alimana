@@ -167,7 +167,7 @@ export default function SigninPage() {
                   </button>
                 </div>
                 {formik.touched.password && formik.errors.password && (
-                  <p id="email-error" className="text-sm text-red-600">
+                  <p id="password-error" className="text-sm text-red-600">
                     {formik.errors.password}
                   </p>
                 )}

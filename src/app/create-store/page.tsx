@@ -56,8 +56,8 @@ export default function CreateStorePage() {
           phone: values.phone || null,
           email: values.email || null,
           websiteUrl: values.websiteUrl || null,
-          logoUrl: values.logo || null,
-          // profileImageUrl: values.profileImageUrl || null,
+          logoUrl: values.profileImageUrl || null,
+          profileImageUrl: values.profileImageUrl || null,
         };
         const response = await fetch('http://localhost:3000/api/store', {
           method: 'POST',
@@ -74,13 +74,17 @@ export default function CreateStorePage() {
   });
 
   const handleNextStep = async () => {
+    // Define which fields to validate based on current step
     const fieldsToValidate =
       step === 1 ? ['name', 'description'] : ['address', 'city', 'state', 'zipCode'];
 
-    await formik.validateForm();
+    const validationErrors = await formik.validateForm();
 
-    const hasErrors = fieldsToValidate.some((field) => formik.errors[field as keyof StoreData]);
-    if (!hasErrors) setStep(step + 1);
+    const hasErrors = fieldsToValidate.some((field) => validationErrors[field as keyof StoreData]);
+
+    if (!hasErrors) {
+      setStep(step + 1);
+    }
   };
 
   return (

@@ -37,6 +37,7 @@ export default function Step1StoreInfo({ formik, onNext }: Props) {
           <Store className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="name"
+            name="name"
             type="text"
             placeholder="Enter your store name"
             className="pl-10"
@@ -52,6 +53,7 @@ export default function Step1StoreInfo({ formik, onNext }: Props) {
         <Label htmlFor="storeDescription">Store Description</Label>
         <Textarea
           id="storeDescription"
+          name="description"
           placeholder="Describe your store"
           className="min-h-[100px]"
           value={formik.values.description}
@@ -69,6 +71,7 @@ export default function Step1StoreInfo({ formik, onNext }: Props) {
           <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="email"
+            name="email"
             type="email"
             placeholder="example@store.com"
             className="pl-10"
@@ -86,6 +89,7 @@ export default function Step1StoreInfo({ formik, onNext }: Props) {
           <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="phone"
+            name="phone"
             type="tel"
             placeholder="+237600000000"
             className="pl-10"
@@ -103,6 +107,7 @@ export default function Step1StoreInfo({ formik, onNext }: Props) {
           <Globe className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="websiteUrl"
+            name="websiteUrl"
             type="url"
             placeholder="https://mystore.com"
             className="pl-10"
@@ -122,6 +127,7 @@ export default function Step1StoreInfo({ formik, onNext }: Props) {
           <ImageIcon className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="profileImageUrl"
+            name="profileImageUrl"
             type="url"
             placeholder="https://cdn.store.com/profile.jpg"
             className="pl-10"
@@ -137,7 +143,14 @@ export default function Step1StoreInfo({ formik, onNext }: Props) {
       {/* Logo Upload */}
       <div className="space-y-2">
         <Label htmlFor="logo">Store Logo</Label>
-        <Input id="logo" type="file" accept="image/*" onChange={formik.handleChange} />
+        <Input
+          id="logo"
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            formik.setFieldValue('logo', e.currentTarget.files?.[0]);
+          }}
+        />
         {formik.errors.logo && <p className="text-sm text-red-600">{formik.errors.logo}</p>}
       </div>
 
