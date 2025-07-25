@@ -61,6 +61,9 @@ export default function CreateStorePage() {
         };
         const response = await fetch('http://localhost:3000/api/store', {
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json', // Ensure this header is set
+          },
           body: JSON.stringify(payload),
           credentials: 'include',
         });
@@ -92,7 +95,7 @@ export default function CreateStorePage() {
       <div className="w-full max-w-2xl space-y-6">
         <div className="flex items-center space-x-2 text-amber-600 hover:text-amber-700">
           <ArrowLeft className="h-4 w-4" />
-          <Link href="/dashboard">Back to Dashboard</Link>
+          <Link href="/signin">Back to Login Page</Link>
         </div>
 
         <Card className="shadow-xl border-0">
