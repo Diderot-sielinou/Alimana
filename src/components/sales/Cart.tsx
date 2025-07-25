@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { CartProduct } from './ProductCard';
-import Receipt from '@/components/sales/Receipt';
-import { Plus, Trash2, ShoppingBasket, Pause, CreditCard, X } from 'lucide-react';
+import { Plus, Trash2, ShoppingBasket, Pause, CreditCard, X, DollarSign } from 'lucide-react';
 
 type Props = {
   items: CartProduct[];
@@ -16,46 +15,46 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
-  // const [item, setItem] = useState<CartProduct[]>([]);
-  const [showReceipt, setShowReceipt] = useState(false);
-  const [receiptId, setReceiptId] = useState('');
+
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState('');
+  const [cashAmount, setCashAmount] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handlePayNow = () => {
     if (items.length === 0) return;
-
-    const randomId = Math.floor(Math.random() * 900000 + 100000);
-    setReceiptId(randomId.toString());
-
-    setShowReceipt(true);
+    setShowPaymentOptions(true);
   };
 
-  const handleSaveReceipt = () => {
-    // Ici tu peux faire un appel API si tu veux sauvegarder réellement
+  const handleCancelPayment = () => {
+    setSelectedMethod('');
+    setCashAmount('');
+    setShowPaymentOptions(false);
+    setErrorMessage('');
+  };
+
+  const handleSavePayment = () => {
+    if (selectedMethod === 'cash' && (!cashAmount || parseFloat(cashAmount) < total)) {
+      setErrorMessage('The cash amount is insufficient.');
+      return;
+    }
+
     setShowSuccessMessage(true);
+    setShowPaymentOptions(false);
+    setSelectedMethod('');
+    setCashAmount('');
+    setErrorMessage('');
 
     setTimeout(() => {
       setShowSuccessMessage(false);
-      setShowReceipt(false);
       onClear();
     }, 2000);
-
-    const clearCart = () => {};
-
-    setTimeout(() => {
-      setShowSuccessMessage(false);
-      setShowReceipt(false);
-      clearCart(); // tu peux vider le panier ici si tu veux
-    }, 2000);
-  };
-
-  const handleCancelReceipt = () => {
-    setShowReceipt(false);
   };
 
   return (
     <>
-      <div className="w-full bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 no-print">
+      <div className="w-full bg-white dark:bg-gray-700 rounded-lg shadow-md p-1.5 no-print">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-700 dark:text-white">Current Sale</h2>
           <span className="text-sm text-gray-700 dark:text-white">#ORD-00123</span>
@@ -178,23 +177,72 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
             <CreditCard className="w-4 h-4 mr-2" strokeWidth={3.5} /> Pay Now
           </button>
         </div>
-      </div>
 
-      {showReceipt && (
-        <Receipt
-          orderNumber="00123"
-          date={new Date().toLocaleString()}
-          customer="Walk-in"
-          items={items}
-          receiptId={receiptId}
-          onSave={handleSaveReceipt}
-          onCancel={handleCancelReceipt}
-        />
-      )}
+        {/* Payment Method Options */}
+        {showPaymentOptions && (
+          <div
+            className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg shadow-lg w-full max-w-md mx-4">
+              <h4 className="font-semibold mb-4 text-black dark:text-white text-center text-lg">
+                Payment Method
+              </h4>
+
+              {/* Only Cash Button */}
+              <div className="flex gap-3 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setSelectedMethod('cash')}
+                  className={`px-4 py-2 rounded-lg  ${
+                    selectedMethod === 'cash' ? 'bg-blue-500 text-white' : 'bg-white'
+                  }`}
+                >
+                  <DollarSign className="inline w-4 h-4 mr-1" /> Cash
+                </button>
+              </div>
+
+              {/* Error Message */}
+              {errorMessage && <div className="mb-3 text-red-600 font-medium">{errorMessage}</div>}
+
+              {/* Payment Action Buttons for Cash */}
+              {selectedMethod === 'cash' && (
+                <div className="flex gap-3 items-center">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    aria-label="Cash amount received"
+                    placeholder={`(Total: $${total.toFixed(2)})`}
+                    value={cashAmount}
+                    onChange={(e) => setCashAmount(e.target.value)}
+                    className="p-2 border mr-1 rounded-lg w-40"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSavePayment}
+                    className="px-2 py-2 bg-green-600 text-white rounded-lg"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancelPayment}
+                    className="px-2 py-2 bg-gray-400 text-white rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
 
       {showSuccessMessage && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded shadow">
-          Saved successfully!
+          Payment saved successfully!
         </div>
       )}
     </>

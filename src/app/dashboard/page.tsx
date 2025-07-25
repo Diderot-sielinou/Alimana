@@ -173,7 +173,7 @@ export default function DashboardPage() {
         </h1>
 
         {/* Revenue Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6 px-0">
           {[
             {
               title: 'Daily Revenue',

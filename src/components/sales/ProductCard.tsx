@@ -19,7 +19,7 @@ type Props = {
 
 export default function ProductCard({ product, onAdd }: Props) {
   return (
-    <div className="border rounded-lg p-4 flex flex-col items-center shadow hover:shadow-md transition">
+    <div className="border rounded-lg p-6 flex flex-col items-center shadow hover:shadow-md transition">
       <div className="w-24 h-24 bg-gray-200 dark:bg-gray-500 flex items-center justify-center mb-2">
         {product.image ? (
           <Image src={product.image} alt={product.name} className="object-cover" />

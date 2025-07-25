@@ -77,7 +77,7 @@ export default function ProductList() {
           <CategoryFilter categories={categories} active={category} onSelect={setCategory} />
 
           {/* Product grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 dark:bg-gray-900 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 dark:bg-gray-900 md:grid-cols-3 gap-2 px-0">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} onAdd={handleAdd} />
             ))}
