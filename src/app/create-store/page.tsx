@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -9,10 +9,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import Step1StoreInfo from '@/components/steps/Step1StoreInfo';
 import Step2StoreLocation from '@/components/steps/Step2StoreLocation';
+import { useFormik } from 'formik';
+import { createStoreValidationSchema } from '@/schema/validation-schema';
 export interface StoreData {
   name: string;
   description: string;
-  currency: string;
   logo?: File | null;
   address: string;
   city: string;
@@ -24,75 +25,68 @@ export interface StoreData {
   profileImageUrl?: string;
 }
 
-type StoreDataKey = keyof StoreData;
-
 export default function CreateStorePage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<StoreData>({
-    name: '',
-    description: '',
-    currency: '',
-    logo: null,
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    phone: '',
-    email: '',
-    websiteUrl: '',
-    profileImageUrl: '',
+
+  const formik = useFormik<StoreData>({
+    initialValues: {
+      name: '',
+      description: '',
+      logo: null,
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      phone: '',
+      email: '',
+      websiteUrl: '',
+      profileImageUrl: '',
+    },
+    validationSchema: createStoreValidationSchema,
+    onSubmit: async (values) => {
+      try {
+        const payload = {
+          name: values.name,
+          description: values.description,
+          address:
+            values.address && values.city && values.state && values.zipCode
+              ? `${values.address}, ${values.city}, ${values.state}, ${values.zipCode}`
+              : null,
+          phone: values.phone || null,
+          email: values.email || null,
+          websiteUrl: values.websiteUrl || null,
+          logoUrl: values.profileImageUrl || null,
+          profileImageUrl: values.profileImageUrl || null,
+        };
+        const response = await fetch('http://localhost:3000/api/store', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json', // Ensure this header is set
+          },
+          body: JSON.stringify(payload),
+          credentials: 'include',
+        });
+
+        if (!response.ok) throw new Error('Store creation failed');
+        router.push('/dashboard');
+      } catch (error) {
+        console.error('Store creation error:', error);
+      }
+    },
   });
-  const [errors, setErrors] = useState<Partial<Record<StoreDataKey, string>>>({});
 
-  useEffect(() => {
-    const canCreateStore = true;
-    if (!canCreateStore) router.push('/403');
-  }, [router]);
+  const handleNextStep = async () => {
+    // Define which fields to validate based on current step
+    const fieldsToValidate =
+      step === 1 ? ['name', 'description'] : ['address', 'city', 'state', 'zipCode'];
 
-  const updateFormData = (field: StoreDataKey, value: string | File | null) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
-  };
+    const validationErrors = await formik.validateForm();
 
-  const handleFinalSubmit = async () => {
-    const formPayload = new FormData();
+    const hasErrors = fieldsToValidate.some((field) => validationErrors[field as keyof StoreData]);
 
-    try {
-      // Debug: raw data
-
-      formPayload.append('name', String(formData.name));
-      if (formData.description) formPayload.append('description', String(formData.description));
-
-      if (formData.address && formData.city && formData.state && formData.zipCode) {
-        const fullAddress = `${formData.address}, ${formData.city}, ${formData.state}, ${formData.zipCode}`;
-        formPayload.append('address', fullAddress);
-      }
-
-      if (formData.phone) formPayload.append('phone', String(formData.phone));
-      if (formData.email) formPayload.append('email', String(formData.email));
-      if (formData.websiteUrl) formPayload.append('websiteUrl', String(formData.websiteUrl));
-      if (formData.profileImageUrl)
-        formPayload.append('profileImageUrl', String(formData.profileImageUrl));
-      if (formData.logo instanceof File) formPayload.append('logoUrl', formData.logo);
-
-      const response = await fetch('http://localhost:3000/api/store', {
-        method: 'POST',
-        body: formPayload,
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        const errorRes = await response.json();
-        console.error('Backend error:', errorRes.message);
-        throw new Error(errorRes.message || 'Store creation failed');
-      }
-
-      router.push('/dashboard');
-    } catch (error) {
-      console.error('Store creation error:', error);
+    if (!hasErrors) {
+      setStep(step + 1);
     }
   };
 
@@ -101,7 +95,7 @@ export default function CreateStorePage() {
       <div className="w-full max-w-2xl space-y-6">
         <div className="flex items-center space-x-2 text-amber-600 hover:text-amber-700">
           <ArrowLeft className="h-4 w-4" />
-          <Link href="/dashboard">Back to Dashboard</Link>
+          <Link href="/signin">Back to Login Page</Link>
         </div>
 
         <Card className="shadow-xl border-0">
@@ -113,22 +107,13 @@ export default function CreateStorePage() {
           <CardContent className="space-y-6">
             <Progress value={(step / 2) * 100} className="h-2" />
 
-            {step === 1 && (
-              <Step1StoreInfo
-                formData={formData}
-                errors={errors}
-                updateFormData={updateFormData}
-                onNext={() => setStep(2)}
-              />
-            )}
+            {step === 1 && <Step1StoreInfo formik={formik} onNext={handleNextStep} />}
 
             {step === 2 && (
               <Step2StoreLocation
-                formData={formData}
-                errors={errors}
-                updateFormData={updateFormData}
+                formik={formik}
                 onBack={() => setStep(1)}
-                onNext={handleFinalSubmit}
+                onNext={formik.handleSubmit}
               />
             )}
           </CardContent>

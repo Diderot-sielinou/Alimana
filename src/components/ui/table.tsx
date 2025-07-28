@@ -69,6 +69,14 @@ const TableCell = React.forwardRef<
 ));
 TableCell.displayName = 'TableCell';
 
+const TableFooter = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, ...props }, ref) => (
+  <tfoot ref={ref} className={cn('bg-muted/50', className)} {...props} />
+));
+TableFooter.displayName = 'TableFooter';
+
 const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
@@ -77,4 +85,4 @@ const TableCaption = React.forwardRef<
 ));
 TableCaption.displayName = 'TableCaption';
 
-export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption };
+export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption,TableFooter };
