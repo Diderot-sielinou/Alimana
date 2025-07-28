@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,14 +11,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { signIn, signInWithGoogle } from '@/lib/auth';
+import { useFormik } from 'formik';
+import { loginValidationSchema } from '@/schema/validation-schema';
 
 type SigninFormData = {
   email: string;
   password: string;
   rememberMe: boolean;
 };
-
-type SigninErrors = Partial<Record<keyof SigninFormData, string>>;
 
 type UserResponse = {
   role: string;
@@ -29,60 +28,38 @@ type UserResponse = {
 export default function SigninPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState<SigninFormData>({
-    email: '',
-    password: '',
-    rememberMe: false,
-  });
-  const [errors, setErrors] = useState<SigninErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const updateFormData = <K extends keyof SigninFormData>(field: K, value: SigninFormData[K]) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field as keyof SigninErrors]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
-  };
-
-  const validateForm = (): boolean => {
-    const newErrors: SigninErrors = {};
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
-    try {
-      const user = (await signIn(formData.email, formData.password)) as UserResponse;
-
-      if (user.role === 'cashier') {
-        router.push('/sales/create');
-      } else if (Array.isArray(user.stores) && user.stores.length > 1) {
-        router.push('/select-store');
-      } else if (Array.isArray(user.stores) && user.stores.length === 1) {
-        router.push('/dashboard');
-      } else {
-        router.push('/create-store');
+  const formik = useFormik<SigninFormData>({
+    initialValues: {
+      email: '',
+      password: '',
+      rememberMe: false,
+    },
+    validationSchema: loginValidationSchema,
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        const user = (await signIn(values.email, values.password)) as UserResponse;
+        if (user.role === 'cashier') {
+          router.push('/sales/create');
+        } else if (Array.isArray(user.stores) && user.stores.length > 1) {
+          router.push('/select-store');
+        } else if (Array.isArray(user.stores) && user.stores.length === 1) {
+          router.push('/dashboard');
+        } else {
+          router.push('/create-store');
+        }
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
+        formik.setFieldError('password', 'Invalid credentials');
+        toast.error(errorMessage);
+      } finally {
+        setSubmitting(false);
       }
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
-      setErrors({ password: 'Invalid credentials' });
-      toast.error(errorMessage);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    },
+
+    validateOnBlur: false,
+    validateOnChange: false,
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
@@ -140,7 +117,7 @@ export default function SigninPage() {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+            <form onSubmit={formik.handleSubmit} className="space-y-6" noValidate>
               {/* Email */}
               <div>
                 <Label htmlFor="email">Email Address</Label>
@@ -148,15 +125,21 @@ export default function SigninPage() {
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     placeholder="Enter your email"
                     autoComplete="email"
                     className="pl-10"
-                    value={formData.email}
-                    onChange={(e) => updateFormData('email', e.target.value)}
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
                 </div>
-                {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
+                {formik.touched.email && formik.errors.email && (
+                  <p id="email-error" className="text-sm text-red-600">
+                    {formik.errors.email}
+                  </p>
+                )}
               </div>
 
               {/* Password */}
@@ -166,12 +149,14 @@ export default function SigninPage() {
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
                     autoComplete="current-password"
                     className="pl-10 pr-10"
-                    value={formData.password}
-                    onChange={(e) => updateFormData('password', e.target.value)}
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
                   <button
                     type="button"
@@ -181,7 +166,11 @@ export default function SigninPage() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
+                {formik.touched.password && formik.errors.password && (
+                  <p id="password-error" className="text-sm text-red-600">
+                    {formik.errors.password}
+                  </p>
+                )}
               </div>
 
               {/* Remember me & Forgot password */}
@@ -189,8 +178,11 @@ export default function SigninPage() {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="rememberMe"
-                    checked={formData.rememberMe}
-                    onCheckedChange={(checked) => updateFormData('rememberMe', Boolean(checked))}
+                    name="rememberMe"
+                    checked={formik.values.rememberMe}
+                    onCheckedChange={(checked) =>
+                      formik.setFieldValue('rememberMe', Boolean(checked))
+                    }
                   />
                   <Label htmlFor="rememberMe" className="text-sm text-gray-600">
                     Remember me
@@ -207,9 +199,9 @@ export default function SigninPage() {
               <Button
                 type="submit"
                 className="w-full bg-amber-600 hover:bg-amber-700 dark:bg-amber dark:text-white"
-                disabled={isSubmitting}
+                disabled={formik.isSubmitting}
               >
-                {isSubmitting ? 'Signing In...' : 'Sign In'}
+                {formik.isSubmitting ? 'Signing In...' : 'Sign In'}
               </Button>
             </form>
 

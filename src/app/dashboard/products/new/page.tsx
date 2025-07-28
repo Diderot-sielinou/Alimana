@@ -14,13 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Sidebar from '@/components/sidebar';
-import { sidebarLinks } from '@/constants/sidebarLinks';
-
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 export default function NewProductPage() {
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [product, setProduct] = useState({
     name: '',
@@ -34,6 +30,7 @@ export default function NewProductPage() {
   const [showScanner, setShowScanner] = useState(false);
   const scannerRef = useRef<HTMLDivElement | null>(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const mockBarcodeDatabase: Record<string, typeof product> = {
     '123456': {
       name: 'Mock Product A',
@@ -78,7 +75,7 @@ export default function NewProductPage() {
     return () => {
       scanner.clear().catch(console.error);
     };
-  }, [showScanner]);
+  }, [mockBarcodeDatabase, showScanner]);
 
   const handleChange = (field: string, value: string) => {
     setProduct((prev) => ({ ...prev, [field]: value }));
@@ -101,18 +98,8 @@ export default function NewProductPage() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
 
       <main className="flex-1 p-6 ml-0 md:ml-64">
-        <div className="mb-4">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="md:hidden text-orange-600 text-2xl"
-          >
-            ☰
-          </button>
-        </div>
-
         <div className="max-w-2xl mx-auto py-10">
           <Button variant="outline" onClick={() => router.back()} className="mb-6">
             ← Back
