@@ -1,98 +1,220 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { type User, type UserRole, ROLE_PERMISSIONS } from '@/lib/auth';
-import { logout as serverLogout } from '@/lib/auth';
-import * as Sentry from '@sentry/nextjs';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { toast } from 'react-hot-toast';
+import { api } from '@/lib/api';
+
+const PUBLIC_PATHS = ['/', '/signin', '/signup', '/auth/callback/google', '/accept-invite'];
+
+type PermissionKey = string;
+type Credentials = { email: string; password: string };
+
+interface User {
+  id: number;
+  email: string;
+  fullName: string;
+  canCreateStore: boolean;
+}
+
+interface StoreContext extends User {
+  storeUserId: number;
+  storeId: number;
+  roleId: number;
+  roleName: string;
+  permissions: PermissionKey[];
+  cashRegisterSessionId?: number;
+}
 
 interface AuthContextType {
+  isAuthenticated: boolean;
+  isLoading: boolean;
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  loading: boolean;
+  storeContext: StoreContext | null;
+  login: (credentials: Credentials) => Promise<void>;
+  logout: () => Promise<void>;
+  selectStore: (storeUserId: number) => Promise<void>;
+  hasPermission: (key: PermissionKey) => boolean;
+  hasAnyPermission: (keys: PermissionKey[]) => boolean;
+  hasAllPermissions: (keys: PermissionKey[]) => boolean;
+  hasStoreContext: boolean;
+  sidebarOpen: boolean;
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  cashRegisterSessionId: number | null;
+  setCashRegisterSessionId: React.Dispatch<React.SetStateAction<number | null>>;
+  fetchMe: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const useAuth = () => {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>');
+  return ctx;
+};
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [storeContext, setStoreContext] = useState<StoreContext | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [cashRegisterSessionId, setCashRegisterSessionId] = useState<number | null>(null);
 
-  useEffect(() => {
-    // Simulate loading user from localStorage or API
-    const loadUser = async () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const fetchMe = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      let res;
       try {
-        // This would typically be an API call
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-          const userData = JSON.parse(savedUser);
-          // Add permissions based on role
-          userData.permissions = ROLE_PERMISSIONS[userData.role as UserRole] || [];
-          setUser(userData);
-        }
-      } catch (error) {
-        if (error) {
-          Sentry.captureException(new Error('Error loading user'));
-          return;
-        }
-      } finally {
-        setLoading(false);
+        res = await api.get('/auth/store/me');
+      } catch {
+        res = await api.get('/auth/user/me');
       }
-    };
-
-    loadUser();
+      setUser(res.data.user);
+      setStoreContext(res.data.storeContext ?? null);
+      setIsAuthenticated(true);
+    } catch {
+      setUser(null);
+      setStoreContext(null);
+      setIsAuthenticated(false);
+      console.log("authentification echoue")
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const login = async (email: string, password: string) => {
+  useEffect(() => {
+    fetchMe();
+  }, [fetchMe]);
+
+  useEffect(() => {
+    if (isLoading) return;
+    const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+
+    if (isAuthenticated && !storeContext && pathname !== '/select-store') {
+      router.replace('/select-store');
+      return;
+    }
+
+    if (isAuthenticated && storeContext && pathname === '/select-store') {
+      router.replace('/dashboard');
+      return;
+    }
+
+    if (!isAuthenticated && !isPublic) {
+      router.replace('/signin');
+    }
+  }, [isAuthenticated, isLoading, pathname, storeContext, router]);
+
+  const login = useCallback(
+    async (credentials: Credentials) => {
     try {
-      const response = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
-      }
-
-      localStorage.setItem('user', JSON.stringify(data.user));
-      setUser(data.user);
-    } catch (error) {
-      if (error) {
-        Sentry.captureException(new Error('Login error'));
-        return;
-      }
+      await api.post('/auth/login', credentials, { withCredentials: true });
+      await fetchMe();
+      toast.success('Connexion réussie');
+      router.push('/select-store');
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Erreur de connexion');
       throw error;
     }
-  };
+  },
+  [fetchMe,router]
+  )
 
-  async function logout() {
+  const logout = useCallback(
+    async () => {
     try {
-      await serverLogout(); // POST /api/auth/logout
-    } catch (error) {
-      if (error) {
-        Sentry.captureException(new Error('Logout failed'));
-        return;
-      }
+      await api.post('/auth/logout', {}, { withCredentials: true });
+    } catch (err) {
+      console.warn('Erreur logout côté serveur', err);
     } finally {
-      localStorage.removeItem('access_token');
       setUser(null);
+      setStoreContext(null);
+      setIsAuthenticated(false);
+      router.push('/signin');
     }
-  }
+  },
+  [router]
+  )
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>{children}</AuthContext.Provider>
+
+
+  const selectStore = useCallback(
+  async (storeUserId: number) => {
+    try {
+      await api.post('/auth/select-store', { store_user_id: storeUserId }, { withCredentials: true });
+      await fetchMe();
+      toast.success('Boutique sélectionnée');
+      router.push('/dashboard');
+    } catch (err) {
+      toast.error('Échec sélection boutique');
+      throw err;
+    }
+  },
+  [fetchMe, router]
+);
+
+  const hasPermission = useCallback(
+    (key: PermissionKey) => storeContext?.permissions.includes(key) ?? false,
+    [storeContext]
   );
-}
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}
+  const hasAnyPermission = useCallback(
+    (keys: PermissionKey[]) => keys.some((k) => hasPermission(k)),
+    [hasPermission]
+  );
+
+  const hasAllPermissions = useCallback(
+    (keys: PermissionKey[]) => keys.every((k) => hasPermission(k)),
+    [hasPermission]
+  );
+
+  const value = useMemo<AuthContextType>(
+    () => ({
+      isAuthenticated,
+      isLoading,
+      user,
+      storeContext,
+      login,
+      logout,
+      selectStore,
+      hasPermission,
+      hasAnyPermission,
+      hasAllPermissions,
+      hasStoreContext: !!storeContext,
+      sidebarOpen,
+      setSidebarOpen,
+      cashRegisterSessionId,
+      setCashRegisterSessionId,
+      fetchMe,
+    }),
+    [
+      isAuthenticated,
+      isLoading,
+      user,
+      storeContext,
+      login,
+      logout,
+      selectStore,
+      hasPermission,
+      hasAnyPermission,
+      hasAllPermissions,
+      sidebarOpen,
+      cashRegisterSessionId,
+      fetchMe,
+    ]
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};

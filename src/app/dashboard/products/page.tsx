@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Sidebar from '@/components/sidebar';
-import { sidebarLinks } from '@/constants/sidebarLinks';
+;
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -18,7 +17,6 @@ import {
 
 export default function ProductsPage() {
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
 
@@ -45,20 +43,8 @@ export default function ProductsPage() {
 
   return (
     <div className="flex min-h-screen relative">
-      {/* Sidebar */}
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
 
-      {/* Main Content */}
       <main className="flex-1 p-6 ml-0 md:ml-64">
-        {/* Mobile Toggle */}
-        <div className="mb-4">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="md:hidden text-orange-600 text-2xl"
-          >
-            ☰
-          </button>
-        </div>
 
         {/* Page Header */}
         <div className="flex flex-wrap gap-4 justify-between items-center mb-6">

@@ -221,3 +221,120 @@ export const hasPermission = (user: User, permission: Permission): boolean => {
 export const hasAnyPermission = (user: User, permissions: Permission[]): boolean => {
   return permissions.some((permission) => user.permissions.includes(permission));
 };
+
+// 'use client';
+// import { useEffect } from 'react';
+// import { useRouter } from 'next/navigation';
+// import { useAuth } from '@/contexts/AuthContext';
+
+// export default function GoogleCallbackPage() {
+//   const { fetchMe } = useAuth();
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     const handleAuth = async () => {
+//       try {
+//         await fetchMe(); // 👈 recharge l’état
+//         router.push('/select-store');
+//       } catch (e) {
+//         router.push('/signin');
+//       }
+//     };
+
+//     handleAuth();
+//   }, [fetchMe, router]);
+
+//   return <div>Connexion en cours...</div>;
+// }
+
+// await api.post('/auth/register', values);
+// await fetchMe(); // 👈 ici aussi
+// router.push('/select-store');
+// 'use client';
+
+// import { useRouter } from 'next/navigation';
+// import { useAuth } from '@/contexts/AuthContext'; // Assure-toi que ce chemin est correct
+// import { api } from '@/lib/api';
+// import { toast } from 'react-hot-toast';
+
+// interface RegisterData {
+//   fullName: string;
+//   email: string;
+//   password: string;
+// }
+
+// export const useRegister = () => {
+//   const { fetchMe } = useAuth();
+//   const router = useRouter();
+
+//   const register = async (data: RegisterData) => {
+//     try {
+//       await api.post('/auth/register', data, { withCredentials: true });
+//       toast.success('Compte créé avec succès');
+//       await fetchMe(); // ⚡ recharge l'utilisateur et son contexte
+//       router.push('/select-store'); // redirection après inscription
+//     } catch (error: any) {
+//       toast.error(error.response?.data?.error || "Erreur lors de l'inscription");
+//       throw error;
+//     }
+//   };
+
+//   return { register };
+// };
+
+// 'use client';
+
+// import { useFormik } from 'formik';
+// import * as Yup from 'yup';
+// import { useRegister } from '@/hooks/useRegister';
+
+// export default function SignupPage() {
+//   const { register } = useRegister();
+
+//   const formik = useFormik({
+//     initialValues: {
+//       fullName: '',
+//       email: '',
+//       password: '',
+//     },
+//     validationSchema: Yup.object({
+//       fullName: Yup.string().required('Nom requis'),
+//       email: Yup.string().email('Email invalide').required('Email requis'),
+//       password: Yup.string().min(6, 'Min. 6 caractères').required('Mot de passe requis'),
+//     }),
+//     onSubmit: async (values) => {
+//       await register(values);
+//     },
+//   });
+
+//   return (
+//     <form onSubmit={formik.handleSubmit} className="space-y-4 max-w-md mx-auto">
+//       <input
+//         name="fullName"
+//         placeholder="Nom complet"
+//         onChange={formik.handleChange}
+//         value={formik.values.fullName}
+//         className="border p-2 w-full rounded"
+//       />
+//       <input
+//         name="email"
+//         placeholder="Email"
+//         onChange={formik.handleChange}
+//         value={formik.values.email}
+//         className="border p-2 w-full rounded"
+//       />
+//       <input
+//         type="password"
+//         name="password"
+//         placeholder="Mot de passe"
+//         onChange={formik.handleChange}
+//         value={formik.values.password}
+//         className="border p-2 w-full rounded"
+//       />
+//       <button type="submit" className="bg-orange-500 text-white px-4 py-2 rounded">
+//         Créer un compte
+//       </button>
+//     </form>
+//   );
+// }
+

@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Sidebar from '@/components/sidebar';
-import { sidebarLinks } from '@/constants/sidebarLinks';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -29,7 +27,6 @@ interface Product {
 }
 
 export default function InventoryPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [inventory, setInventory] = useState<Product[]>([
     {
@@ -147,9 +144,7 @@ export default function InventoryPage() {
     product.name.toLowerCase().includes(search.toLowerCase())
   );
   return (
-    <div className="flex min-h-screen">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
-
+    <div className="flex min-h-screen w-full">
       <main className="flex-1 p-6 ml-0 md:ml-64">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Inventory</h1>
