@@ -88,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    * 🔄 Appel initial de fetchMe
    */
   useEffect(() => {
-    fetchMe();
+    // fetchMe();
   }, [fetchMe]);
 
   /**
