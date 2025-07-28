@@ -195,7 +195,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
                 <button
                   type="button"
                   onClick={() => setSelectedMethod('cash')}
-                  className={`px-4 py-2 rounded-lg  ${
+                  className={`px-4 py-2 rounded-lg mx-auto ${
                     selectedMethod === 'cash' ? 'bg-blue-500 text-white' : 'bg-white'
                   }`}
                 >
@@ -208,7 +208,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
 
               {/* Payment Action Buttons for Cash */}
               {selectedMethod === 'cash' && (
-                <div className="flex gap-3 items-center">
+                <div className="flex flex-col max-[424px]:flex-col min-[425px]:flex-row justify-center gap-3 items-center">
                   <input
                     type="number"
                     min="0"
@@ -217,19 +217,19 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
                     placeholder={`(Total: $${total.toFixed(2)})`}
                     value={cashAmount}
                     onChange={(e) => setCashAmount(e.target.value)}
-                    className="p-2 border mr-1 rounded-lg w-40"
+                    className="p-2 border rounded-lg w-40 md:w-40"
                   />
                   <button
                     type="button"
                     onClick={handleSavePayment}
-                    className="px-2 py-2 bg-green-600 text-white rounded-lg"
+                    className="px-4 py-2 bg-orange-600 text-white rounded-lg w-40 md:w-auto"
                   >
                     Save
                   </button>
                   <button
                     type="button"
                     onClick={handleCancelPayment}
-                    className="px-2 py-2 bg-gray-400 text-white rounded-lg"
+                    className="px-4 py-2 bg-gray-400 text-white rounded-lg w-40 md:w-auto"
                   >
                     Cancel
                   </button>
