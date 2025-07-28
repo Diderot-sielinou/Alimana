@@ -2,41 +2,39 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
-import { Store, ArrowRight } from 'lucide-react';
-import { use2Auth } from '@/context/AuthContext';
+// import { useRouter } from 'next/navigation';
+// import { Store, ArrowRight } from 'lucide-react';
+// import { use2Auth } from '@/context/AuthContext';
 
 export default function SelectStorePage() {
-  const { user, selectStore, isAuthenticated } = use2Auth();
-  const router = useRouter();
+  // const { user, selectStore, isAuthenticated } = use2Auth();
+  // const router = useRouter();
 
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/signin');
-    }
-  }, [isAuthenticated, router]);
+  // React.useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     router.push('/signin');
+  //   }
+  // }, [isAuthenticated, router]);
 
-  const handleStoreSelect = (store: any) => {
-    selectStore(store);
-    router.push('/dashboard');
-  };
+  // const handleStoreSelect = (store: any) => {
+  //   selectStore(store);
+  //   router.push('/dashboard');
+  // };
 
-  if (!user) return null;
+  // if (!user) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         <div className="bg-white rounded-lg shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Sélectionnez votre boutique
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Sélectionnez votre boutique</h1>
             <p className="text-gray-500">
               Choisissez la boutique avec laquelle vous souhaitez travailler
             </p>
           </div>
 
-          <div className="grid gap-4">
+          {/* <div className="grid gap-4">
             {user.stores.map((store) => (
               <div
                 key={store.id}
@@ -64,7 +62,7 @@ export default function SelectStorePage() {
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,10 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from 'sonner';
-import { signIn, signInWithGoogle } from '@/lib/auth';
+// import {  signInWithGoogle } from '@/lib/auth';
 import { useFormik } from 'formik';
 import { loginValidationSchema } from '@/schema/validation-schema';
+import { useAuth } from '@/context/auth-context';
 
 type SigninFormData = {
   email: string;
@@ -20,13 +19,8 @@ type SigninFormData = {
   rememberMe: boolean;
 };
 
-type UserResponse = {
-  role: string;
-  stores?: { id: string; name: string }[];
-};
-
 export default function SigninPage() {
-  const router = useRouter();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik<SigninFormData>({
@@ -36,25 +30,8 @@ export default function SigninPage() {
       rememberMe: false,
     },
     validationSchema: loginValidationSchema,
-    onSubmit: async (values, { setSubmitting }) => {
-      try {
-        const user = (await signIn(values.email, values.password)) as UserResponse;
-        if (user.role === 'cashier') {
-          router.push('/sales/create');
-        } else if (Array.isArray(user.stores) && user.stores.length > 1) {
-          router.push('/select-store');
-        } else if (Array.isArray(user.stores) && user.stores.length === 1) {
-          router.push('/dashboard');
-        } else {
-          router.push('/create-store');
-        }
-      } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
-        formik.setFieldError('password', 'Invalid credentials');
-        toast.error(errorMessage);
-      } finally {
-        setSubmitting(false);
-      }
+    onSubmit: async (values) => {
+      await login({ email: values.email, password: values.password });
     },
 
     validateOnBlur: false,
@@ -80,7 +57,6 @@ export default function SigninPage() {
             <CardTitle className="text-xl">Sign In</CardTitle>
             <Button
               variant="outline"
-              onClick={signInWithGoogle}
               className="w-full bg-white mt-2 dark:hover:bg-slate-300 dark:text-black"
             >
               <span className="mr-2">

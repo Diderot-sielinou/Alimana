@@ -50,53 +50,61 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const router = useRouter();
   const pathname = usePathname();
 
+  /**
+   * ⚙️ Fetch l'utilisateur courant
+   */
   const fetchMe = useCallback(async () => {
-    const suppressErrorToast = !isAuthenticated && !isLoading && pathname === PUBLIC_PATHS[0];
+    const suppressErrorToast = pathname === PUBLIC_PATHS[0];
 
     setIsLoading(true);
     try {
       let res;
       try {
         res = await api.get('/auth/store/me');
-      } catch (storeMeError) {
-        console.log(storeMeError);
+      } catch {
         res = await api.get('/auth/user/me');
       }
+
+      console.log(res);
+      // ✅ Vérifie la structure retournée
+      if (!res?.data?.user) throw new Error('Utilisateur non trouvé');
       setUser(res.data.user);
+
       setStoreContext(res.data.storeContext || null);
       setIsAuthenticated(true);
     } catch (error: any) {
       setUser(null);
       setStoreContext(null);
       setIsAuthenticated(false);
-      // console.log("authentification echoue") // 💡 L'intercepteur gère déjà les messages, peut être supprimé
       if (process.env.NODE_ENV === 'development' && !suppressErrorToast) {
-        console.warn(
-          'Authentication fetch failed, user not authenticated.',
-          error.response?.data || error.message
-        );
+        console.warn('Échec d’authentification', error.response?.data || error.message);
       }
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated, isLoading, pathname]);
+  }, [pathname]);
 
+  /**
+   * 🔄 Appel initial de fetchMe
+   */
   useEffect(() => {
     fetchMe();
   }, [fetchMe]);
 
+  /**
+   * 🔁 Redirection automatique selon les droits
+   */
   useEffect(() => {
     if (isLoading) return;
+
     const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 
     if (isAuthenticated && !storeContext && pathname !== '/select-store') {
       router.replace('/select-store');
-      return;
     }
 
     if (isAuthenticated && storeContext && pathname === '/select-store') {
       router.replace('/dashboard');
-      return;
     }
 
     if (!isAuthenticated && !isPublic) {
@@ -104,24 +112,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [isAuthenticated, isLoading, pathname, storeContext, router]);
 
+  /**
+   * 🔐 Login
+   */
   const login = useCallback(
     async (credentials: Credentials) => {
       try {
-        await api.post('/auth/login', credentials, { withCredentials: true });
-        await fetchMe();
+        await api.post('/auth/login', credentials); // no need for withCredentials
         toast.success('Connexion réussie');
-        // router.push('/select-store');
+        await fetchMe();
+        router.push('/select-store');
       } catch (error: any) {
         toast.error(error.response?.data?.error || 'Erreur de connexion');
         throw error;
       }
     },
-    [fetchMe]
+    [fetchMe, router]
   );
 
+  /**
+   * 🔓 Logout
+   */
   const logout = useCallback(async () => {
     try {
-      await api.post('/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout');
+      toast.success('Déconnexion réussie');
     } catch (err) {
       console.warn('Erreur logout côté serveur', err);
     } finally {
@@ -132,14 +147,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [router]);
 
+  /**
+   * 🏪 Sélection de boutique
+   */
   const selectStore = useCallback(
     async (storeUserId: number) => {
       try {
-        await api.post(
-          '/auth/select-store',
-          { store_user_id: storeUserId },
-          { withCredentials: true }
-        );
+        await api.post('/auth/select-store', { store_user_id: storeUserId });
         await fetchMe();
         toast.success('Boutique sélectionnée');
         router.push('/dashboard');
@@ -151,8 +165,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [fetchMe, router]
   );
 
+  /**
+   * 🛡️ Permissions
+   */
   const hasPermission = useCallback(
-    (key: PermissionKey) => storeContext?.permissions.includes(key) ?? false,
+    (key: PermissionKey) => (storeContext?.permissions ?? []).includes(key),
     [storeContext]
   );
 
