@@ -1,16 +1,31 @@
 export interface User {
   id: number;
   email: string;
-  firstName: string;
-  lastName: string;
-  role: Role;
-  stores: Store[];
+  fullName: string;
+  canCreateStore: boolean;
 }
+type PermissionKey = string;
 
-export interface Role {
-  id: number;
-  name: string;
-  permissions: Permission[];
+export interface StoreContext {
+  storeUserId: number; // L'ID de l'association user-store
+  storeId: number;
+  roleId: number;
+  roleName: string;
+  permissions: PermissionKey[];
+  user: {
+    id: number;
+    email: string;
+    fullName: string;
+  };
+  store: {
+    id: number;
+    name: string;
+    currency?: string;
+    timezone?: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+  };
 }
 
 export interface Permission {
