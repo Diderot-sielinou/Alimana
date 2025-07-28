@@ -1,10 +1,7 @@
-// ✅ Inventory Page with Dialog-Based Form, Responsive Design, & Click-to-Scan Barcode
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-import Sidebar from '@/components/sidebar';
-import { sidebarLinks } from '@/constants/sidebarLinks';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -38,7 +35,6 @@ interface Product {
 }
 
 export default function InventoryPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -168,7 +164,6 @@ export default function InventoryPage() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
       <main className="flex-1 p-6 ml-0 md:ml-64">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold">Inventory</h1>
