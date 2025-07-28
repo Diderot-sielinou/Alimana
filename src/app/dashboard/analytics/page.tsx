@@ -1,13 +1,11 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Chart } from 'chart.js/auto';
-import { sidebarLinks } from '@/constants/sidebarLinks';
-import Sidebar from '@/components/sidebar';
+
 import { Card } from '@/components/ui/card';
 
 export default function AnalyticsPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const revenueChartRef = useRef(null);
   const performanceChartRef = useRef(null);
@@ -120,18 +118,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
-
-      {/* Main content */}
       <main className="flex-1 p-4 ml-0 md:ml-64">
-        {/* Mobile toggle */}
-        <div className="mb-4 md:hidden">
-          <button onClick={() => setSidebarOpen(true)} className="text-orange-600 text-2xl">
-            ☰
-          </button>
-        </div>
-
         <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
           Analytics Overview
         </h1>

@@ -1,15 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Sidebar from '@/components/sidebar';
-import { sidebarLinks } from '@/constants/sidebarLinks';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 
 export default function SettingsPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Store settings state
   const [storeData, setStoreData] = useState({
@@ -59,18 +56,8 @@ export default function SettingsPage() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} links={sidebarLinks} />
 
       <main className="flex-1 p-6 ml-0 md:ml-64 space-y-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Store Settings</h1>
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="md:hidden text-orange-600 text-2xl"
-          >
-            ☰
-          </button>
-        </div>
 
         {/* General Info */}
         <section className="space-y-4">
