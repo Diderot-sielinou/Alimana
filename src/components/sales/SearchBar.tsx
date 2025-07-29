@@ -54,7 +54,7 @@ export default function SearchBar({ value, onChange }: Props) {
         </div>
         <button
           onClick={() => setScannerVisible(true)}
-          className="flex items-center justify-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-500 transition"
+          className="flex items-center justify-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-500 transition"
           type="button"
         >
           <Barcode className="w-5 h-5 mr-2" />

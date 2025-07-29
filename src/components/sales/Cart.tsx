@@ -83,7 +83,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
             <h3 className="font-medium text-gray-700">Items ({items.length})</h3>
             <button
               onClick={onClear}
-              className="flex items-center text-red-600 text-sm hover:text-red-800"
+              className="flex items-center text-red-600 text-sm hover:text-red-500"
               type="button"
             >
               <Trash2 className="w-4 h-4 mr-1" strokeWidth={3} /> Clear
@@ -130,7 +130,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
                     </span>
                     <button
                       onClick={() => onRemove(item.id)}
-                      className="text-red-600 hover:text-red-800"
+                      className="text-red-600 hover:text-red-500"
                       type="button"
                       title="Remove item"
                     >
@@ -171,7 +171,7 @@ export default function Cart({ items, onClear, onUpdateQuantity, onRemove }: Pro
           </button>
           <button
             onClick={handlePayNow}
-            className="flex items-center justify-center px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
+            className="flex items-center justify-center px-4 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition"
             type="button"
             disabled={items.length === 0}
           >

@@ -31,7 +31,7 @@ export default function ProductCard({ product, onAdd }: Props) {
       <p className="text-xs text-gray-500">${product.price.toFixed(2)}</p>
       <button
         onClick={() => onAdd(product)}
-        className="mt-2 bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-500"
+        className="mt-2 bg-amber-600 text-white px-3 py-1 rounded text-sm hover:bg-amber-500"
       >
         + Add
       </button>
