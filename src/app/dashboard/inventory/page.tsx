@@ -85,7 +85,7 @@ export default function InventoryPage() {
 
   useEffect(() => {
     if (!showScanner || !scannerRef.current) return;
-    if (document.getElementById('scanner')?.hasChildNodes()) return;
+    if (scannerRef.current.hasChildNodes()) return;
 
     const scanner = new Html5QrcodeScanner('scanner', { fps: 10, qrbox: 250 }, false);
 
@@ -96,13 +96,16 @@ export default function InventoryPage() {
           setProduct((prev) => ({ ...prev, ...found }));
           setScannedId(decodedText);
         } else {
-          // Replace alert with toast if using one
           alert('No product found for this barcode.');
         }
         setShowScanner(false);
         scanner.clear();
       },
-      (error) => console.warn('Scanning error', error)
+      (error) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Scanning error', error);
+        }
+      }
     );
 
     return () => {
@@ -130,13 +133,19 @@ export default function InventoryPage() {
       status: (Number(product.stock) > 0 ? 'In Stock' : 'Out of Stock') as Product['status'],
     };
 
-
     const updated = editingId
       ? products.map((p) => (p.id === editingId ? newProduct : p))
       : [...products, newProduct];
 
     setProducts(updated);
-    localStorage.setItem('products', JSON.stringify(updated));
+    try {
+      localStorage.setItem('products', JSON.stringify(updated));
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to save products:', error);
+      }
+    }
+
     setProduct({
       id: '',
       name: '',
@@ -167,7 +176,13 @@ export default function InventoryPage() {
       p.id === id ? { ...p, status: 'Inactive' as Product['status'] } : p
     );
     setProducts(updated);
-    localStorage.setItem('products', JSON.stringify(updated));
+    try {
+      localStorage.setItem('products', JSON.stringify(updated));
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to save products:', error);
+      }
+    }
   };
 
   return (
@@ -208,7 +223,6 @@ export default function InventoryPage() {
                   </p>
                 )}
 
-                {/* Product Fields */}
                 <div className="space-y-2">
                   <Label htmlFor="name">Product Name</Label>
                   <Input
@@ -286,6 +300,7 @@ export default function InventoryPage() {
                     onChange={(e) => handleChange('expirationDate', e.target.value)}
                   />
                 </div>
+                {/* TODO: Implement image upload functionality */}
                 <div className="space-y-2">
                   <Label htmlFor="image">Image (mocked)</Label>
                   <Input id="image" type="file" disabled />
@@ -299,7 +314,6 @@ export default function InventoryPage() {
           </Dialog>
         </div>
 
-        {/* Product Table */}
         <div className="overflow-auto rounded-lg border shadow">
           <table className="w-full text-sm">
             <thead>

@@ -20,7 +20,7 @@ export default function SearchBar({ value, onChange }: Props) {
 
     scanner.render(
       (decodedText) => {
-        if (/^\d{8,13}$/.test(decodedText)) {
+        if (/^[a-zA-Z0-9\-_\s]{4,50}$/.test(decodedText)) {
           onChange(decodedText);
           setScannerVisible(false);
           scanner.clear();
@@ -36,7 +36,7 @@ export default function SearchBar({ value, onChange }: Props) {
     return () => {
       scanner.clear().catch(console.error);
     };
-  }, [scannerVisible]);
+  }, [scannerVisible, onChange]);
 
   return (
     <div className="mb-6">
