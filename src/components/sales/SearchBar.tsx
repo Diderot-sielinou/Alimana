@@ -15,9 +15,7 @@ export default function SearchBar({ value, onChange }: Props) {
 
   useEffect(() => {
     if (!scannerVisible || !scannerRef.current) return;
-
     if (document.getElementById('scanner')?.hasChildNodes()) return;
-
     const scanner = new Html5QrcodeScanner('scanner', { fps: 10, qrbox: 250 }, false);
 
     scanner.render(

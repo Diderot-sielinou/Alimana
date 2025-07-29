@@ -12,7 +12,7 @@ export const sidebarLinks = [
     href: '/dashboard/overview',
     label: 'Dashboard',
     icon: LayoutDashboard,
-    requiredPermissions: [], // visible à tous connectés
+    requiredPermissions: [], 
   },
   {
     href: '/dashboard/sales',

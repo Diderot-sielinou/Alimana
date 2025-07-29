@@ -169,7 +169,7 @@ export default function InventoryPage() {
           <h1 className="text-2xl font-semibold">Inventory</h1>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-amber-600">Add Product</Button>
+              <Button className="bg-amber-600 hover:bg-amber-700">Add Product</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl overflow-y-auto max-h-[90vh]">
               <DialogHeader>
