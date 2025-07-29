@@ -35,7 +35,6 @@ interface Product {
 }
 
 export default function InventoryPage() {
-  const [search] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [product, setProduct] = useState<Product>({
@@ -73,8 +72,15 @@ export default function InventoryPage() {
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem('products');
-    if (stored) setProducts(JSON.parse(stored));
+    try {
+      const stored = localStorage.getItem('products');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) setProducts(parsed);
+      }
+    } catch (error) {
+      console.error('Failed to load from localStorage:', error);
+    }
   }, []);
 
   useEffect(() => {
@@ -90,6 +96,7 @@ export default function InventoryPage() {
           setProduct((prev) => ({ ...prev, ...found }));
           setScannedId(decodedText);
         } else {
+          // Replace alert with toast if using one
           alert('No product found for this barcode.');
         }
         setShowScanner(false);
@@ -120,8 +127,9 @@ export default function InventoryPage() {
       ...product,
       id: editingId || Date.now().toString(),
       quantity: product.stock,
-      status: Number(product.stock) > 0 ? 'In Stock' : 'Out of Stock',
+      status: (Number(product.stock) > 0 ? 'In Stock' : 'Out of Stock') as Product['status'],
     };
+
 
     const updated = editingId
       ? products.map((p) => (p.id === editingId ? newProduct : p))
@@ -147,8 +155,6 @@ export default function InventoryPage() {
     setScannedId(null);
   };
 
-  const filtered = products.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()));
-
   const handleEdit = (product: Product) => {
     setProduct(product);
     setEditingId(product.id);
@@ -157,7 +163,9 @@ export default function InventoryPage() {
 
   const handleDeactivate = (id: string) => {
     if (!confirm('Are you sure you want to deactivate this product?')) return;
-    const updated = products.map((p) => (p.id === id ? { ...p, status: 'Inactive' as const } : p));
+    const updated = products.map((p) =>
+      p.id === id ? { ...p, status: 'Inactive' as Product['status'] } : p
+    );
     setProducts(updated);
     localStorage.setItem('products', JSON.stringify(updated));
   };
@@ -169,7 +177,12 @@ export default function InventoryPage() {
           <h1 className="text-2xl font-semibold">Inventory</h1>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-amber-600 hover:bg-amber-700">Add Product</Button>
+              <Button
+                variant="ghost"
+                className="bg-amber-600 hover:bg-amber-700 text-white"
+              >
+                Add Product
+              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl overflow-y-auto max-h-[90vh]">
               <DialogHeader>
@@ -194,6 +207,8 @@ export default function InventoryPage() {
                     ✅ Scanned ID: <strong>{scannedId}</strong>
                   </p>
                 )}
+
+                {/* Product Fields */}
                 <div className="space-y-2">
                   <Label htmlFor="name">Product Name</Label>
                   <Input
@@ -254,6 +269,24 @@ export default function InventoryPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="zip">Zip Code</Label>
+                  <Input
+                    id="zip"
+                    value={product.zip}
+                    onChange={(e) => handleChange('zip', e.target.value)}
+                    placeholder="e.g. 90210"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="expirationDate">Expiration Date</Label>
+                  <Input
+                    id="expirationDate"
+                    type="date"
+                    value={product.expirationDate}
+                    onChange={(e) => handleChange('expirationDate', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="image">Image (mocked)</Label>
                   <Input id="image" type="file" disabled />
                   <p className="text-xs text-gray-500">Image upload not implemented yet</p>
@@ -266,6 +299,7 @@ export default function InventoryPage() {
           </Dialog>
         </div>
 
+        {/* Product Table */}
         <div className="overflow-auto rounded-lg border shadow">
           <table className="w-full text-sm">
             <thead>
@@ -282,7 +316,7 @@ export default function InventoryPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((product) => (
+              {products.map((product) => (
                 <tr key={product.id} className="border-t hover:bg-gray-50">
                   <td className="p-3">{product.name}</td>
                   <td className="p-3">{product.category}</td>
@@ -293,7 +327,12 @@ export default function InventoryPage() {
                   <td className="p-3">{product.zip || '-'}</td>
                   <td className="p-3">
                     <span
-                      className={`text-sm font-medium ${product.status === 'In Stock' ? 'text-green-400' : product.status === 'Out of Stock' ? 'text-yellow-600' : 'text-red-400'}`}
+                      className={`text-sm font-medium ${product.status === 'In Stock'
+                        ? 'text-green-400'
+                        : product.status === 'Out of Stock'
+                          ? 'text-yellow-600'
+                          : 'text-red-400'
+                        }`}
                     >
                       {product.status}
                     </span>
@@ -307,7 +346,7 @@ export default function InventoryPage() {
                       variant="destructive"
                       onClick={() => handleDeactivate(product.id)}
                     >
-                      Deactivate
+                      Disable
                     </Button>
                   </td>
                 </tr>
