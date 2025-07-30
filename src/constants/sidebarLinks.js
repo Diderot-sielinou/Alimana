@@ -1,6 +1,5 @@
 import {
   LayoutDashboard,
-  ShoppingCart,
   Box,
   BarChart3,
   Warehouse,
@@ -58,12 +57,12 @@ export const sidebarLinks = [
     icon: Box,
     requiredPermissions: [],
   },
-  {
-    href: '/dashboard/sales',
-    label: 'Sales',
-    icon: ShoppingCart,
-    requiredPermissions: [],
-  },
+  // {
+  //   href: '/dashboard/sales',
+  //   label: 'Sales',
+  //   icon: ShoppingCart,
+  //   requiredPermissions: [],
+  // },
   {
     href: '/dashboard/analytics',
     label: 'Analytics',

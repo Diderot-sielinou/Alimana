@@ -77,7 +77,7 @@ export default function ProductList() {
           <CategoryFilter categories={categories} active={category} onSelect={setCategory} />
 
           {/* Product grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 dark:bg-gray-900 md:grid-cols-3 gap-2 px-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 dark:bg-gray-900 [2560px]:grid-cols-3 gap-3 px-0">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} onAdd={handleAdd} />
             ))}
@@ -85,7 +85,7 @@ export default function ProductList() {
         </div>
 
         {/* RIGHT SIDE: Cart */}
-        <div className="lg:sticky lg:top-6 mt-[123px]">
+        <div className="lg:sticky lg:top-6 mt-[90px] lg:mt-[123px]">
           <Cart
             items={cartItems}
             onClear={handleClearCart}
