@@ -1,7 +1,7 @@
-import { Product } from "./product";
+import { IProduct } from './product.interface';
 
 export interface CartItem {
-  product: Product;
+  product: IProduct;
   quantity: number;
   discount: number;
   subtotal: number;
@@ -10,12 +10,15 @@ export interface CartItem {
 export interface PaymentMethod {
   id: number;
   name: string;
-  type: 'cash' | 'card' | 'mobile' | 'bank_transfer';
+  type?: 'cash' | 'card' | 'mobile' | 'bank_transfer';
   isActive: boolean;
-  requiresReference: boolean;
+  isDefault: boolean;
+  requiresReference?: boolean;
+  storeId: number;
 }
 
 export interface Payment {
+  storeId: number;
   paymentMethodId: number;
   amount: number;
   transactionReference?: string;
@@ -42,26 +45,6 @@ export interface SaleItem {
   itemDiscount: number;
   subtotal: number;
 }
-
-// export interface CashRegister {
-//   id: number;
-//   name: string;
-//   location?: string;
-//   isActive: boolean;
-//   currentSession?: CashRegisterSession;
-// }
-
-// export interface CashRegisterSession {
-//   id: number;
-//   cashRegisterId: number;
-//   initialCash: number;
-//   finalCash?: number;
-//   openedByStoreUserId: number;
-//   closedByStoreUserId?: number;
-//   openedAt: string;
-//   closedAt?: string;
-//   status: 'open' | 'closed';
-// }
 
 export interface CashRegisterSession {
   id: number;

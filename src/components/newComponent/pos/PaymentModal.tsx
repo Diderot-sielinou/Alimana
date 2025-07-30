@@ -5,20 +5,23 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CartItem, PaymentMethod, Payment, Sale } from '@/types/pos';
+import { CartItem } from '@/types/pos';
 
 import { api } from '@/lib/api';
 import { CreditCard, Smartphone, Banknote, Building } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useShopData } from '@/context/store-context';
 import { useAuth } from '@/context/auth-context';
+import { ICreatePaymentDto } from '@/types/payment.interface';
+import { IPaymentMethod } from '@/types/payment-method.interface';
+import { ISaleResponse } from '@/types/sale-dto.interface';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   cartItems: CartItem[];
   total: number;
-  onPaymentComplete: (sale: Sale) => void;
+  onPaymentComplete: (sale: ISaleResponse) => void;
   sessionId: number;
 }
 
@@ -28,12 +31,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   cartItems,
   total,
   onPaymentComplete,
-  sessionId
+  sessionId,
 }) => {
   const { paymentMethods } = useShopData();
-  const { user, storeContext } = useAuth();
-  const [payments, setPayments] = React.useState<Payment[]>([]);
-  const [selectedMethod, setSelectedMethod] = React.useState<PaymentMethod | null>(null);
+  const { storeContext } = useAuth();
+  const [payments, setPayments] = React.useState<ICreatePaymentDto[]>([]);
+  const [selectedMethod, setSelectedMethod] = React.useState<IPaymentMethod | null>(null);
   const [amount, setAmount] = React.useState('');
   const [reference, setReference] = React.useState('');
   const [notes, setNotes] = React.useState('');
@@ -42,11 +45,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const getMethodIcon = (type: string) => {
     switch (type) {
-      case 'cash': return Banknote;
-      case 'card': return CreditCard;
-      case 'mobile': return Smartphone;
-      case 'bank_transfer': return Building;
-      default: return CreditCard;
+      case 'cash':
+        return Banknote;
+      case 'card':
+        return CreditCard;
+      case 'mobile':
+        return Smartphone;
+      case 'bank_transfer':
+        return Building;
+      default:
+        return CreditCard;
     }
   };
 
@@ -71,35 +79,33 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       return;
     }
 
-    const newPayment: Payment = {
+    const newPayment: ICreatePaymentDto = {
       paymentMethodId: selectedMethod.id,
       amount: paymentAmount,
-      transactionReference: reference.trim() || undefined,
+      transactionReference: reference.trim(),
     };
 
-    setPayments(prev => [...prev, newPayment]);
+    setPayments((prev) => [...prev, newPayment]);
     setAmount('');
     setReference('');
     setSelectedMethod(null);
   };
 
   const removePayment = (index: number) => {
-    setPayments(prev => prev.filter((_, i) => i !== index));
+    setPayments((prev) => prev.filter((_, i) => i !== index));
   };
 
   const processSale = async () => {
     if (remaining > 0) {
-      toast.error('Le paiement n\'est pas complet');
+      toast.error("Le paiement n'est pas complet");
       return;
     }
 
     setIsProcessing(true);
     try {
       const saleData = {
-        storeId: storeContext!.id,
         cashRegisterSessionId: sessionId,
-        createdByStoreUserId: user!.id,
-        saleItems: cartItems.map(item => ({
+        saleItems: cartItems.map((item) => ({
           productId: item.product.id,
           quantity: item.quantity,
           itemDiscount: item.discount,
@@ -109,10 +115,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         discountAmount: discount,
       };
 
-      const response = await api.post('/sales', saleData);
-      onPaymentComplete(response.data.sale);
+      const response = await api.post(`store/${storeContext?.storeId}/sales`, saleData);
+      console.log(`reponse apres une vente ${response}`);
+      onPaymentComplete(response.data);
     } catch (error) {
-      toast.error('Erreur lors de l\'enregistrement de la vente');
+      const err = error as Error;
+      toast.error(`Erreur lors de l\'enregistrement de la vente ${err.message}`);
     } finally {
       setIsProcessing(false);
     }
@@ -153,20 +161,22 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           <div>
             <h3 className="font-medium text-gray-900 mb-3">Ajouter un paiement</h3>
             <div className="grid grid-cols-2 gap-2 mb-4">
-              {paymentMethods.filter(m => m.isActive).map((method) => {
-                const Icon = getMethodIcon(method.type);
-                return (
-                  <Button
-                    key={method.id}
-                    variant={selectedMethod?.id === method.id ? "default" : "outline"}
-                    onClick={() => setSelectedMethod(method)}
-                    className="h-12 flex items-center justify-start space-x-2"
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{method.name}</span>
-                  </Button>
-                );
-              })}
+              {paymentMethods
+                .filter((m) => m.isActive)
+                .map((method) => {
+                  const Icon = getMethodIcon(method.type);
+                  return (
+                    <Button
+                      key={method.id}
+                      variant={selectedMethod?.id === method.id ? 'default' : 'outline'}
+                      onClick={() => setSelectedMethod(method)}
+                      className="h-12 flex items-center justify-start space-x-2"
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{method.name}</span>
+                    </Button>
+                  );
+                })}
             </div>
 
             {selectedMethod && (
@@ -211,9 +221,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               <h3 className="font-medium text-gray-900 mb-3">Paiements</h3>
               <div className="space-y-2">
                 {payments.map((payment, index) => {
-                  const method = paymentMethods.find(m => m.id === payment.paymentMethodId);
+                  const method = paymentMethods.find((m) => m.id === payment.paymentMethodId);
                   return (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div>
                         <span className="font-medium">{method?.name}</span>
                         {payment.transactionReference && (
@@ -240,7 +253,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               <div className="mt-3 p-3 bg-gray-50 rounded-lg">
                 <div className="flex justify-between items-center">
                   <span>Restant à payer:</span>
-                  <span className={`font-bold ${remaining === 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <span
+                    className={`font-bold ${remaining === 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
                     {remaining.toLocaleString()} XAF
                   </span>
                 </div>

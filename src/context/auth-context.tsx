@@ -1,38 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { api } from '@/lib/api';
+import { StoreContext, User } from '@/types/auth';
 
 const PUBLIC_PATHS = ['/', '/signin', '/signup', '/auth/callback/google', '/accept-invite'];
 
 type PermissionKey = string;
 type Credentials = { email: string; password: string };
-
-interface User {
-  id: number;
-  email: string;
-  fullName: string;
-  canCreateStore: boolean;
-}
-
-interface StoreContext extends User {
-  storeUserId: number;
-  storeId: number;
-  roleId: number;
-  roleName: string;
-  permissions: PermissionKey[];
-  cashRegisterSessionId?: number;
-}
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -51,6 +28,7 @@ interface AuthContextType {
   cashRegisterSessionId: number | null;
   setCashRegisterSessionId: React.Dispatch<React.SetStateAction<number | null>>;
   fetchMe: () => Promise<void>;
+  hasFetchedMe: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -65,108 +43,132 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [storeContext, setStoreContext] = useState<StoreContext | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [hasFetchedMe, setHasFetchedMe] = useState(false);
   const [cashRegisterSessionId, setCashRegisterSessionId] = useState<number | null>(null);
 
   const router = useRouter();
   const pathname = usePathname();
 
-  const fetchMe = useCallback(async () => {
-    setIsLoading(true);
+  const fetchUser = useCallback(async () => {
     try {
-      let res;
-      try {
-        res = await api.get('/auth/store/me');
-      } catch {
-        res = await api.get('/auth/user/me');
-      }
-      setUser(res.data.user);
-      setStoreContext(res.data.storeContext ?? null);
-      setIsAuthenticated(true);
+      const res = await api.get('/auth/user/me');
+      if (!res?.data) throw new Error('Utilisateur non trouvé');
+      return res.data as User;
     } catch {
-      setUser(null);
-      setStoreContext(null);
-      setIsAuthenticated(false);
-      console.log("authentification echoue")
-    } finally {
-      setIsLoading(false);
+      return null;
     }
   }, []);
 
+  const fetchStoreContext = useCallback(async () => {
+    console.log('appeelle de la fonction pour fect storecontext');
+    try {
+      console.log('appeelle de la fonction pour fect storecontext dans le try');
+
+      const res = await api.get('/auth/store/me'); // renvoie contexte boutique si existant
+      console.log('afficge la requete', res);
+      if (!res?.data) return null;
+      return res.data as StoreContext;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const fetchMe = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const [userData, storeData] = await Promise.all([fetchUser(), fetchStoreContext()]);
+      setUser(userData);
+      setStoreContext(storeData);
+      setIsAuthenticated(!!userData);
+      setHasFetchedMe(true);
+      console.log('user', userData);
+      console.log('store data', storeData);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      setUser(null);
+      setStoreContext(null);
+      setIsAuthenticated(false);
+      setHasFetchedMe(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchUser, fetchStoreContext]);
+
+  // Appel initial
   useEffect(() => {
-    fetchMe();
-  }, [fetchMe]);
+    console.log(hasFetchedMe);
+    console.log(user);
+    console.log(storeContext);
+    // fetchMe();
+  }, [fetchMe, hasFetchedMe, storeContext, user]);
+
+  // Redirection selon auth + store context
 
   useEffect(() => {
-    if (isLoading) return;
+    if (!hasFetchedMe || isLoading) return;
+
     const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 
+    const safeRedirect = (path: string) => {
+      if (pathname !== path) router.replace(path);
+    };
+
     if (isAuthenticated && !storeContext && pathname !== '/select-store') {
-      router.replace('/select-store');
+      safeRedirect('/select-store');
       return;
     }
 
     if (isAuthenticated && storeContext && pathname === '/select-store') {
-      router.replace('/dashboard');
+      safeRedirect('/dashboard');
       return;
     }
 
     if (!isAuthenticated && !isPublic) {
-      router.replace('/signin');
+      safeRedirect('/signin');
     }
-  }, [isAuthenticated, isLoading, pathname, storeContext, router]);
+  }, [isAuthenticated, isLoading, hasFetchedMe, pathname, storeContext, router]);
 
   const login = useCallback(
     async (credentials: Credentials) => {
-    try {
-      await api.post('/auth/login', credentials, { withCredentials: true });
-      await fetchMe();
+      await api.post('/auth/login', credentials);
       toast.success('Connexion réussie');
+      await fetchMe();
       router.push('/select-store');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Erreur de connexion');
-      throw error;
-    }
-  },
-  [fetchMe,router]
-  )
+    },
+    [fetchMe, router]
+  );
 
-  const logout = useCallback(
-    async () => {
+  const logout = useCallback(async () => {
     try {
-      await api.post('/auth/logout', {}, { withCredentials: true });
-    } catch (err) {
-      console.warn('Erreur logout côté serveur', err);
+      await api.post('/auth/logout');
+      toast.success('Déconnexion réussie');
     } finally {
       setUser(null);
       setStoreContext(null);
       setIsAuthenticated(false);
       router.push('/signin');
     }
-  },
-  [router]
-  )
-
-
+  }, [router]);
 
   const selectStore = useCallback(
-  async (storeUserId: number) => {
-    try {
-      await api.post('/auth/select-store', { store_user_id: storeUserId }, { withCredentials: true });
-      await fetchMe();
+    async (storeUserId: number) => {
+      console.log('appeelle de la fonction select pour fect avec', storeUserId);
+
+      const response = await api.post('/auth/select-store', { storeUserId: storeUserId });
+      const accessToken = response.data.accessToken;
+      localStorage.setItem('accessToken', accessToken);
+      console.log(response);
+      await fetchMe(); // rafraîchir user + storeContext
       toast.success('Boutique sélectionnée');
       router.push('/dashboard');
-    } catch (err) {
-      toast.error('Échec sélection boutique');
-      throw err;
-    }
-  },
-  [fetchMe, router]
-);
+    },
+    [fetchMe, router]
+  );
 
   const hasPermission = useCallback(
-    (key: PermissionKey) => storeContext?.permissions.includes(key) ?? false,
+    (key: PermissionKey) => (storeContext?.permissions ?? []).includes(key),
     [storeContext]
   );
 
@@ -198,6 +200,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       cashRegisterSessionId,
       setCashRegisterSessionId,
       fetchMe,
+      hasFetchedMe,
     }),
     [
       isAuthenticated,
@@ -213,6 +216,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       sidebarOpen,
       cashRegisterSessionId,
       fetchMe,
+      hasFetchedMe,
     ]
   );
 
