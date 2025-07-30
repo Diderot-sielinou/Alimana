@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  ShoppingCart,
   Box,
   BarChart3,
   Warehouse,
@@ -7,7 +8,6 @@ import {
   UserPlus,
   CreditCard,
 } from 'lucide-react';
-
 //   {
 //     href: '/dashboard',
 //     label: 'Dashboard',
@@ -65,7 +65,7 @@ export const sidebarLinks = [
   // },
   {
     href: '/dashboard/post',
-    label: 'post',
+    label: 'Sales',
     icon: ShoppingCart,
     requiredPermissions: [],
   },
