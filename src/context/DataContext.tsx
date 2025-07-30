@@ -40,7 +40,7 @@ type DataContextType = {
   updateEmployeeFields: (id: string, updates: Partial<Employee>) => Promise<void>;
   updateEmployeePermissions: (id: string, permissions: string[]) => Promise<void>;
   updateEmployeeProfilePicture: (id: string, file: File) => Promise<void>;
-  disableEmployee:(id:string) => Promise<void>;
+  disableEmployee: (id: string) => Promise<void>;
 
   refreshAll: () => Promise<void>;
 
@@ -89,7 +89,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       setCashRegister(mockData.cashRegisters);
     }
     if (storeContext) {
-      refreshAll();
+      // refreshAll();
     }
   }, [storeContext]);
 
@@ -360,7 +360,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     updateEmployeePermissions,
     updateEmployeeProfilePicture,
     updateEmployeeFields,
-    disableEmployee
+    disableEmployee,
   };
 
   return (

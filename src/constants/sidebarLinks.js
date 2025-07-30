@@ -5,8 +5,8 @@ import {
   Warehouse,
   Settings,
   UserPlus,
+  CreditCard,
 } from 'lucide-react';
-
 
 //   {
 //     href: '/dashboard',
@@ -63,6 +63,18 @@ export const sidebarLinks = [
   //   icon: ShoppingCart,
   //   requiredPermissions: [],
   // },
+  {
+    href: '/dashboard/post',
+    label: 'post',
+    icon: ShoppingCart,
+    requiredPermissions: [],
+  },
+  {
+    href: '/dashboard/cash-registers',
+    label: 'sessions',
+    icon: CreditCard,
+    requiredPermissions: [],
+  },
   {
     href: '/dashboard/analytics',
     label: 'Analytics',

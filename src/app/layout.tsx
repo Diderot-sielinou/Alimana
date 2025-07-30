@@ -6,7 +6,6 @@ import { Toaster } from 'react-hot-toast'; // ✅
 import GlobalProviders from '@/provider/GlobalProviders';
 import 'react-tooltip/dist/react-tooltip.css';
 
-
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -36,7 +35,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
       className={`${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="antialiased bg-background text-foreground dark:bg-gray-900 dark:text-white">
+      <body
+        className="antialiased bg-background text-foreground dark:bg-gray-900 dark:text-white"
+        suppressHydrationWarning={true}
+      >
         <GlobalProviders>{children}</GlobalProviders>
         <Toaster position="top-center" />
       </body>

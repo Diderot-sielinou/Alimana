@@ -1,65 +1,91 @@
-// import { toast } from 'react-hot-toast';
-// import { Product, Category } from '@/types/product';
-// import { PaymentMethod, CashRegister, Sale } from '@/types/pos';
-// import { User, Store } from '@/types/auth';
+// src/lib/api.ts
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
-// const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-// export const api = axios.create({
-//   baseURL: API_BASE_URL,
-//   withCredentials: true,
-//   timeout: 10000,
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-// });
+// On crée d'abord une instance sans token
+export const api = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-// --- Intercepteur de réponses ---
-// api.interceptors.response.use(
-//   (response) => response,
+// Intercepteur requête (défini après création, donc côté client uniquement)
+if (typeof window !== 'undefined') {
+  api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
+}
 
-//   async (error) => {
-//     const originalRequest = error.config;
-//     const status = error.response?.status;
+// Intercepteur réponse
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    const status = error.response?.status;
+    const isClientSide = typeof window !== 'undefined';
 
-//     // 🔐 Gestion du 401 (token expiré → refresh)
-//     if (status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
-//       try {
-//         await axios.post(`${API_BASE_URL}/auth/refresh`, {}, { withCredentials: true });
-//         return api(originalRequest); // rejoue la requête avec nouveau token
-//       } catch (refreshError) {
-//         toast.error('Votre session a expiré. Veuillez vous reconnecter.');
-//         window.location.href = '/signin';
-//         return Promise.reject(refreshError);
-//       }
-//     }
+    // Éviter une boucle infinie sur /auth/refresh
+    if (originalRequest.url?.endsWith('/auth/refresh')) {
+      if (isClientSide) {
+        toast.error('Session expirée. Veuillez vous reconnecter.');
+        window.location.href = '/signin';
+      }
+      return Promise.reject(error);
+    }
 
-//     //  Gestion du 403 Forbidden
-//     if (status === 403) {
-//       toast.error("Accès refusé. Vous n'avez pas la permission.");
-//       // Optionnel : redirection automatique
-//       // window.location.href = '/unauthorized';
-//     }
+    // Tentative de refresh automatique
+    if (status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        await axios.post(`${API_BASE_URL}/auth/refresh`, {}, { withCredentials: true });
+        return api(originalRequest);
+      } catch (refreshError) {
+        if (isClientSide) {
+          if (window.location.pathname !== '/signin') {
+            toast.error('Session expirée. Veuillez vous reconnecter.');
+          }
+          window.location.href = '/signin';
+        }
+        return Promise.reject(refreshError);
+      }
+    }
 
-//     //  Gestion des erreurs serveur (500+)
-//     if (status >= 500) {
-//       toast.error('Une erreur interne est survenue. Réessayez plus tard.');
-//     }
+    if (status === 403 && isClientSide) {
+      toast.error("Accès refusé. Vous n'avez pas la permission.");
+      window.location.href = '/unauthorized';
+    }
 
-//     //  Gestion des erreurs client (400+)
-//     if (status >= 400 && status < 500 && status !== 403 && status !== 401) {
-//       const message = error.response?.data?.error || 'Une erreur est survenue.';
-//       toast.error(message);
-//     }
+    if (status >= 500) {
+      toast.error('Erreur interne du serveur. Réessayez plus tard.');
+    }
 
-//     console.error('[API ERROR]', {
-//       url: originalRequest?.url,
-//       status,
-//       data: error.response?.data,
-//     });
+    if (status >= 400 && status < 500 && status !== 401 && status !== 403) {
+      const message =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        'Erreur lors de la requête.';
+      toast.error(message);
+    }
 
-//     return Promise.reject(error);
-//   }
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[API ERROR]', {
+        url: originalRequest?.url,
+        status,
+        method: originalRequest?.method,
+        data: error.response?.data,
+        message: error.message,
+      });
+    }
 
-// );
+    return Promise.reject(error);
+  }
+);
