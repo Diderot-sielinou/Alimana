@@ -30,9 +30,14 @@ export interface StoreContext {
 
 export interface Permission {
   id: number;
-  name: string;
-  resource: string;
-  action: string;
+  key: string;
+  label: string;
+  category: string | null;
+  name?: string;
+  resource?: string;
+  action?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Store {
@@ -50,4 +55,28 @@ export interface AuthState {
   currentStore: Store | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+}
+
+export interface DefaultShopSettings {
+  taxRate: number;
+  defaultPaymentMethodId: string;
+  receiptHeader: string;
+  receiptFooter: string;
+  inventoryAlertThreshold: number;
+  autoCloseCashRegister: boolean;
+  autoCloseTime: string; // Format HH:MM:SS
+}
+
+// Informations de base de la boutique
+export interface ShopInfo {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  email: string;
+  currency: string; // Ex: "XAF"
+  timezone: string; // Ex: "Africa/Douala"
+  defaultSettings: DefaultShopSettings;
+  createdAt: string; // ISO 8601 date string
+  updatedAt: string; // ISO 8601 date string
 }

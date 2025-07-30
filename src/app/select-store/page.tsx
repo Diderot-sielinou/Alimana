@@ -1,27 +1,42 @@
 // // src/app/select-store/page.tsx
 'use client';
 
-import React from 'react';
-// import { useRouter } from 'next/navigation';
-// import { Store, ArrowRight } from 'lucide-react';
-// import { use2Auth } from '@/context/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Store, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { getMyStores, StoreSummary } from '@/services/utils';
+import { LoadingSpinner } from '@/components/dashboard/LoadingSpinner';
 
 export default function SelectStorePage() {
-  // const { user, selectStore, isAuthenticated } = use2Auth();
-  // const router = useRouter();
+  const { user, selectStore } = useAuth();
+  const router = useRouter();
 
-  // React.useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     router.push('/signin');
-  //   }
-  // }, [isAuthenticated, router]);
+  const [stores, setStores] = useState<StoreSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  console.log(user);
 
-  // const handleStoreSelect = (store: any) => {
-  //   selectStore(store);
-  //   router.push('/dashboard');
-  // };
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        const data = await getMyStores();
+        setStores(data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des boutiques :', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // if (!user) return null;
+    fetchStores();
+  }, []);
+
+  const handleStoreSelect = (store: StoreSummary) => {
+    selectStore(store.storeUserId);
+    router.push('/dashboard');
+  };
+
+  if (loading) return <LoadingSpinner></LoadingSpinner>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center p-4">
@@ -30,12 +45,13 @@ export default function SelectStorePage() {
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Sélectionnez votre boutique</h1>
             <p className="text-gray-500">
+              <span>bienvenue {user?.fullName} </span>
               Choisissez la boutique avec laquelle vous souhaitez travailler
             </p>
           </div>
 
-          {/* <div className="grid gap-4">
-            {user.stores.map((store) => (
+          <div className="grid gap-4">
+            {stores.map((store) => (
               <div
                 key={store.id}
                 onClick={() => handleStoreSelect(store)}
@@ -47,22 +63,16 @@ export default function SelectStorePage() {
                       <Store className="w-6 h-6" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg text-gray-900">
-                        {store.name}
-                      </h3>
-                      <p className="text-gray-500 text-sm">
-                        {store.address}
-                      </p>
-                      <p className="text-gray-400 text-xs">
-                        Devise: {store.currency} • Fuseau: {store.timezone}
-                      </p>
+                      <h3 className="font-semibold text-lg text-gray-900">{store.name}</h3>
+                      <p className="text-gray-500 text-sm">vous avey le role de {store.roleName}</p>
+                      <p className="text-gray-400 text-xs">Devise: XAF • Fuseau: africa/daouala</p>
                     </div>
                   </div>
                   <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
                 </div>
               </div>
             ))}
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

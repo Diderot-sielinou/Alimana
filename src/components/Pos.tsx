@@ -10,10 +10,6 @@ type BasketItem = {
   quantity: number;
 };
 
-const products = [
-  // ... tes produits
-];
-
 const POS = () => {
   const [basket, setBasket] = useState<BasketItem[]>([]);
   const [receiptVisible, setReceiptVisible] = useState(false);

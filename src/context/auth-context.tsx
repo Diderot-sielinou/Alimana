@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
@@ -29,6 +28,7 @@ interface AuthContextType {
   cashRegisterSessionId: number | null;
   setCashRegisterSessionId: React.Dispatch<React.SetStateAction<number | null>>;
   fetchMe: () => Promise<void>;
+  hasFetchedMe: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -45,100 +45,105 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [hasFetchedMe, setHasFetchedMe] = useState(false);
   const [cashRegisterSessionId, setCashRegisterSessionId] = useState<number | null>(null);
 
   const router = useRouter();
   const pathname = usePathname();
 
-  /**
-   * ⚙️ Fetch l'utilisateur courant
-   */
-  const fetchMe = useCallback(async () => {
-    const suppressErrorToast = pathname === PUBLIC_PATHS[0];
+  const fetchUser = useCallback(async () => {
+    try {
+      const res = await api.get('/auth/user/me');
+      if (!res?.data) throw new Error('Utilisateur non trouvé');
+      return res.data as User;
+    } catch {
+      return null;
+    }
+  }, []);
 
+  const fetchStoreContext = useCallback(async () => {
+    console.log('appeelle de la fonction pour fect storecontext');
+    try {
+      console.log('appeelle de la fonction pour fect storecontext dans le try');
+
+      const res = await api.get('/auth/store/me'); // renvoie contexte boutique si existant
+      console.log('afficge la requete', res);
+      if (!res?.data) return null;
+      return res.data as StoreContext;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const fetchMe = useCallback(async () => {
     setIsLoading(true);
     try {
-      let res;
-      try {
-        res = await api.get('/auth/store/me');
-      } catch {
-        res = await api.get('/auth/user/me');
-      }
-
-      console.log(res);
-      // ✅ Vérifie la structure retournée
-      if (!res?.data?.user) throw new Error('Utilisateur non trouvé');
-      setUser(res.data.user);
-
-      setStoreContext(res.data.storeContext || null);
-      setIsAuthenticated(true);
-    } catch (error: any) {
+      const [userData, storeData] = await Promise.all([fetchUser(), fetchStoreContext()]);
+      setUser(userData);
+      setStoreContext(storeData);
+      setIsAuthenticated(!!userData);
+      setHasFetchedMe(true);
+      console.log('user', userData);
+      console.log('store data', storeData);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
       setUser(null);
       setStoreContext(null);
       setIsAuthenticated(false);
-      if (process.env.NODE_ENV === 'development' && !suppressErrorToast) {
-        console.warn('Échec d’authentification', error.response?.data || error.message);
-      }
+      setHasFetchedMe(false);
     } finally {
       setIsLoading(false);
     }
-  }, [pathname]);
+  }, [fetchUser, fetchStoreContext]);
 
-  /**
-   * 🔄 Appel initial de fetchMe
-   */
+  // Appel initial
   useEffect(() => {
+    console.log(hasFetchedMe);
+    console.log(user);
+    console.log(storeContext);
     // fetchMe();
-  }, [fetchMe]);
+  }, [fetchMe, hasFetchedMe, storeContext, user]);
 
-  /**
-   * 🔁 Redirection automatique selon les droits
-   */
+  // Redirection selon auth + store context
+
   useEffect(() => {
-    if (isLoading) return;
+    if (!hasFetchedMe || isLoading) return;
 
     const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 
+    const safeRedirect = (path: string) => {
+      if (pathname !== path) router.replace(path);
+    };
+
     if (isAuthenticated && !storeContext && pathname !== '/select-store') {
-      router.replace('/select-store');
+      safeRedirect('/select-store');
+      return;
     }
 
     if (isAuthenticated && storeContext && pathname === '/select-store') {
-      router.replace('/dashboard');
+      safeRedirect('/dashboard');
+      return;
     }
 
     if (!isAuthenticated && !isPublic) {
-      router.replace('/signin');
+      safeRedirect('/signin');
     }
-  }, [isAuthenticated, isLoading, pathname, storeContext, router]);
+  }, [isAuthenticated, isLoading, hasFetchedMe, pathname, storeContext, router]);
 
-  /**
-   * 🔐 Login
-   */
   const login = useCallback(
     async (credentials: Credentials) => {
-      try {
-        await api.post('/auth/login', credentials); // no need for withCredentials
-        toast.success('Connexion réussie');
-        await fetchMe();
-        router.push('/select-store');
-      } catch (error: any) {
-        toast.error(error.response?.data?.error || 'Erreur de connexion');
-        throw error;
-      }
+      await api.post('/auth/login', credentials);
+      toast.success('Connexion réussie');
+      await fetchMe();
+      router.push('/select-store');
     },
     [fetchMe, router]
   );
 
-  /**
-   * 🔓 Logout
-   */
   const logout = useCallback(async () => {
     try {
       await api.post('/auth/logout');
       toast.success('Déconnexion réussie');
-    } catch (err) {
-      console.warn('Erreur logout côté serveur', err);
     } finally {
       setUser(null);
       setStoreContext(null);
@@ -147,27 +152,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [router]);
 
-  /**
-   * 🏪 Sélection de boutique
-   */
   const selectStore = useCallback(
     async (storeUserId: number) => {
-      try {
-        await api.post('/auth/select-store', { store_user_id: storeUserId });
-        await fetchMe();
-        toast.success('Boutique sélectionnée');
-        router.push('/dashboard');
-      } catch (err) {
-        toast.error('Échec sélection boutique');
-        throw err;
-      }
+      console.log('appeelle de la fonction select pour fect avec', storeUserId);
+
+      const response = await api.post('/auth/select-store', { storeUserId: storeUserId });
+      const accessToken = response.data.accessToken;
+      localStorage.setItem('accessToken', accessToken);
+      console.log(response);
+      await fetchMe(); // rafraîchir user + storeContext
+      toast.success('Boutique sélectionnée');
+      router.push('/dashboard');
     },
     [fetchMe, router]
   );
 
-  /**
-   * 🛡️ Permissions
-   */
   const hasPermission = useCallback(
     (key: PermissionKey) => (storeContext?.permissions ?? []).includes(key),
     [storeContext]
@@ -201,6 +200,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       cashRegisterSessionId,
       setCashRegisterSessionId,
       fetchMe,
+      hasFetchedMe,
     }),
     [
       isAuthenticated,
@@ -216,6 +216,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       sidebarOpen,
       cashRegisterSessionId,
       fetchMe,
+      hasFetchedMe,
     ]
   );
 

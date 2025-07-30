@@ -6,34 +6,46 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { PlusCircle, PlayCircle, StopCircle, History, Loader2, DollarSign } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
-import { CashRegister, CashRegisterSession } from '@/types/pos'; // Assurez-vous que CashRegister est bien importé
 import { useShopData } from '@/context/store-context';
-import { use2Auth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth-context';
+import { ICashRegisterSession } from '@/types/cash-register-session.interface';
+import { ICashRegister } from '@/types/cash-register.interface';
 
 export default function CashRegistersPage() {
-  const { cashRegisters, isLoading, loadInitialData } = useShopData();
-  const { user, currentStore } = use2Auth();
+  const {
+    cashRegisters: currentStoreCashRegisters,
+    isLoading,
+    loadInitialData,
+    setOpenSession,
+  } = useShopData();
+  const { storeContext: user } = useAuth();
 
   const [isOpeningSession, setIsOpeningSession] = React.useState(false);
-  const [selectedRegister, setSelectedRegister] = React.useState<CashRegister | null>(null);
+  const [selectedRegister, setSelectedRegister] = React.useState<ICashRegister | null>(null);
   const [initialCash, setInitialCash] = React.useState<string>('');
   const [isProcessingSession, setIsProcessingSession] = React.useState(false);
 
   const [showHistoryModal, setShowHistoryModal] = React.useState(false);
   const [historyRegisterId, setHistoryRegisterId] = React.useState<number | null>(null);
-  const [registerHistory, setRegisterHistory] = React.useState<CashRegisterSession[]>([]);
+  const [registerHistory, setRegisterHistory] = React.useState<ICashRegisterSession[]>([]);
   const [isFetchingHistory, setIsFetchingHistory] = React.useState(false);
 
   // Filtrer les caisses pour la boutique actuelle
-  const currentStoreCashRegisters = React.useMemo(() => {
-    return cashRegisters.filter(cr => cr.storeId === currentStore?.id);
-  }, [cashRegisters, currentStore]);
+  // const currentStoreCashRegisters = React.useMemo(() => {
+  //   return cashRegisters.filter(cr => cr.storeId === currentStore?.id);
+  // }, [cashRegisters, currentStore]);
 
   // Ouvrir une session de caisse
   const handleOpenSession = async () => {
@@ -50,29 +62,34 @@ export default function CashRegistersPage() {
 
     setIsProcessingSession(true);
     try {
-      await api.post('/cash-register-sessions/open', {
-        cashRegisterId: selectedRegister.id,
-        openedByStoreUserId: user?.id,
+      const response = await api.post(`store/${user?.storeId}/cash-register-sessions/open`, {
+        cashRegisterId: selectedRegister?.id,
         initialCash: initialAmount,
       });
-      toast.success(`Session ouverte pour ${selectedRegister.name} avec ${initialAmount.toLocaleString()} XAF.`);
+      console.log(`reponse de l'ouverture de sesssion ${response}`);
+      setOpenSession(response.data);
+      toast.success(
+        `Session ouverte pour ${selectedRegister?.name} avec ${initialAmount.toLocaleString()} XAF.`
+      );
       loadInitialData(); // Rafraîchir les données
       setIsOpeningSession(false);
       setSelectedRegister(null);
       setInitialCash('');
     } catch (error) {
-      console.error('Erreur lors de l\'ouverture de session:', error);
-      toast.error('Échec de l\'ouverture de session.');
+      console.error("Erreur lors de l'ouverture de session:", error);
+      toast.error("Échec de l'ouverture de session.");
     } finally {
       setIsProcessingSession(false);
     }
   };
 
   // Fermer une session de caisse
-  const handleCloseSession = async (session: CashRegisterSession) => {
+  const handleCloseSession = async (session: ICashRegisterSession) => {
     if (!session || session.status === 'closed') return;
 
-    const closingAmount = prompt(`Confirmez le montant de clôture pour ${session.name} (Actuel: ${session.currentCash?.toLocaleString() || 'N/A'} XAF):`);
+    console.log(`session ouverte ${JSON.stringify(session)}`);
+
+    const closingAmount = prompt(`Confirmez le montant de clôture pour ${session.id}`);
     if (closingAmount === null) return; // Annulé par l'utilisateur
 
     const finalClosingAmount = parseFloat(closingAmount);
@@ -83,12 +100,14 @@ export default function CashRegistersPage() {
 
     setIsProcessingSession(true);
     try {
-      await api.post('/cash-register-sessions/close', {
-        sessionId: session.id,
-        closingCash: finalClosingAmount,
-        closedByStoreUserId: user?.id, // Assurez-vous que l'ID de l'utilisateur est envoyé
+      await api.post(`store/${user?.storeId}/cash-register-sessions/${session.id}/close`, {
+        // sessionId: session.id,
+        finalCash: finalClosingAmount,
+        // closedByStoreUserId: user?.s, // Assurez-vous que l'ID de l'utilisateur est envoyé
       });
-      toast.success(`Session de ${session.name} fermée avec ${finalClosingAmount.toLocaleString()} XAF.`);
+      toast.success(
+        `Session de ${session.id} fermée avec ${finalClosingAmount.toLocaleString()} XAF.`
+      );
       loadInitialData(); // Rafraîchir les données
     } catch (error) {
       console.error('Erreur lors de la fermeture de session:', error);
@@ -102,13 +121,13 @@ export default function CashRegistersPage() {
   const fetchRegisterHistory = async (registerId: number) => {
     setIsFetchingHistory(true);
     try {
-      const response = await api.get(`/cash-register-sessions/history/${registerId}`);
-      setRegisterHistory(response.data.history);
+      const response = await api.get(`store/${user?.storeId}/cash-register/${registerId}/history`);
+      setRegisterHistory(response.data);
       setHistoryRegisterId(registerId);
       setShowHistoryModal(true);
     } catch (error) {
-      console.error('Erreur lors de la récupération de l\'historique:', error);
-      toast.error('Échec de la récupération de l\'historique.');
+      console.error("Erreur lors de la récupération de l'historique:", error);
+      toast.error("Échec de la récupération de l'historique.");
     } finally {
       setIsFetchingHistory(false);
     }
@@ -151,42 +170,46 @@ export default function CashRegistersPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {currentStoreCashRegisters.map((register) => (
-          <Card key={register.id}>
+          <Card key={register?.id}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-lg font-semibold text-gray-900">
-                {register.name}
+                {register?.name}
               </CardTitle>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  register.currentSession?.status === 'open'
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  register?.currentOpenSession?.status === 'open'
                     ? 'bg-green-100 text-green-800'
                     : 'bg-gray-100 text-gray-800'
                 }`}
               >
-                {register.currentSession?.status === 'open' ? 'Session Ouverte' : 'Fermée / Inactive'}
+                {register?.currentOpenSession?.status === 'open'
+                  ? 'Session Ouverte'
+                  : 'Fermée / Inactive'}
               </span>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-gray-600">
-                Lieu: {register.location}
-              </p>
-              {register.currentSession?.status === 'open' ? (
+              <p className="text-sm text-gray-600">Lieu: {register?.store?.name}</p>
+              {register?.currentOpenSession?.status === 'open' ? (
                 <div className="text-sm text-gray-700">
                   <p className="flex items-center mt-1">
                     <PlayCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Ouverte depuis: {format(new Date(register.currentSession.openedAt), 'dd/MM/yyyy HH:mm', { locale: fr })}
+                    Ouverte depuis:{' '}
+                    {format(new Date(register?.currentOpenSession.openedAt), 'dd/MM/yyyy HH:mm', {
+                      locale: fr,
+                    })}
                   </p>
                   <p className="flex items-center mt-1">
                     <DollarSign className="w-4 h-4 mr-2 text-blue-500" />
-                    Solde initial: {register.currentSession.initialCash.toLocaleString()} XAF
+                    Solde initial: {register?.currentOpenSession.initialCash.toLocaleString()} XAF
                   </p>
-                  {register.currentSession.currentCash !== undefined && (
+                  {/* {register?.currentOpenSession. !== undefined && (
                     <p className="flex items-center mt-1 font-bold text-primary">
                       <DollarSign className="w-4 h-4 mr-2 text-primary" />
-                      Solde actuel: {register.currentSession.currentCash.toLocaleString()} XAF
+                      Solde actuel: {register?.currentOpenSession.currentCash.toLocaleString()} XAF
                     </p>
-                  )}
+                  )} */}
                   <Button
-                    onClick={() => handleCloseSession(register.currentSession!)}
+                    onClick={() => handleCloseSession(register.currentOpenSession!)}
                     disabled={isProcessingSession}
                     className="w-full mt-4 bg-red-500 hover:bg-red-600"
                   >
@@ -208,7 +231,7 @@ export default function CashRegistersPage() {
                   disabled={isProcessingSession}
                   className="w-full mt-4"
                 >
-                  {isProcessingSession && selectedRegister?.id === register.id ? (
+                  {isProcessingSession && selectedRegister?.id === register?.id ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
                     <PlayCircle className="w-4 h-4 mr-2" />
@@ -218,16 +241,16 @@ export default function CashRegistersPage() {
               )}
               <Button
                 variant="outline"
-                onClick={() => fetchRegisterHistory(register.id)}
+                onClick={() => fetchRegisterHistory(register?.id)}
                 disabled={isFetchingHistory}
                 className="w-full mt-2 flex items-center"
               >
-                {isFetchingHistory && historyRegisterId === register.id ? (
+                {isFetchingHistory && historyRegisterId === register?.id ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <History className="w-4 h-4 mr-2" />
                 )}
-                Voir l'historique
+                Voir lhistorique
               </Button>
             </CardContent>
           </Card>
@@ -242,7 +265,10 @@ export default function CashRegistersPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label htmlFor="register-select" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="register-select"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Sélectionner la caisse
               </label>
               <select
@@ -251,19 +277,28 @@ export default function CashRegistersPage() {
                 value={selectedRegister?.id || ''}
                 onChange={(e) => {
                   const regId = parseInt(e.target.value);
-                  setSelectedRegister(currentStoreCashRegisters.find(r => r.id === regId) || null);
+                  setSelectedRegister(
+                    currentStoreCashRegisters.find((r) => r.id === regId) || null
+                  );
                 }}
               >
                 <option value="">-- Choisir une caisse --</option>
-                {currentStoreCashRegisters.filter(cr => !cr.currentSession || cr.currentSession.status === 'closed').map((register) => (
-                  <option key={register.id} value={register.id}>
-                    {register.name} ({register.location})
-                  </option>
-                ))}
+                {currentStoreCashRegisters
+                  .filter(
+                    (cr) => !cr.currentOpenSession || cr.currentOpenSession.status === 'closed'
+                  )
+                  .map((register) => (
+                    <option key={register?.id} value={register?.id}>
+                      {register?.name} ({register?.store?.name})
+                    </option>
+                  ))}
               </select>
             </div>
             <div>
-              <label htmlFor="initial-cash" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="initial-cash"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Montant initial (XAF)
               </label>
               <Input
@@ -277,7 +312,9 @@ export default function CashRegistersPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsOpeningSession(false)}>Annuler</Button>
+            <Button variant="outline" onClick={() => setIsOpeningSession(false)}>
+              Annuler
+            </Button>
             <Button onClick={handleOpenSession} disabled={isProcessingSession}>
               {isProcessingSession ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -294,26 +331,35 @@ export default function CashRegistersPage() {
       <Dialog open={showHistoryModal} onOpenChange={setShowHistoryModal}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Historique des sessions ({currentStoreCashRegisters.find(cr => cr.id === historyRegisterId)?.name})</DialogTitle>
+            <DialogTitle>
+              Historique des sessions (
+              {currentStoreCashRegisters.find((cr) => cr.id === historyRegisterId)?.name})
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            {registerHistory.length === 0 ? (
-              <p className="text-gray-500 text-center">Aucune session historique trouvée pour cette caisse.</p>
+            {registerHistory?.length === 0 ? (
+              <p className="text-gray-500 text-center">
+                Aucune session historique trouvée pour cette caisse.
+              </p>
             ) : (
               registerHistory.map((session) => (
                 <Card key={session.id}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-semibold">Session ID: {session.id}</span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          session.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          session.status === 'open'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
                         }`}
                       >
                         {session.status === 'open' ? 'Ouverte' : 'Fermée'}
                       </span>
                     </div>
                     <p className="text-sm text-gray-700">
-                      Ouverte par: {session.openedBy?.name || 'N/A'} le {format(new Date(session.openedAt), 'dd/MM/yyyy HH:mm', { locale: fr })}
+                      Ouverte par: {session.openedBy?.user?.fullName || 'N/A'} le{' '}
+                      {format(new Date(session.openedAt), 'dd/MM/yyyy HH:mm', { locale: fr })}
                     </p>
                     <p className="text-sm text-gray-700">
                       Montant initial: {session.initialCash.toLocaleString()} XAF
@@ -321,23 +367,30 @@ export default function CashRegistersPage() {
                     {session.status === 'closed' && (
                       <>
                         <p className="text-sm text-gray-700">
-                          Fermée par: {session.closedBy?.name || 'N/A'} le {format(new Date(session.closedAt!), 'dd/MM/yyyy HH:mm', { locale: fr })}
+                          Fermée par: {session.closedBy?.user?.fullName || 'N/A'} le{' '}
+                          {format(new Date(session.closedAt!), 'dd/MM/yyyy HH:mm', { locale: fr })}
                         </p>
                         <p className="text-sm text-gray-700 font-medium">
-                          Montant de clôture: {session.finalCash?.toLocaleString() || 'N/A'} XAF
+                          Montant de clôture: {session.closingCash?.toLocaleString() || 'N/A'} XAF
                         </p>
-                        <p className={`text-sm font-bold ${
-                           (session.finalCash || 0) - (session.initialCash || 0) < 0 ? 'text-red-600' : 'text-green-600'
-                        }`}>
-                          Différence: {((session.finalCash || 0) - (session.initialCash || 0)).toLocaleString()} XAF
+                        <p
+                          className={`text-sm font-bold ${
+                            (session.closingCash || 0) - (session.initialCash || 0) < 0
+                              ? 'text-red-600'
+                              : 'text-green-600'
+                          }`}
+                        >
+                          Différence: {session.discrepancy.toLocaleString()} XAF
                         </p>
                       </>
                     )}
-                     <p className="text-sm text-gray-700">
-                      Nombre de ventes: {session.salesCount || 0}
+                    <p className="text-sm text-gray-700">
+                      {/* Nombre de ventes: {session. || 0} */}
                     </p>
                     <p className="text-sm text-gray-700 font-semibold">
-                      Total des ventes: {session.totalSalesAmount?.toLocaleString() || 0} XAF
+                      Total des ventes:{' '}
+                      {((session.closingCash || 0) - (session.initialCash || 0)).toLocaleString()}{' '}
+                      XAF
                     </p>
                   </CardContent>
                 </Card>

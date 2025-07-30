@@ -2,10 +2,8 @@
 'use client';
 
 import React from 'react';
-import { use2Auth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { Product } from '@/types/product';
-import { CartItem, Sale, CashRegisterSession } from '@/types/pos';
+import { CartItem } from '@/types/pos';
 import { Button } from '@/components/ui/button';
 import { Calculator, ShoppingCart } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -16,19 +14,18 @@ import { Cart } from '@/components/newComponent/pos/Cart';
 import { PaymentModal } from '@/components/newComponent/pos/PaymentModal';
 import { Receipt } from '@/components/newComponent/pos/Receipt';
 import { useShopData } from '@/context/store-context';
+import { IProduct } from '@/types/product.interface';
+import { ISaleResponse } from '@/types/sale-dto.interface';
 
 export default function PosPage() {
-  const { cashRegisters, loadInitialData } = useShopData(); // Ajout de fetchShopData pour rafraîchir les données
-  const { currentStore } = use2Auth();
+  // recupere la session de caisse ouverte par l'utilisateur actuellement connecte
+  const { loadInitialData, openSession } = useShopData(); // Ajout de fetchShopData pour rafraîchir les données
   const router = useRouter();
 
   const [cart, setCart] = React.useState<CartItem[]>([]);
   const [showPayment, setShowPayment] = React.useState(false);
   const [showReceipt, setShowReceipt] = React.useState(false);
-  const [currentSale, setCurrentSale] = React.useState<Sale | null>(null);
-
-  // Trouver la session de caisse ouverte pour la boutique actuelle
-    const openSession = cashRegisters.find(r => r.currentSession?.status === 'open');
+  const [currentSale, setCurrentSale] = React.useState<ISaleResponse | null>(null);
 
   // const openSession: CashRegisterSession | undefined = React.useMemo(() => {
   //   return cashRegisters.find(cr =>
@@ -38,33 +35,35 @@ export default function PosPage() {
   // }, [cashRegisters, currentStore]);
 
   // Fonction pour ajouter un produit au panier
-  const addToCart = (product: Product) => {
-    const existingItem = cart.find(item => item.product.id === product.id);
+  const addToCart = (product: IProduct) => {
+    const existingItem = cart.find((item) => item.product.id === product.id);
     if (existingItem) {
       // Vérifier le stock avant d'ajouter
-      if (existingItem.quantity + 1 > product.stock) {
-        toast.error(`Stock insuffisant pour ${product.name}. Disponible: ${product.stock}`);
+      if (existingItem.quantity + 1 > product.quantityInStock) {
+        toast.error(
+          `Stock insuffisant pour ${product.name}. Disponible: ${product.quantityInStock}`
+        );
         return;
       }
-      setCart(prevCart =>
-        prevCart.map(item =>
+      setCart((prevCart) =>
+        prevCart.map((item) =>
           item.product.id === product.id
             ? {
                 ...item,
                 quantity: item.quantity + 1,
-                subtotal: (item.quantity + 1) * item.product.price - item.discount,
+                subtotal: (item.quantity + 1) * item.product.sellingPrice - item.discount,
               }
             : item
         )
       );
     } else {
-      setCart(prevCart => [
+      setCart((prevCart) => [
         ...prevCart,
         {
           product,
           quantity: 1,
           discount: 0,
-          subtotal: product.price, // Initial subtotal without discount
+          subtotal: product.sellingPrice, // Initial subtotal without discount
         },
       ]);
     }
@@ -73,17 +72,21 @@ export default function PosPage() {
 
   // Fonction pour mettre à jour un article du panier
   const updateCartItem = (productId: number, updates: Partial<CartItem>) => {
-    setCart(prevCart =>
-      prevCart.map(item => {
+    setCart((prevCart) =>
+      prevCart.map((item) => {
         if (item.product.id === productId) {
           const updatedItem = { ...item, ...updates };
           // Assurez-vous que la quantité ne dépasse pas le stock
-          if (updatedItem.quantity && updatedItem.quantity > item.product.stock) {
-            toast.error(`Stock insuffisant pour ${item.product.name}. Max: ${item.product.stock}`);
-            updatedItem.quantity = item.product.stock;
+          if (updatedItem.quantity && updatedItem.quantity > item.product.quantityInStock) {
+            toast.error(
+              `Stock insuffisant pour ${item.product.name}. Max: ${item.product.quantityInStock}`
+            );
+            updatedItem.quantity = item.product.quantityInStock;
           }
           // Recalculer le sous-total après mise à jour (quantité ou remise)
-          updatedItem.subtotal = (updatedItem.quantity || 0) * updatedItem.product.price - (updatedItem.discount || 0);
+          updatedItem.subtotal =
+            (updatedItem.quantity || 0) * updatedItem.product.sellingPrice -
+            (updatedItem.discount || 0);
           return updatedItem;
         }
         return item;
@@ -93,7 +96,7 @@ export default function PosPage() {
 
   // Fonction pour retirer un article du panier
   const removeFromCart = (productId: number) => {
-    setCart(prevCart => prevCart.filter(item => item.product.id !== productId));
+    setCart((prevCart) => prevCart.filter((item) => item.product.id !== productId));
     toast.success('Article retiré du panier.');
   };
 
@@ -109,7 +112,7 @@ export default function PosPage() {
   };
 
   // Gère la complétion du paiement
-  const handlePaymentComplete = (sale: Sale) => {
+  const handlePaymentComplete = (sale: ISaleResponse) => {
     setCurrentSale(sale);
     setShowPayment(false);
     setShowReceipt(true); // Ouvre le reçu
@@ -128,9 +131,7 @@ export default function PosPage() {
         <p className="text-gray-500 mb-6">
           Vous devez ouvrir une session de caisse pour commencer les ventes.
         </p>
-        <Button onClick={() => router.push('/dashboard/cash-registers')}>
-          Gérer les caisses
-        </Button>
+        <Button onClick={() => router.push('/dashboard/cash-registers')}>Gérer les caisses</Button>
       </div>
     );
   }
@@ -141,9 +142,10 @@ export default function PosPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Point de Vente</h1>
           <p className="text-gray-500">
-            Session: {openSession?.name?'name':'noname'} • Solde Initial: {openSession?.currentSession?.initialCash.toLocaleString()} XAF
-            {openSession?.currentSession?.id !== undefined && ( // Afficher le solde actuel si disponible
-              <span className="ml-4">Solde Actuel: {openSession.isActive.toLocaleString()} XAF</span>
+            Session: {openSession?.id} • Solde Initial: {openSession?.initialCash?.toLocaleString()}{' '}
+            XAF
+            {openSession?.id !== undefined && ( // Afficher le solde actuel si disponible
+              <span className="ml-4">caisier: {openSession.openedBy?.user?.fullName}</span>
             )}
           </p>
         </div>
@@ -174,7 +176,7 @@ export default function PosPage() {
 
       {/* Modal de paiement */}
       {showPayment && (
-        <PaymentModal  
+        <PaymentModal
           isOpen={showPayment}
           onClose={() => setShowPayment(false)}
           cartItems={cart}
@@ -186,11 +188,7 @@ export default function PosPage() {
 
       {/* Reçu */}
       {showReceipt && currentSale && (
-        <Receipt
-          isOpen={showReceipt}
-          onClose={() => setShowReceipt(false)}
-          sale={currentSale}
-        />
+        <Receipt isOpen={showReceipt} onClose={() => setShowReceipt(false)} sale={currentSale} />
       )}
     </div>
   );
