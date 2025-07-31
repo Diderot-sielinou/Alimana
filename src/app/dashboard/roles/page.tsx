@@ -34,7 +34,7 @@ export default function RolesPage() {
   };
 
   return (
-    <div className="p-6">
+    <main className="pl-[260px] pr-6 pt-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Manage Roles</h1>
         <button
@@ -61,6 +61,6 @@ export default function RolesPage() {
       {modalOpen && (
         <RoleModal role={selectedRole} onClose={handleCloseModal} onSave={handleSaveRole} />
       )}
-    </div>
+    </main>
   );
 }
