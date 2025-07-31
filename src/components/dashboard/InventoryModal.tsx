@@ -86,10 +86,10 @@ export const InventoryReportModal = ({ onClose, storeId = 1 }: ModalProps) => {
         window.URL.revokeObjectURL(url);
       }, 100);
 
-      toast(`Your ${format.toUpperCase()} report has been downloaded successfully!`);
+      toast.success(`Your ${format.toUpperCase()} report has been downloaded successfully!`);
     } catch (err) {
       console.error('Download error:', err);
-      toast(err instanceof Error ? err.message : 'Failed to download report');
+      toast.error(err instanceof Error ? err.message : 'Failed to download report');
     } finally {
       setIsDownloading(false);
       // setDownloadProgress(0);
