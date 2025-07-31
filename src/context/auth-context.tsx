@@ -62,12 +62,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const fetchStoreContext = useCallback(async () => {
-    console.log('appeelle de la fonction pour fect storecontext');
     try {
-      console.log('appeelle de la fonction pour fect storecontext dans le try');
-
       const res = await api.get('/auth/store/me'); // renvoie contexte boutique si existant
-      console.log('afficge la requete', res);
       if (!res?.data) return null;
       return res.data as StoreContext;
     } catch {
@@ -98,9 +94,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Appel initial
   useEffect(() => {
-    console.log(hasFetchedMe);
-    console.log(user);
-    console.log(storeContext);
     // fetchMe();
   }, [fetchMe, hasFetchedMe, storeContext, user]);
 

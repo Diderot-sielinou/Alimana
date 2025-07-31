@@ -77,6 +77,12 @@ export const sidebarLinks = [
     requiredPermissions: [],
   },
   {
+    href: '/dashboard/manage-cash-register',
+    label: 'Cash Register',
+    icon: CreditCard,
+    requiredPermissions: [],
+  },
+  {
     href: '/dashboard/analytics',
     label: 'Analytics',
     icon: BarChart3,
