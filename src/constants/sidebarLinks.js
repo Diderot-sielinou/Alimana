@@ -6,6 +6,7 @@ import {
   Warehouse,
   Settings,
   UserPlus,
+  FileText
 } from 'lucide-react';
 
 
@@ -88,4 +89,10 @@ export const sidebarLinks = [
     icon: Settings,
     requiredPermissions: [],
   },
+  {
+    href: '/dashboard/reports',
+    label: 'Reports',
+    icon: FileText,
+    requiredPermissions: []
+  }
 ];
