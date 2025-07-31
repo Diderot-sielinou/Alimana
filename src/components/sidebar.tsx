@@ -56,7 +56,6 @@ export default function Sidebar() {
           </button>
         </div>
 
-        {/* Nav + Logout Zone */}
         <div className="flex flex-col flex-1 justify-between">
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto py-4">
@@ -85,7 +84,7 @@ export default function Sidebar() {
             </ul>
           </nav>
 
-          {/* Logout en bas */}
+          {/* Logout */}
           <div className="p-4 border-t border-orange-500">
             <button
               onClick={logout}

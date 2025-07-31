@@ -141,11 +141,11 @@ export default function DashboardPage() {
     <div className="md:ml-64 min-h-screen bg-gray-50 dark:bg-gray-950 px-6 py-4">
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">📊 Tableau de bord</h1>
-        <p className="text-gray-500 mt-1">Vue densemble de votre boutique</p>
+        <p className="text-gray-500 mt-1 mb-8 text-center">Vue densemble de votre boutique</p>
       </div>
 
       {/* Résumé des revenus */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 mb-6 md:grid-cols-4 gap-6">
         {[
           {
             title: 'Revenu journalier',
@@ -202,7 +202,9 @@ export default function DashboardPage() {
 
       {/* Sections secondaires */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-5">
-        {/* Produits populaires */}
+        {/*Colonne 1: Produits Populaires + Sales chart */}
+        <div className="flex flex-col gap-6">
+          {/* Produits populaires */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base md:text-lg">Produits populaires</CardTitle>
@@ -227,7 +229,18 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        {/* État des caisses */}
+
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow">
+            {' '}
+            <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">
+              Sales Overview{' '}
+            </h3>{' '}
+            <canvas ref={lineChartRef} className="h-64"/>{' '}
+          </div>{' '}
+        </div>
+        {/* Colonne 2: Etat des caisses + Doughnut chart */}
+        <div className="flex flex-col gap-6">
+          {/* État des caisses */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base md:text-lg">État des caisses</CardTitle>
@@ -259,24 +272,15 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        {/* Charts */}{' '}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full ">
-          {' '}
-          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow">
-            {' '}
-            <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">
-              Sales Overview{' '}
-            </h3>{' '}
-            <canvas ref={lineChartRef} />{' '}
-          </div>{' '}
-          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow">
-            {' '}
-            <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">
-              {' '}
-              Payment Methods{' '}
-            </h3>{' '}
-            <canvas ref={doughnutChartRef} />
-          </div>
+
+        <div className="bg-white p-6 rounded-xl shadow">
+  <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">
+    Payment Methods
+  </h3>
+  <div className="mx-auto w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-96 xl:h-96">
+  <canvas ref={doughnutChartRef} className="w-full h-full" />
+</div>
+</div>
         </div>
       </div>
     </div>
