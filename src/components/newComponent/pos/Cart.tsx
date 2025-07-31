@@ -8,12 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Trash2, Minus, Plus, ShoppingCart } from 'lucide-react';
 
 interface CartProps {
-  items: CartItem[];// Le tableau des articles dans le panier.
-  onUpdateItem: (productId: number, updates: Partial<CartItem>) => void;//Pour modifier la quantité ou la remise d'un article.
+  items: CartItem[]; // Le tableau des articles dans le panier.
+  onUpdateItem: (productId: number, updates: Partial<CartItem>) => void; //Pour modifier la quantité ou la remise d'un article.
   onRemoveItem: (productId: number) => void; // Pour supprimer un article.
   onClear: () => void;
   onCheckout: () => void; // Pour déclencher le processus de paiement.
-  total: number;// e montant total calculé du panier
+  total: number; // e montant total calculé du panier
 }
 
 export const Cart: React.FC<CartProps> = ({
@@ -22,7 +22,7 @@ export const Cart: React.FC<CartProps> = ({
   onRemoveItem,
   onClear,
   onCheckout,
-  total
+  total,
 }) => {
   const updateQuantity = (productId: number, newQuantity: number) => {
     if (newQuantity > 0) {
@@ -41,7 +41,12 @@ export const Cart: React.FC<CartProps> = ({
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Panier</h2>
         {items.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={onClear} className="text-red-600 hover:text-red-700">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClear}
+            className="text-red-600 hover:text-red-700"
+          >
             <Trash2 className="w-4 h-4 mr-1" />
             Vider
           </Button>
@@ -61,7 +66,9 @@ export const Cart: React.FC<CartProps> = ({
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <h3 className="font-medium text-gray-900">{item.product.name}</h3>
-                    <p className="text-sm text-gray-500">{item.product.price.toLocaleString()} XAF</p>
+                    <p className="text-sm text-gray-500">
+                      {item.product.sellingPrice.toLocaleString()} XAF
+                    </p>
                   </div>
                   <Button
                     variant="ghost"
@@ -110,15 +117,13 @@ export const Cart: React.FC<CartProps> = ({
                     onChange={(e) => updateDiscount(item.product.id, parseInt(e.target.value) || 0)}
                     className="h-8"
                     min="0"
-                    max={item.quantity * item.product.price}
+                    max={item.quantity * item.product.sellingPrice}
                   />
                 </div>
 
                 {/* Sous-total */}
                 <div className="text-right">
-                  <p className="font-semibold text-primary">
-                    {item.subtotal.toLocaleString()} XAF
-                  </p>
+                  <p className="font-semibold text-primary">{item.subtotal.toLocaleString()} XAF</p>
                 </div>
               </div>
             ))}
@@ -131,9 +136,7 @@ export const Cart: React.FC<CartProps> = ({
         <div className="mt-6 pt-4 border-t">
           <div className="flex justify-between items-center mb-4">
             <span className="text-lg font-semibold text-gray-900">Total:</span>
-            <span className="text-2xl font-bold text-primary">
-              {total.toLocaleString()} XAF
-            </span>
+            <span className="text-2xl font-bold text-primary">{total.toLocaleString()} XAF</span>
           </div>
           <Button onClick={onCheckout} className="w-full" size="lg">
             Procéder au paiement
@@ -151,14 +154,14 @@ export const Cart: React.FC<CartProps> = ({
 // import { Button } from '@/components/ui/button';
 // import { Input } from '@/components/ui/input';
 // import { Badge } from '@/components/ui/badge';
-// import { 
-//   ShoppingCart, 
-//   Trash2, 
-//   Plus, 
-//   Minus, 
-//   CreditCard, 
+// import {
+//   ShoppingCart,
+//   Trash2,
+//   Plus,
+//   Minus,
+//   CreditCard,
 //   Percent,
-//   X 
+//   X
 // } from 'lucide-react';
 // import toast from 'react-hot-toast';
 
@@ -196,7 +199,7 @@ export const Cart: React.FC<CartProps> = ({
 
 //     const maxDiscount = item.quantity * item.product.price;
 //     const validDiscount = Math.max(0, Math.min(discount, maxDiscount));
-    
+
 //     onUpdateItem(productId, { discount: validDiscount });
 //   };
 
@@ -229,7 +232,7 @@ export const Cart: React.FC<CartProps> = ({
 //             {getTotalItems()} articles
 //           </Badge>
 //         </div>
-        
+
 //         {/* Client */}
 //         <div className="mt-3">
 //           <label className="block text-sm font-medium text-gray-700 mb-1">

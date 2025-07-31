@@ -4,30 +4,31 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Sale } from '@/types/pos';
 import { Printer } from 'lucide-react';
+import { ISaleResponse } from '@/types/sale-dto.interface';
 
 interface ReceiptProps {
   isOpen: boolean;
   onClose: () => void;
-  sale: Sale;
+  sale: ISaleResponse;
 }
 
 export const Receipt: React.FC<ReceiptProps> = ({ isOpen, onClose, sale }) => {
+  console.log(`sale recus ${sale}`);
   const handlePrint = () => {
     const printWindow = window.open('', '_blank');
     if (printWindow) {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Reçu - ${sale.id}</title>
+            <title>Reçu - ${sale.sale?.id}</title>
             <style>
               body { font-family: monospace; margin: 20px; }
               pre { white-space: pre-wrap; }
             </style>
           </head>
           <body>
-            <pre>${sale.receipt}</pre>
+            <pre>${sale?.receiptContent}</pre>
             <script>window.print(); window.close();</script>
           </body>
         </html>
@@ -44,9 +45,7 @@ export const Receipt: React.FC<ReceiptProps> = ({ isOpen, onClose, sale }) => {
 
         <div className="space-y-4">
           <div className="bg-gray-50 p-4 rounded-lg">
-            <pre className="text-xs whitespace-pre-wrap font-mono">
-              {sale.receipt}
-            </pre>
+            <pre className="text-xs whitespace-pre-wrap font-mono">{sale?.receiptContent}</pre>
           </div>
 
           <div className="flex space-x-3">
@@ -63,12 +62,6 @@ export const Receipt: React.FC<ReceiptProps> = ({ isOpen, onClose, sale }) => {
     </Dialog>
   );
 };
-
-
-
-
-
-
 
 // 'use client';
 
@@ -149,7 +142,7 @@ export const Receipt: React.FC<ReceiptProps> = ({ isOpen, onClose, sale }) => {
 //       total: sale.totalAmount,
 //       store: store
 //     };
-    
+
 //     const dataStr = JSON.stringify(receiptData, null, 2);
 //     const dataBlob = new Blob([dataStr], { type: 'application/json' });
 //     const url = URL.createObjectURL(dataBlob);

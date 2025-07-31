@@ -25,7 +25,6 @@ export default function Sidebar() {
   const filteredLinks = links.filter((link) => {
     if (!link.requiredPermissions || link.requiredPermissions.length === 0) return true;
     return link.requiredPermissions.some((perm: string) => hasPermission(perm));
-
   });
 
   const isLinkActive = (href: string) => {
@@ -58,7 +57,6 @@ export default function Sidebar() {
           </button>
         </div>
 
-        {/* Navigation and Logout */}
         <div className="flex flex-col flex-1 justify-between">
           {/* Nav */}
           <nav className="flex-1 overflow-y-auto py-4">
@@ -69,10 +67,11 @@ export default function Sidebar() {
                   <li key={href} className="relative">
                     <Link
                       href={href}
-                      className={`flex items-center px-4 py-2 rounded-md transition-all duration-200 ${isActive
+                      className={`flex items-center px-4 py-2 rounded-md transition-all duration-200 ${
+                        isActive
                           ? 'bg-amber-600 font-semibold ring-1 ring-white'
                           : 'hover:bg-amber-500'
-                        }`}
+                      }`}
                     >
                       {isActive && (
                         <span className="absolute left-0 top-1 bottom-1 w-1 bg-white rounded-r" />
@@ -86,8 +85,7 @@ export default function Sidebar() {
             </ul>
           </nav>
 
-          {/* Logout */}
-          <div className="p-4 border-t border-amber-500">
+          <div className="p-4 border-t border-orange-500">
             <button
               onClick={logout}
               className="w-full flex items-center px-3 py-2 rounded-md hover:bg-amber-500 transition text-white font-medium text-sm"

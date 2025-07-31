@@ -5,6 +5,7 @@ import {
   Warehouse,
   Settings,
   UserPlus,
+  CreditCard,
 } from 'lucide-react';
 
 export const sidebarLinks = [
@@ -12,12 +13,24 @@ export const sidebarLinks = [
     href: '/dashboard/overview',
     label: 'Dashboard',
     icon: LayoutDashboard,
-    requiredPermissions: [], 
+    requiredPermissions: [],
   },
+  // {
+  //   href: '/dashboard/sales',
+  //   label: 'Sales',
+  //   icon: ShoppingCart,
+  //   requiredPermissions: [],
+  // },
   {
-    href: '/dashboard/sales',
+    href: '/dashboard/post',
     label: 'Sales',
     icon: ShoppingCart,
+    requiredPermissions: [],
+  },
+  {
+    href: '/dashboard/cash-registers',
+    label: 'sessions',
+    icon: CreditCard,
     requiredPermissions: [],
   },
   {

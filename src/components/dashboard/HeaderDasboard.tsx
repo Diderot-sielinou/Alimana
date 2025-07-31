@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Chart } from 'chart.js/auto';
 import { Bell, Menu } from 'lucide-react';
 import Image from 'next/image';
@@ -9,32 +9,10 @@ import React from 'react';
 import { useAuth } from '@/context/auth-context';
 
 export default function HeaderDasboard() {
-  const { setSidebarOpen} = useAuth();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { setSidebarOpen } = useAuth();
 
   const lineChartRef = useRef<HTMLCanvasElement>(null);
   const doughnutChartRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      setIsDarkMode(true);
-    } else {
-      // Par défaut, on reste en light mode
-      document.documentElement.classList.remove('dark');
-      setIsDarkMode(false);
-    }
-  }, []);
-
-  // Toggle dark mode manually
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    localStorage.setItem('theme', newMode ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark', newMode);
-  };
 
   // Line chart (Sales Overview)
   useEffect(() => {
@@ -101,8 +79,7 @@ export default function HeaderDasboard() {
 
   return (
     <div>
-      {' '}
-      <header className="bg-white dark:bg-gray-900 shadow-sm z-10 md:ml-64 max-w-full pr-2">
+      <header className="bg-white shadow-sm z-10 md:ml-64 max-w-full pr-2">
         <div className="flex items-center justify-between px-6 py-3">
           {/* Mobile menu */}
           <div className="flex items-center">
@@ -115,7 +92,11 @@ export default function HeaderDasboard() {
             <Link
               href="/"
               className="text-xl font-semibold text-amber-700 dark:text-amber-300 hover:text-amber-900"
-            >
+            ></Link>
+            <button>
+              <Menu className="w-6 h-6" />
+            </button>
+            <Link href="/" className="text-xl font-semibold text-orange-700 hover:text-orange-900">
               ALIMANA
             </Link>
           </div>
@@ -126,28 +107,31 @@ export default function HeaderDasboard() {
               {isDarkMode ? '🌙' : '☀️'}
             </button>
             <button className="text-amber-700 dark:text-amber-300 relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+              <button className="text-orange-700 relative">
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+              </button>
+              <div className="flex items-center space-x-2">
+                <Image
+                  src="https://images.unsplash.com/photo-1644904105846-095e45fca990?w=500&auto=format&fit=crop&q=60"
+                  alt="User"
+                  width={400}
+                  height={300}
+                  className="w-8 h-8 rounded-full"
+                />
+                <span className="hidden md:inline text-amber-700 dark:text-amber-200 text-sm">
+                  Admin
+                </span>
+                <span className="hidden md:inline text-amber-700 text-sm">Admin</span>
+              </div>
             </button>
-            <div className="flex items-center space-x-2">
-              <Image
-                src="https://images.unsplash.com/photo-1644904105846-095e45fca990?w=500&auto=format&fit=crop&q=60"
-                alt="User"
-                width={400}
-                height={300}
-                className="w-8 h-8 rounded-full"
-              />
-              <span className="hidden md:inline text-amber-700 dark:text-amber-200 text-sm">
-                Admin
-              </span>
-            </div>
           </div>
         </div>
 
         {/* Filters & Export */}
-        <div className="px-6 py-2 bg-gray-50 dark:bg-gray-800">
+        <div className="px-6 py-2 bg-gray-50">
           <div className="flex justify-between">
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+            <p className="text-sm text-gray-600">
               <span className="mr-1">🔄</span> Last updated: Just now
             </p>
             <div className="flex space-x-2">
