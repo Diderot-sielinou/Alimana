@@ -108,13 +108,13 @@ export default function HeaderDasboard() {
           <div className="flex items-center">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="text-orange-700 dark:text-orange-400 mr-4 md:hidden"
+              className="text-amber-700 dark:text-amber-400 mr-4 md:hidden"
             >
               <Menu className="w-6 h-6" />
             </button>
             <Link
               href="/"
-              className="text-xl font-semibold text-orange-700 dark:text-orange-300 hover:text-orange-900"
+              className="text-xl font-semibold text-amber-700 dark:text-amber-300 hover:text-amber-900"
             >
               ALIMANA
             </Link>
@@ -125,7 +125,7 @@ export default function HeaderDasboard() {
             <button onClick={toggleDarkMode} title="Toggle dark mode">
               {isDarkMode ? '🌙' : '☀️'}
             </button>
-            <button className="text-orange-700 dark:text-orange-300 relative">
+            <button className="text-amber-700 dark:text-amber-300 relative">
               <Bell className="w-5 h-5" />
               <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
             </button>
@@ -137,7 +137,7 @@ export default function HeaderDasboard() {
                 height={300}
                 className="w-8 h-8 rounded-full"
               />
-              <span className="hidden md:inline text-orange-700 dark:text-orange-200 text-sm">
+              <span className="hidden md:inline text-amber-700 dark:text-amber-200 text-sm">
                 Admin
               </span>
             </div>
@@ -151,12 +151,12 @@ export default function HeaderDasboard() {
               <span className="mr-1">🔄</span> Last updated: Just now
             </p>
             <div className="flex space-x-2">
-              <select className="bg-orange-600 text-white px-3 py-1 rounded">
+              <select className="bg-amber-600 text-white px-3 py-1 rounded">
                 <option value="Today">Today</option>
                 <option value="This week">This Week</option>
                 <option value="This Month">This Month</option>
               </select>
-              <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm">Export</button>
+              <button className="bg-amber-600 text-white px-3 py-1 rounded text-sm">Export</button>
             </div>
           </div>
         </div>

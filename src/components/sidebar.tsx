@@ -43,12 +43,12 @@ export default function Sidebar() {
       )}
 
       <aside
-        className={`fixed top-0 left-0 h-screen w-64 bg-orange-600 text-white shadow-lg z-30 transform
+        className={`fixed top-0 left-0 h-screen w-64 bg-amber-600 text-white shadow-lg z-30 transform
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         transition-transform duration-300 md:translate-x-0 flex flex-col`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-orange-500">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-amber-500">
           <Link href="/dashboard" className="flex items-center gap-2 text-xl font-bold text-white">
             <Store className="w-6 h-6" />
             <span>STORE</span>

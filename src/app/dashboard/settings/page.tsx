@@ -157,7 +157,7 @@ export default function SettingsPage() {
         </section>
 
         {/* Save Button */}
-        <Button onClick={handleSave} className="bg-orange-600 text-white hover:bg-orange-700">
+        <Button onClick={handleSave} className="bg-amber-600 text-white hover:bg-amber-700">
           Save Settings
         </Button>
       </main>
