@@ -6,10 +6,9 @@ import {
   Warehouse,
   Settings,
   UserPlus,
-  FileText
+  FileText,
+  CreditCard,
 } from 'lucide-react';
-
-
 //   {
 //     href: '/dashboard',
 //     label: 'Dashboard',
@@ -59,10 +58,22 @@ export const sidebarLinks = [
     icon: Box,
     requiredPermissions: [],
   },
+  // {
+  //   href: '/dashboard/sales',
+  //   label: 'Sales',
+  //   icon: ShoppingCart,
+  //   requiredPermissions: [],
+  // },
   {
-    href: '/dashboard/sales',
+    href: '/dashboard/post',
     label: 'Sales',
     icon: ShoppingCart,
+    requiredPermissions: [],
+  },
+  {
+    href: '/dashboard/cash-registers',
+    label: 'sessions',
+    icon: CreditCard,
     requiredPermissions: [],
   },
   {
@@ -93,6 +104,6 @@ export const sidebarLinks = [
     href: '/dashboard/reports',
     label: 'Reports',
     icon: FileText,
-    requiredPermissions: []
-  }
+    requiredPermissions: [],
+  },
 ];
