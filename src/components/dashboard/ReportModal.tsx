@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { X, Download, FileText, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 // import { Progress } from '@/components/ui/progress';
 
 interface ModalProps {
@@ -37,12 +38,12 @@ export const SalesReportModal = ({ onClose, storeId = 1 }: ModalProps) => {
   // Validate date range
   const validateDates = () => {
     if (!fromDate || !toDate) {
-      alert('Please select both start and end dates');
+      toast('Please select both start and end dates');
       return false;
     }
 
     if (new Date(fromDate) > new Date(toDate)) {
-      alert('End date must be after start date');
+      toast('End date must be after start date');
       return false;
     }
 
@@ -108,10 +109,10 @@ export const SalesReportModal = ({ onClose, storeId = 1 }: ModalProps) => {
         window.URL.revokeObjectURL(url);
       }, 100);
 
-      alert(`Your ${format.toUpperCase()} report has been downloaded successfully!`);
+      toast(`Your ${format.toUpperCase()} report has been downloaded successfully!`);
     } catch (err) {
       console.error('Download error:', err);
-      alert(err instanceof Error ? err.message : 'Failed to download report');
+      toast(err instanceof Error ? err.message : 'Failed to download report');
     } finally {
       setIsDownloading(false);
       // setDownloadProgress(0);
