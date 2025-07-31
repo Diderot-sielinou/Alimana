@@ -2,14 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import { X, Download, FileText, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/auth-context';
 // import { Progress } from '@/components/ui/progress';
 
 interface ModalProps {
   onClose: () => void;
-  storeId?: number;
 }
 
-export const SalesReportModal = ({ onClose, storeId = 1 }: ModalProps) => {
+export const SalesReportModal = ({ onClose }: ModalProps) => {
+  const { storeContext } = useAuth();
+  const storeId = storeContext?.storeId;
   const modalRef = useRef<HTMLDivElement>(null);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
@@ -214,7 +216,11 @@ export const SalesReportModal = ({ onClose, storeId = 1 }: ModalProps) => {
               <Button type="button" onClick={onClose} variant="outline" disabled={isDownloading}>
                 Cancel
               </Button>
-              <Button type="submit" className="bg-orange-600 hover:bg-orange-700 text-white" disabled={isDownloading || !fromDate || !toDate}>
+              <Button
+                type="submit"
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+                disabled={isDownloading || !fromDate || !toDate}
+              >
                 <Download className="mr-2 h-4 w-4" />
                 {isDownloading ? 'Downloading...' : 'Download Report'}
               </Button>

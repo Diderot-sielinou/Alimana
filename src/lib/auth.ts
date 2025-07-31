@@ -1,3 +1,5 @@
+import { api } from './api';
+
 export interface User {
   id: string;
   email: string;
@@ -135,6 +137,30 @@ export const hasAnyPermission = (user: User, permissions: Permission[]): boolean
   return permissions.some((permission) => user.permissions.includes(permission));
 };
 
+// 📝 Register new user
+export async function signUp(data: {
+  fullName: string;
+  phone?: string;
+  email: string;
+  password?: string;
+  avatar?: string;
+  authProvider?: string;
+  provider?: string;
+  isActive?: boolean;
+  canCreateStore?: boolean;
+}) {
+  return api.post('/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
+}
+
+export function signUpWithGoogle() {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  window.location.href = `${API_BASE_URL}/api/auth/google`;
+}
 // 'use client';
 // import { useEffect } from 'react';
 // import { useRouter } from 'next/navigation';
