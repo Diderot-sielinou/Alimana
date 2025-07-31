@@ -3,7 +3,6 @@
 export const allPermissions = [
   'create_user',
   'edit_user',
-  'invites_users',
   'delete_user',
   'view_user',
 
