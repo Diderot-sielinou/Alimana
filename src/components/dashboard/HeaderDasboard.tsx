@@ -103,9 +103,6 @@ export default function HeaderDasboard() {
 
           {/* Header right */}
           <div className="flex items-center space-x-4">
-            <button onClick={toggleDarkMode} title="Toggle dark mode">
-              {isDarkMode ? '🌙' : '☀️'}
-            </button>
             <button className="text-amber-700 dark:text-amber-300 relative">
               <button className="text-orange-700 relative">
                 <Bell className="w-5 h-5" />
