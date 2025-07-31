@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Chart } from 'chart.js/auto';
 import { Bell, Menu } from 'lucide-react';
 import Image from 'next/image';
@@ -9,32 +9,10 @@ import React from 'react';
 import { useAuth } from '@/context/auth-context';
 
 export default function HeaderDasboard() {
-  const { setSidebarOpen} = useAuth();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { setSidebarOpen } = useAuth();
 
   const lineChartRef = useRef<HTMLCanvasElement>(null);
   const doughnutChartRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      setIsDarkMode(true);
-    } else {
-      // Par défaut, on reste en light mode
-      document.documentElement.classList.remove('dark');
-      setIsDarkMode(false);
-    }
-  }, []);
-
-  // Toggle dark mode manually
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    localStorage.setItem('theme', newMode ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark', newMode);
-  };
 
   // Line chart (Sales Overview)
   useEffect(() => {
@@ -101,31 +79,24 @@ export default function HeaderDasboard() {
 
   return (
     <div>
-      {' '}
-      <header className="bg-white dark:bg-gray-900 shadow-sm z-10 md:ml-64 max-w-full pr-2">
+      <header className="bg-white shadow-sm z-10 md:ml-64 max-w-full pr-2">
         <div className="flex items-center justify-between px-6 py-3">
           {/* Mobile menu */}
           <div className="flex items-center">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="text-orange-700 dark:text-orange-400 mr-4 md:hidden"
+              className="text-orange-700 mr-4 md:hidden"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <Link
-              href="/"
-              className="text-xl font-semibold text-orange-700 dark:text-orange-300 hover:text-orange-900"
-            >
+            <Link href="/" className="text-xl font-semibold text-orange-700 hover:text-orange-900">
               ALIMANA
             </Link>
           </div>
 
           {/* Header right */}
           <div className="flex items-center space-x-4">
-            <button onClick={toggleDarkMode} title="Toggle dark mode">
-              {isDarkMode ? '🌙' : '☀️'}
-            </button>
-            <button className="text-orange-700 dark:text-orange-300 relative">
+            <button className="text-orange-700 relative">
               <Bell className="w-5 h-5" />
               <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
             </button>
@@ -137,17 +108,15 @@ export default function HeaderDasboard() {
                 height={300}
                 className="w-8 h-8 rounded-full"
               />
-              <span className="hidden md:inline text-orange-700 dark:text-orange-200 text-sm">
-                Admin
-              </span>
+              <span className="hidden md:inline text-orange-700 text-sm">Admin</span>
             </div>
           </div>
         </div>
 
         {/* Filters & Export */}
-        <div className="px-6 py-2 bg-gray-50 dark:bg-gray-800">
+        <div className="px-6 py-2 bg-gray-50">
           <div className="flex justify-between">
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+            <p className="text-sm text-gray-600">
               <span className="mr-1">🔄</span> Last updated: Just now
             </p>
             <div className="flex space-x-2">

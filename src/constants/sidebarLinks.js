@@ -8,7 +8,6 @@ import {
   UserPlus,
   CreditCard,
 } from 'lucide-react';
-
 //   {
 //     href: '/dashboard',
 //     label: 'Dashboard',
@@ -58,15 +57,15 @@ export const sidebarLinks = [
     icon: Box,
     requiredPermissions: [],
   },
-  {
-    href: '/dashboard/sales',
-    label: 'Sales',
-    icon: ShoppingCart,
-    requiredPermissions: [],
-  },
+  // {
+  //   href: '/dashboard/sales',
+  //   label: 'Sales',
+  //   icon: ShoppingCart,
+  //   requiredPermissions: [],
+  // },
   {
     href: '/dashboard/post',
-    label: 'post',
+    label: 'Sales',
     icon: ShoppingCart,
     requiredPermissions: [],
   },
