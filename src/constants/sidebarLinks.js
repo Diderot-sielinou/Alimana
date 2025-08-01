@@ -7,6 +7,7 @@ import {
   Settings,
   UserPlus,
   CreditCard,
+  Badge,
   Tags,
 } from 'lucide-react';
 
@@ -39,6 +40,12 @@ export const sidebarLinks = [
     href: '/dashboard/cash-registers',
     label: 'sessions',
     icon: CreditCard,
+    requiredPermissions: [],
+  },
+  {
+    href: '/dashboard/roles',
+    label: 'Roles',
+    icon: Badge,
     requiredPermissions: [],
   },
   {
