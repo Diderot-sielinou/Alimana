@@ -6,6 +6,7 @@ import {
   Warehouse,
   Settings,
   UserPlus,
+  FileText,
   CreditCard,
   Badge,
   Tags,
@@ -38,7 +39,7 @@ export const sidebarLinks = [
   },
   {
     href: '/dashboard/cash-registers',
-    label: 'sessions',
+    label: 'Sessions',
     icon: CreditCard,
     requiredPermissions: [],
   },
@@ -73,6 +74,12 @@ export const sidebarLinks = [
     href: '/dashboard/settings',
     label: 'Settings',
     icon: Settings,
+    requiredPermissions: [],
+  },
+  {
+    href: '/dashboard/reports',
+    label: 'Reports',
+    icon: FileText,
     requiredPermissions: [],
   },
 ];

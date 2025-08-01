@@ -106,10 +106,7 @@ export default function HeaderDasboard() {
         <div className="flex items-center justify-between px-6 py-3">
           {/* Mobile menu */}
           <div className="flex items-center">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="text-orange-700 dark:text-orange-400 mr-4 md:hidden"
-            >
+            <button onClick={() => setSidebarOpen(true)} className="text-orange-700 mr-4 md:hidden">
               <Menu className="w-6 h-6" />
             </button>
             <Link
