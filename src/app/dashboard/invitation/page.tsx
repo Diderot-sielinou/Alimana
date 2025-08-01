@@ -137,7 +137,11 @@ export default function InvitationPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                <Button
+                  type="submit"
+                  className="w-full text-white disabled:bg-gray-400 bg-amber-600 hover:bg-amber-700"
+                  disabled={!email || !fullName || !role}
+                >
                   Send Invitation
                 </Button>
               </form>
