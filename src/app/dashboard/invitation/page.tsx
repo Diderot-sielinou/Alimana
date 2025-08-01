@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react'; // make sure this is imported
 import { useState } from 'react';
+import { api } from '@/lib/api';
+import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -37,6 +39,8 @@ export default function InvitationPage() {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
   const [fullName, setFullName] = useState('');
+  const { storeContext } = useAuth();
+  const storeId = storeContext?.storeId || undefined;
 
   type Invitation = {
     id: string;
@@ -50,8 +54,8 @@ export default function InvitationPage() {
   useEffect(() => {
     const fetchInvitations = async () => {
       try {
-        const res = await fetch('/api/invitations');
-        const data = await res.json();
+        const res = await api.get('/api/invitations');
+        const data = res.data;
         setInvitations(data);
       } catch (error) {
         console.error('Failed to fetch invitations', error);
@@ -64,24 +68,10 @@ export default function InvitationPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newInvite = {
-      email,
-      role,
-      fullName,
-    };
-
     try {
-      const res = await fetch('stores/:storeId/invitations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newInvite),
-      });
+      const res = await api.post(`/api/stores/${storeId}/invitations`);
 
-      if (!res.ok) throw new Error('Failed to send invitation');
-
-      const savedInvite = await res.json(); // this should include id, date, and status
+      const savedInvite = res.data; // this should include id, date, and status
 
       setInvitations([savedInvite, ...invitations]); // update list with server response
       setEmail('');

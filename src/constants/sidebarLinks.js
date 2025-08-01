@@ -1,11 +1,14 @@
 import {
   LayoutDashboard,
   ShoppingCart,
+  Box,
   BarChart3,
   Warehouse,
   Settings,
   UserPlus,
   CreditCard,
+  Badge,
+  Tags,
 } from 'lucide-react';
 
 export const sidebarLinks = [
@@ -13,6 +16,18 @@ export const sidebarLinks = [
     href: '/dashboard/overview',
     label: 'Dashboard',
     icon: LayoutDashboard,
+    requiredPermissions: [], // visible à tous connectés
+  },
+  {
+    href: '/dashboard/product',
+    label: 'Products',
+    icon: Box,
+    requiredPermissions: [],
+  },
+  {
+    href: '/dashboard/categories',
+    label: 'category',
+    icon: Tags,
     requiredPermissions: [],
   },
   {
@@ -25,6 +40,15 @@ export const sidebarLinks = [
     href: '/dashboard/cash-registers',
     label: 'sessions',
     icon: CreditCard,
+    requiredPermissions: [],
+  },
+  {
+    href: '/dashboard/manage-cash-register',
+    label: 'Cash Register',
+    icon: CreditCard,
+    href: '/dashboard/roles',
+    label: 'Roles',
+    icon: Badge,
     requiredPermissions: [],
   },
   {

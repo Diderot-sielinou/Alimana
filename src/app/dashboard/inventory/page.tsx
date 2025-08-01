@@ -192,10 +192,7 @@ export default function InventoryPage() {
           <h1 className="text-2xl font-semibold">Inventory</h1>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                className="bg-amber-600 hover:bg-amber-700 text-white"
-              >
+              <Button variant="ghost" className="bg-amber-600 hover:bg-amber-700 text-white">
                 Add Product
               </Button>
             </DialogTrigger>
@@ -341,12 +338,13 @@ export default function InventoryPage() {
                   <td className="p-3">{product.zip || '-'}</td>
                   <td className="p-3">
                     <span
-                      className={`text-sm font-medium ${product.status === 'In Stock'
-                        ? 'text-green-400'
-                        : product.status === 'Out of Stock'
-                          ? 'text-yellow-600'
-                          : 'text-red-400'
-                        }`}
+                      className={`text-sm font-medium ${
+                        product.status === 'In Stock'
+                          ? 'text-green-400'
+                          : product.status === 'Out of Stock'
+                            ? 'text-yellow-600'
+                            : 'text-red-400'
+                      }`}
                     >
                       {product.status}
                     </span>
