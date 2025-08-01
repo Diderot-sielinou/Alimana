@@ -39,7 +39,7 @@ export const Cart: React.FC<CartProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-sm border p-6 h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Panier</h2>
+        <h2 className="text-lg font-semibold text-gray-900">Cart</h2>
         {items.length > 0 && (
           <Button
             variant="ghost"
@@ -57,7 +57,7 @@ export const Cart: React.FC<CartProps> = ({
         {items.length === 0 ? (
           <div className="text-center py-8">
             <ShoppingCart className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-500">Panier vide</p>
+            <p className="text-gray-500">Cart Empty</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -110,7 +110,7 @@ export const Cart: React.FC<CartProps> = ({
 
                 {/* Remise */}
                 <div className="mb-3">
-                  <label className="block text-xs text-gray-500 mb-1">Remise (XAF)</label>
+                  <label className="block text-xs text-gray-500 mb-1">Balance (XAF)</label>
                   <Input
                     type="number"
                     value={item.discount}
@@ -139,7 +139,7 @@ export const Cart: React.FC<CartProps> = ({
             <span className="text-2xl font-bold text-primary">{total.toLocaleString()} XAF</span>
           </div>
           <Button onClick={onCheckout} className="w-full" size="lg">
-            Procéder au paiement
+            Proceed to payment
           </Button>
         </div>
       )}
