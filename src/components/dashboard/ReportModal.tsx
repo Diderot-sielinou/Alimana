@@ -61,7 +61,17 @@ export const SalesReportModal = ({ onClose }: ModalProps) => {
 
     try {
       const endpoint = `${API_BASE_URL}/store/${storeId}/reports/summary/${format}?from=${fromDate}&to=${toDate}`;
-      const response = await fetch(endpoint);
+      const response = await fetch(endpoint, {
+        credentials: 'include',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`, // JWT if using
+          'Content-Type': 'application/json',
+          Accept:
+            format === 'pdf'
+              ? 'application/pdf'
+              : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        },
+      });
 
       if (!response.ok) {
         throw new Error(response.status === 404 ? 'Report not found' : 'Failed to generate report');

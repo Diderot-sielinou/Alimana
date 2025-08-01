@@ -40,7 +40,17 @@ export const InventoryReportModal = ({ onClose, storeId = 1 }: ModalProps) => {
 
     try {
       const endpoint = `${API_BASE_URL}/store/${storeId}/reports/inventory/${format}`;
-      const response = await fetch(endpoint);
+      const response = await fetch(endpoint, {
+        credentials: 'include',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`, // JWT if using
+          'Content-Type': 'application/json',
+          Accept:
+            format === 'pdf'
+              ? 'application/pdf'
+              : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        },
+      });
 
       if (!response.ok) {
         throw new Error(response.status === 404 ? 'Report not found' : 'Failed to generate report');
@@ -122,7 +132,6 @@ export const InventoryReportModal = ({ onClose, storeId = 1 }: ModalProps) => {
             }}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-             
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Report Format
@@ -168,7 +177,11 @@ export const InventoryReportModal = ({ onClose, storeId = 1 }: ModalProps) => {
               <Button type="button" onClick={onClose} variant="outline" disabled={isDownloading}>
                 Cancel
               </Button>
-              <Button type="submit" className="bg-orange-600 hover:bg-orange-700 text-white" disabled={isDownloading}>
+              <Button
+                type="submit"
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+                disabled={isDownloading}
+              >
                 <Download className="mr-2 h-4 w-4" />
                 {isDownloading ? 'Downloading...' : 'Download Report'}
               </Button>

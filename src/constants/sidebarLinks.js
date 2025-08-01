@@ -72,7 +72,7 @@ export const sidebarLinks = [
   },
   {
     href: '/dashboard/cash-registers',
-    label: 'sessions',
+    label: 'Sessions',
     icon: CreditCard,
     requiredPermissions: [],
   },
