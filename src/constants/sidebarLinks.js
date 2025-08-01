@@ -15,12 +15,6 @@ export const sidebarLinks = [
     icon: LayoutDashboard,
     requiredPermissions: [],
   },
-  // {
-  //   href: '/dashboard/sales',
-  //   label: 'Sales',
-  //   icon: ShoppingCart,
-  //   requiredPermissions: [],
-  // },
   {
     href: '/dashboard/post',
     label: 'Sales',
@@ -46,10 +40,10 @@ export const sidebarLinks = [
     requiredPermissions: [],
   },
   {
-    href: '/dashboard/user-management',
-    label: 'User Management',
+    href: '/dashboard/invitation',
+    label: 'Invitation',
     icon: UserPlus,
-    requiredPermissions: [], // OU tu peux filtrer par l’un ou l’autre
+    requiredPermissions: [],
   },
   {
     href: '/dashboard/settings',
