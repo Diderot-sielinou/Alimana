@@ -9,7 +9,7 @@ import React from 'react';
 import { useAuth } from '@/context/auth-context';
 
 export default function HeaderDasboard() {
-  const { setSidebarOpen} = useAuth();
+  const { setSidebarOpen } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const lineChartRef = useRef<HTMLCanvasElement>(null);
@@ -145,7 +145,7 @@ export default function HeaderDasboard() {
         </div>
 
         {/* Filters & Export */}
-        <div className="px-6 py-2 bg-gray-50 dark:bg-gray-800">
+        {/* <div className="px-6 py-2 bg-gray-50 dark:bg-gray-800">
           <div className="flex justify-between">
             <p className="text-sm text-gray-600 dark:text-gray-300">
               <span className="mr-1">🔄</span> Last updated: Just now
@@ -159,7 +159,7 @@ export default function HeaderDasboard() {
               <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm">Export</button>
             </div>
           </div>
-        </div>
+        </div> */}
       </header>
     </div>
   );
