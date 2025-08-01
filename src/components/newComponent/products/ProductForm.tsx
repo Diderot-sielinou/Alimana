@@ -14,8 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useShopData } from '@/context/store-context';
 import { IProduct } from '@/types/product.interface';
+import { useShopData } from '@/context/store-context';
 
 interface ProductFormProps {
   initialData?: IProduct;
@@ -176,7 +176,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
                   <SelectValue placeholder="Sélectionner une catégorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Aucune catégorie</SelectItem>
+                  <SelectItem value="">Aucune catégorie</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category.id} value={category.id.toString()}>
                       {category.name}

@@ -14,6 +14,7 @@ import {
   GetSalesSummary,
   GetSalesOverview,
 } from '@/types/get-sales-summary.interface';
+import { IRole } from '@/types/role.interface';
 
 interface ShopDataState {
   products: IProduct[];
@@ -24,6 +25,9 @@ interface ShopDataState {
   salesSummary: GetSalesSummary;
   profitSummary: GetProfitSummary;
   salesOverview: GetSalesOverview[];
+  // permissions?: Permission[];
+
+  roles?: IRole[];
   isLoading: boolean;
 }
 
@@ -137,7 +141,7 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const loadInitialData = useCallback(async () => {
     if (!storeContext?.storeId) {
-      console.warn('⛔️ No storeContext.storeId — skipping data load');
+      console.warn(' No storeContext.storeId — skipping data load');
       return;
     }
 

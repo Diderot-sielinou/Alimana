@@ -2,7 +2,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Store, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { getMyStores, StoreSummary } from '@/services/utils';
@@ -10,7 +9,6 @@ import { LoadingSpinner } from '@/components/dashboard/LoadingSpinner';
 
 export default function SelectStorePage() {
   const { user, selectStore } = useAuth();
-  const router = useRouter();
 
   const [stores, setStores] = useState<StoreSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +31,6 @@ export default function SelectStorePage() {
 
   const handleStoreSelect = (store: StoreSummary) => {
     selectStore(store.storeUserId);
-    router.push('/dashboard');
   };
 
   if (loading) return <LoadingSpinner></LoadingSpinner>;

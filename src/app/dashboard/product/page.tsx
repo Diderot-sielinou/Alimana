@@ -1,230 +1,292 @@
-// src/app/dashboard/products/page.tsx
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Edit, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Search, Edit, Trash2, Package, Loader2 } from 'lucide-react';
-import { Product } from '@/types/product';
+import { DataTable } from '@/components/ui/data-table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import toast from 'react-hot-toast';
-import { api } from '@/lib/api'; // Assurez-vous d'importer l'API
 import { useShopData } from '@/context/store-context';
+import { IProduct } from '@/types/product.interface';
+import { PaginatedResponse, productAPI } from '@/services/utils';
 import { ProductForm } from '@/components/newComponent/common/ProductForm';
-import { DeleteConfirmationDialog } from '@/components/newComponent/common/DeleteConfirmationDialog';
-import { DataTable } from '@/components/newComponent/pos/DataTable';
+import { useAuth } from '@/context/auth-context';
 
 export default function ProductsPage() {
-  const { products, categories, loadInitialData, isLoading } = useShopData();
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [selectedCategory, setSelectedCategory] = React.useState<number | null>(null);
-  const [editingProduct, setEditingProduct] = React.useState<Product | null>(null);
-  const [deletingProduct, setDeletingProduct] = React.useState<Product | null>(null);
-  const [showForm, setShowForm] = React.useState(false);
-  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<IProduct | null>(null);
 
-  const filteredProducts = React.useMemo(() => {
-    return products.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.barcode.includes(searchTerm);
-      const matchesCategory = !selectedCategory || product.categoryId === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [products, searchTerm, selectedCategory]);
+  const { categories } = useShopData();
+  const { storeContext } = useAuth();
+  const storeId = storeContext?.storeId as number;
 
-  const handleFormSaveSuccess = () => {
-    setShowForm(false);
-    setEditingProduct(null); // Réinitialise l'état d'édition
-    loadInitialData(); // Rafraîchit la liste des produits
-  };
-
-  const handleDeleteProduct = async () => {
-    if (!deletingProduct) return;
-
-    setIsDeleting(true);
+  const fetchProducts = async () => {
     try {
-      await api.delete(`/products/${deletingProduct.id}`);
-      toast.success('Produit supprimé avec succès !');
-      loadInitialData(); // Rafraîchit la liste des produits
-      setDeletingProduct(null); // Ferme le dialogue de confirmation
+      setLoading(true);
+      const rawParams = {
+        page: currentPage,
+        limit: 10,
+        search: searchValue || undefined,
+        categoryId: selectedCategory && selectedCategory !== 'all' ? selectedCategory : undefined,
+      };
+
+      const params = Object.fromEntries(
+        Object.entries(rawParams).filter(([_, v]) => v !== undefined && v !== '')
+      );
+
+      console.log(`parametre de requette ${JSON.stringify(params)}`);
+      const response = await productAPI.getAll(params, storeId);
+      console.log(`reponse du fetch avec pagination ${JSON.stringify(response)}`);
+      const data = response.data as PaginatedResponse<IProduct>;
+
+      setProducts(data.data);
+      setTotalPages(data.pagination.totalPages);
     } catch (error) {
-      console.error('Erreur lors de la suppression du produit:', error);
-      toast.error('Échec de la suppression du produit.');
+      toast.error('Erreur lors du chargement des produits');
+      console.error(error);
     } finally {
-      setIsDeleting(false);
+      setLoading(false);
     }
   };
 
-  const columns = React.useMemo(() => [
-    {
-      header: 'Produit',
-      accessorKey: 'name',
-      cell: ({ row }: any) => (
-        <div>
-          <div className="font-medium">{row.original.name}</div>
-          <div className="text-sm text-gray-500">{row.original.barcode}</div>
-        </div>
-      ),
-    },
-    {
-      header: 'Catégorie',
-      accessorKey: 'category',
-      cell: ({ row }: any) => {
-        const category = categories.find(cat => cat.id === row.original.categoryId);
-        return category ? (
-          <Badge
-            variant="secondary"
-            style={{
-              backgroundColor: category.color ? `${category.color}20` : '#E0E0E0', // Fallback color
-              color: category.color || '#616161'
-            }}
-          >
-            {category.name}
-          </Badge>
-        ) : <Badge variant="secondary">Inconnu</Badge>;
-      },
-    },
-    {
-      header: 'Prix',
-      accessorKey: 'price',
-      cell: ({ row }: any) => (
-        <div className="font-medium">
-          {row.original.price.toLocaleString()} XAF
-        </div>
-      ),
-    },
-    {
-      header: 'Stock',
-      accessorKey: 'stock',
-      cell: ({ row }: any) => (
-        <Badge variant={row.original.stock > 10 ? 'success' : row.original.stock > 0 ? 'warning' : 'destructive'}>
-          {row.original.stock}
-        </Badge>
-      ),
-    },
-    {
-      header: 'Statut',
-      accessorKey: 'isActive',
-      cell: ({ row }: any) => (
-        <Badge variant={row.original.isActive ? 'success' : 'secondary'}>
-          {row.original.isActive ? 'Actif' : 'Inactif'}
-        </Badge>
-      ),
-    },
-    {
-      header: 'Actions',
-      id: 'actions', // Important pour des colonnes sans accessorKey
-      cell: ({ row }: any) => (
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setEditingProduct(row.original);
-              setShowForm(true);
-            }}
-          >
-            <Edit className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-red-600 hover:text-red-700"
-            onClick={() => setDeletingProduct(row.original)} // Ouvre le dialogue de confirmation
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      ),
-    },
-  ], [categories]); // Dépend de `categories` pour l'affichage correct du badge de catégorie
+  useEffect(() => {
+    if (!storeId) return;
+    console.log(`le store id ${storeId}`);
 
-  if (isLoading) {
+    fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, searchValue, selectedCategory, storeId]);
+
+  if (!storeContext || !storeContext.storeId) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center">
-        <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
-        <p className="text-gray-500">Chargement des produits...</p>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin text-blue-600">
+            <Loader2 size={48} />
+          </div>
+          <p className="text-lg font-medium text-gray-700">chargement en cours</p>
+        </div>
       </div>
     );
   }
 
+  const handleToggleActive = async (product: IProduct) => {
+    try {
+      await productAPI.toggleActive(product.id, storeId);
+      toast.success(`Produit ${product.isActive ? 'désactivé' : 'activé'} avec succès`);
+      await fetchProducts();
+    } catch (error) {
+      toast.error('Erreur lors de la modification du statut');
+    }
+  };
+
+  const handleCreateProduct = async (data: Partial<IProduct>) => {
+    try {
+      await productAPI.create(data, storeId);
+      toast.success('Produit créé avec succès');
+      setIsCreateModalOpen(false);
+      await fetchProducts();
+    } catch (error) {
+      toast.error('Erreur lors de la création du produit');
+    }
+  };
+
+  const handleUpdateProduct = async (data: Partial<IProduct>) => {
+    if (!editingProduct) return;
+
+    try {
+      await productAPI.update(editingProduct.id, data, storeId);
+      toast.success('Produit modifié avec succès');
+      setEditingProduct(null);
+      await fetchProducts();
+    } catch (error) {
+      toast.error('Erreur lors de la modification du produit');
+    }
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'XAF',
+    }).format(price);
+  };
+
+  const columns = [
+    {
+      key: 'name' as keyof IProduct,
+      header: 'Nom',
+      render: (product: IProduct) => (
+        <div className="flex items-center space-x-3">
+          {product.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="w-10 h-10 rounded-md object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center">
+              <span className="text-xs text-gray-500">IMG</span>
+            </div>
+          )}
+          <div>
+            <p className="font-medium">{product.name}</p>
+            {product.sku && <p className="text-xs text-gray-500">SKU: {product.sku}</p>}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'category' as keyof IProduct,
+      header: 'Catégorie',
+      render: (product: IProduct) => (
+        <Badge variant="secondary" className="bg-orange-50 text-orange-700">
+          {product.category?.name || 'Sans catégorie'}
+        </Badge>
+      ),
+    },
+    {
+      key: 'sellingPrice' as keyof IProduct,
+      header: 'Prix de vente',
+      render: (product: IProduct) => (
+        <span className="font-medium">{formatPrice(product.sellingPrice)}</span>
+      ),
+    },
+    {
+      key: 'quantityInStock' as keyof IProduct,
+      header: 'Stock',
+      render: (product: IProduct) => (
+        <Badge
+          variant={
+            product.quantityInStock > 10
+              ? 'default'
+              : product.quantityInStock > 0
+                ? 'secondary'
+                : 'destructive'
+          }
+          className={
+            product.quantityInStock > 10
+              ? 'bg-green-100 text-green-800'
+              : product.quantityInStock > 0
+                ? 'bg-yellow-100 text-yellow-800'
+                : 'bg-red-100 text-red-800'
+          }
+        >
+          {product.quantityInStock} {product.unit || 'unités'}
+        </Badge>
+      ),
+    },
+    {
+      key: 'isActive' as keyof IProduct,
+      header: 'Statut',
+      render: (product: IProduct) => (
+        <Badge variant={product.isActive ? 'default' : 'secondary'}>
+          {product.isActive ? 'Actif' : 'Inactif'}
+        </Badge>
+      ),
+    },
+    {
+      key: 'actions' as keyof IProduct,
+      header: 'Actions',
+      render: (product: IProduct) => (
+        <div className="flex items-center space-x-2">
+          <Button variant="ghost" size="sm" onClick={() => setEditingProduct(product)}>
+            <Edit className="w-4 h-4" />
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => handleToggleActive(product)}>
+            {product.isActive ? (
+              <EyeOff className="w-4 h-4 text-red-500" />
+            ) : (
+              <Eye className="w-4 h-4 text-green-500" />
+            )}
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ml-0 md:ml-64 ">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gestion des Produits</h1>
-          <p className="text-gray-500 mt-1">Gérez linventaire de vos produits ici.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Produits</h1>
+          <p className="text-gray-600">Gérez les produits de votre boutique</p>
         </div>
-        <Dialog open={showForm} onOpenChange={setShowForm}>
+        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingProduct(null); setShowForm(true); }}>
+            <Button className="bg-orange-500 hover:bg-orange-600">
               <Plus className="w-4 h-4 mr-2" />
-              Ajouter un produit
+              Nouveau produit
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
-              <DialogTitle>{editingProduct ? 'Modifier le produit' : 'Ajouter un nouveau produit'}</DialogTitle>
+              <DialogTitle>Créer un nouveau produit</DialogTitle>
             </DialogHeader>
-            <ProductForm initialData={editingProduct} onSaveSuccess={handleFormSaveSuccess} />
+            <ProductForm onSubmit={handleCreateProduct} />
           </DialogContent>
         </Dialog>
       </div>
-
-      {/* Barre de recherche et filtres de catégorie */}
-      <div className="flex flex-col md:flex-row gap-4 items-center">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input
-            placeholder="Rechercher par nom ou code-barres..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <div className="flex flex-wrap gap-2 w-full md:w-auto">
-          <Button
-            variant={selectedCategory === null ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setSelectedCategory(null)}
-          >
-            Toutes
-          </Button>
-          {categories.map((category) => (
-            <Button
-              key={category.id}
-              variant={selectedCategory === category.id ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedCategory(category.id)}
-            >
-              {category.name}
-            </Button>
-          ))}
-        </div>
+      <div className="flex items-center space-x-4">
+        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Filtrer par catégorie" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Toutes les catégories</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id.toString()}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
-
-      {/* Tableau des produits */}
-      {filteredProducts.length === 0 && !isLoading ? (
-        <div className="text-center py-8">
-          <Package className="w-10 h-10 text-gray-400 mx-auto mb-2" />
-          <p className="text-gray-500">Aucun produit trouvé.</p>
-        </div>
-      ) : (
-        <DataTable columns={columns} data={filteredProducts} />
-      )}
-
-      {/* Dialogue de confirmation de suppression */}
-      {deletingProduct && (
-        <DeleteConfirmationDialog
-          isOpen={!!deletingProduct}
-          onClose={() => setDeletingProduct(null)}
-          onConfirm={handleDeleteProduct}
-          title={`Supprimer "${deletingProduct.name}" ?`}
-          description="Cette action est irréversible. Êtes-vous sûr de vouloir supprimer ce produit ?"
-          isDeleting={isDeleting}
-        />
-      )}
+      <DataTable
+        data={products}
+        columns={columns}
+        searchValue={searchValue}
+        onSearchChange={setSearchValue}
+        searchPlaceholder="Rechercher un produit..."
+        pagination={{
+          page: currentPage,
+          totalPages,
+          onPageChange: setCurrentPage,
+        }}
+        loading={loading}
+        emptyMessage="Aucun produit trouvé"
+      />
+      <Dialog open={!!editingProduct} onOpenChange={() => setEditingProduct(null)}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Modifier le produit</DialogTitle>
+          </DialogHeader>
+          {editingProduct && (
+            <ProductForm initialData={editingProduct} onSubmit={handleUpdateProduct} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

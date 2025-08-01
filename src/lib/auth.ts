@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { api } from './api';
 
 export interface User {
@@ -202,24 +203,23 @@ export function signUpWithGoogle() {
 //   password: string;
 // }
 
-// export const useRegister = () => {
-//   const { fetchMe } = useAuth();
-//   const router = useRouter();
+interface SignupValues {
+  fullName: string;
+  email: string;
+  password: string;
+  phone: string;
+}
 
-//   const register = async (data: RegisterData) => {
-//     try {
-//       await api.post('/auth/register', data, { withCredentials: true });
-//       toast.success('Compte créé avec succès');
-//       await fetchMe(); // ⚡ recharge l'utilisateur et son contexte
-//       router.push('/select-store'); // redirection après inscription
-//     } catch (error: any) {
-//       toast.error(error.response?.data?.error || "Erreur lors de l'inscription");
-//       throw error;
-//     }
-//   };
-
-//   return { register };
-// };
+export const register = async (data: SignupValues) => {
+  try {
+    await api.post('/auth/register', data);
+    toast.success('Compte créé avec succès');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    toast.error(error.response?.data?.error || "Erreur lors de l'inscription");
+    throw error;
+  }
+};
 
 // 'use client';
 

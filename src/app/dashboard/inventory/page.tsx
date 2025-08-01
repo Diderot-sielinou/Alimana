@@ -1,309 +1,368 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
-  sku: string;
-  quantity: number;
-  price: number;
-  status: string;
-  orderId: string;
-  reference: string;
-  daysLeft: number;
-  revenue: number;
-  deliveryZip: string;
+  description: string;
+  price: string;
+  stock: string;
+  category: string;
+  expirationDate: string;
+  zip?: string;
+  quantity?: string;
+  status: 'In Stock' | 'Out of Stock' | 'Inactive';
 }
 
 export default function InventoryPage() {
-  const [search, setSearch] = useState('');
-  const [inventory, setInventory] = useState<Product[]>([
-    {
-      id: 1,
-      name: 'Wireless Mouse',
-      sku: 'WM-001',
-      quantity: 120,
-      price: 25.99,
-      status: 'In Stock',
-      orderId: 'ORD-1001',
-      reference: 'REF-WM-001',
-      daysLeft: 12,
-      revenue: 3118.8,
-      deliveryZip: '10001',
-    },
-    {
-      id: 2,
-      name: 'Bluetooth Keyboard',
-      sku: 'BK-002',
-      quantity: 80,
-      price: 45.5,
-      status: 'Low Stock',
-      orderId: 'ORD-1002',
-      reference: 'REF-BK-002',
-      daysLeft: 4,
-      revenue: 3640,
-      deliveryZip: '94107',
-    },
-  ]);
-
-  const [newProduct, setNewProduct] = useState({
+  const [products, setProducts] = useState<Product[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [product, setProduct] = useState<Product>({
+    id: '',
     name: '',
-    sku: '',
-    quantity: '',
+    description: '',
     price: '',
+    stock: '',
+    category: '',
+    expirationDate: '',
+    zip: '',
+    quantity: '',
     status: 'In Stock',
   });
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [scannedId, setScannedId] = useState<string | null>(null);
+  const scannerRef = useRef<HTMLDivElement | null>(null);
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { id, value } = e.target;
-    setNewProduct((prev) => ({ ...prev, [id]: value }));
+  const mockBarcodeDatabase: Record<string, Partial<Product>> = {
+    '123456': {
+      name: 'Mock Product A',
+      description: 'Auto-filled from barcode A',
+      price: '29.99',
+      stock: '10',
+      category: 'shoes',
+    },
+    '789101': {
+      name: 'Mock Product B',
+      description: 'Auto-filled from barcode B',
+      price: '49.99',
+      stock: '5',
+      category: 'clothing',
+    },
   };
 
-  const handleAddProduct = () => {
-    if (!newProduct.name || !newProduct.sku || !newProduct.quantity || !newProduct.price) return;
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('products');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) setProducts(parsed);
+      }
+    } catch (error) {
+      console.error('Failed to load from localStorage:', error);
+    }
+  }, []);
 
-    const id = inventory.length + 1;
-    const product: Product = {
-      id,
-      name: newProduct.name,
-      sku: newProduct.sku,
-      quantity: parseInt(newProduct.quantity),
-      price: parseFloat(newProduct.price),
-      status: newProduct.status,
-      orderId: `ORD-${id}`,
-      reference: `REF-${newProduct.sku}`,
-      daysLeft: 7,
-      revenue: parseFloat(newProduct.price) * parseInt(newProduct.quantity),
-      deliveryZip: '00000',
+  useEffect(() => {
+    if (!showScanner || !scannerRef.current) return;
+    if (scannerRef.current.hasChildNodes()) return;
+
+    const scanner = new Html5QrcodeScanner('scanner', { fps: 10, qrbox: 250 }, false);
+
+    scanner.render(
+      (decodedText) => {
+        const found = mockBarcodeDatabase[decodedText];
+        if (found) {
+          setProduct((prev) => ({ ...prev, ...found }));
+          setScannedId(decodedText);
+        } else {
+          alert('No product found for this barcode.');
+        }
+        setShowScanner(false);
+        scanner.clear();
+      },
+      (error) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Scanning error', error);
+        }
+      }
+    );
+
+    return () => {
+      scanner.clear().catch(console.error);
+    };
+  }, [showScanner]);
+
+  const handleChange = (field: keyof Product, value: string) => {
+    setProduct((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const calculateDaysLeft = (expirationDate: string): number => {
+    const today = new Date();
+    const expireDate = new Date(expirationDate);
+    const diff = Math.ceil((expireDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return diff > 0 ? diff : 0;
+  };
+
+  const handleAddProduct = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newProduct: Product = {
+      ...product,
+      id: editingId || Date.now().toString(),
+      quantity: product.stock,
+      status: (Number(product.stock) > 0 ? 'In Stock' : 'Out of Stock') as Product['status'],
     };
 
-    setInventory((prev) => [...prev, product]);
-    resetForm();
-  };
+    const updated = editingId
+      ? products.map((p) => (p.id === editingId ? newProduct : p))
+      : [...products, newProduct];
 
-  const handleEditProduct = () => {
-    if (editId === null) return;
-    const updated = inventory.map((product) =>
-      product.id === editId
-        ? {
-            ...product,
-            ...newProduct,
-            quantity: parseInt(newProduct.quantity),
-            price: parseFloat(newProduct.price),
-            revenue: parseFloat(newProduct.price) * parseInt(newProduct.quantity),
-            reference: `REF-${newProduct.sku}`,
-          }
-        : product
-    );
-    setInventory(updated);
-    resetForm();
-  };
+    setProducts(updated);
+    try {
+      localStorage.setItem('products', JSON.stringify(updated));
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to save products:', error);
+      }
+    }
 
-  const startEdit = (product: Product) => {
-    setNewProduct({
-      name: product.name,
-      sku: product.sku,
-      quantity: product.quantity.toString(),
-      price: product.price.toString(),
-      status: product.status,
-    });
-    setEditId(product.id);
-    setIsEditing(true);
-    setIsDialogOpen(true);
-  };
-
-  const resetForm = () => {
-    setNewProduct({
+    setProduct({
+      id: '',
       name: '',
-      sku: '',
-      quantity: '',
+      description: '',
       price: '',
+      stock: '',
+      category: '',
+      expirationDate: '',
+      zip: '',
+      quantity: '',
       status: 'In Stock',
     });
-    setEditId(null);
-    setIsEditing(false);
-    setIsDialogOpen(false);
+    setEditingId(null);
+    setDialogOpen(false);
+    setShowScanner(false);
+    setScannedId(null);
   };
 
-  const filteredInventory = inventory.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
-  return (
-    <div className="flex min-h-screen w-full">
-      <main className="flex-1 p-6 ml-0 md:ml-64">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Inventory</h1>
+  const handleEdit = (product: Product) => {
+    setProduct(product);
+    setEditingId(product.id);
+    setDialogOpen(true);
+  };
 
-          {/* Add Product Modal */}
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+  const handleDeactivate = (id: string) => {
+    if (!confirm('Are you sure you want to deactivate this product?')) return;
+    const updated = products.map((p) =>
+      p.id === id ? { ...p, status: 'Inactive' as Product['status'] } : p
+    );
+    setProducts(updated);
+    try {
+      localStorage.setItem('products', JSON.stringify(updated));
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to save products:', error);
+      }
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen">
+      <main className="flex-1 p-6 ml-0 md:ml-64">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-semibold">Inventory</h1>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button
-                onClick={() => {
-                  resetForm();
-                  setIsDialogOpen(true);
-                }}
-                className="bg-orange-600 text-white hover:bg-orange-700 w-full sm:w-auto"
-              >
-                + {isEditing ? 'Edit Product' : 'Add Product'}
+              <Button variant="ghost" className="bg-amber-600 hover:bg-amber-700 text-white">
+                Add Product
               </Button>
             </DialogTrigger>
-
-            <DialogContent className="sm:max-w-lg">
+            <DialogContent className="sm:max-w-xl overflow-y-auto max-h-[90vh]">
               <DialogHeader>
-                <DialogTitle>{isEditing ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+                <DialogTitle>{editingId ? 'Edit Product' : 'Add Product'}</DialogTitle>
               </DialogHeader>
+              <form onSubmit={handleAddProduct} className="space-y-6">
+                <div className="flex justify-end">
+                  <Button type="button" variant="secondary" onClick={() => setShowScanner(true)}>
+                    📷 Scan Barcode
+                  </Button>
+                </div>
+                {showScanner && (
+                  <div className="mt-4">
+                    <div ref={scannerRef} id="scanner" className="w-full max-w-sm mx-auto" />
+                    <p className="text-center text-sm text-gray-600 mt-2">
+                      Place the barcode in front of your camera.
+                    </p>
+                  </div>
+                )}
+                {scannedId && (
+                  <p className="text-sm text-green-600 text-center mt-2">
+                    ✅ Scanned ID: <strong>{scannedId}</strong>
+                  </p>
+                )}
 
-              <form className="space-y-4 mt-4" onSubmit={(e) => e.preventDefault()}>
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                    Product Name
-                  </label>
-                  <Input id="name" value={newProduct.name} onChange={handleInputChange} />
-                </div>
-                <div>
-                  <label htmlFor="sku" className="block text-sm font-medium text-gray-700">
-                    SKU
-                  </label>
-                  <Input id="sku" value={newProduct.sku} onChange={handleInputChange} />
-                </div>
-                <div>
-                  <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
-                    Quantity
-                  </label>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Product Name</Label>
                   <Input
-                    id="quantity"
-                    type="number"
-                    value={newProduct.quantity}
-                    onChange={handleInputChange}
+                    id="name"
+                    value={product.name}
+                    onChange={(e) => handleChange('name', e.target.value)}
+                    placeholder="e.g. Nike Air Max"
+                    required
                   />
                 </div>
-                <div>
-                  <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                    Price
-                  </label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    value={newProduct.price}
-                    onChange={handleInputChange}
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={product.description}
+                    onChange={(e) => handleChange('description', e.target.value)}
+                    placeholder="Brief description of the product"
                   />
                 </div>
-                <div>
-                  <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                    Status
-                  </label>
-                  <select
-                    id="status"
-                    value={newProduct.status}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+                <div className="flex gap-4">
+                  <div className="flex-1 space-y-2">
+                    <Label htmlFor="price">Price</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      value={product.price}
+                      onChange={(e) => handleChange('price', e.target.value)}
+                      placeholder="e.g. 59.99"
+                      required
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Label htmlFor="stock">Stock</Label>
+                    <Input
+                      id="stock"
+                      type="number"
+                      value={product.stock}
+                      onChange={(e) => handleChange('stock', e.target.value)}
+                      placeholder="e.g. 25"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={product.category}
+                    onValueChange={(val) => handleChange('category', val)}
                   >
-                    <option>In Stock</option>
-                    <option>Low Stock</option>
-                    <option>Out of Stock</option>
-                  </select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="shoes">Shoes</SelectItem>
+                      <SelectItem value="clothing">Clothing</SelectItem>
+                      <SelectItem value="accessories">Accessories</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </form>
-              <DialogFooter className="mt-6 flex justify-end gap-2">
-                <Button
-                  onClick={isEditing ? handleEditProduct : handleAddProduct}
-                  className="bg-orange-600 text-white hover:bg-orange-700"
-                >
-                  {isEditing ? 'Update' : 'Save'}
+                <div className="space-y-2">
+                  <Label htmlFor="zip">Zip Code</Label>
+                  <Input
+                    id="zip"
+                    value={product.zip}
+                    onChange={(e) => handleChange('zip', e.target.value)}
+                    placeholder="e.g. 90210"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="expirationDate">Expiration Date</Label>
+                  <Input
+                    id="expirationDate"
+                    type="date"
+                    value={product.expirationDate}
+                    onChange={(e) => handleChange('expirationDate', e.target.value)}
+                  />
+                </div>
+                {/* TODO: Implement image upload functionality */}
+                <div className="space-y-2">
+                  <Label htmlFor="image">Image (mocked)</Label>
+                  <Input id="image" type="file" disabled />
+                  <p className="text-xs text-gray-500">Image upload not implemented yet</p>
+                </div>
+                <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700">
+                  {editingId ? 'Update Product' : 'Add Product'}
                 </Button>
-              </DialogFooter>
+              </form>
             </DialogContent>
           </Dialog>
         </div>
 
-        <div className="mb-4">
-          <Input
-            placeholder="Search products..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full md:w-1/3 dark:bg-gray-700"
-          />
-        </div>
-
-        <div className="overflow-auto">
-          <table className="min-w-full bg-white border rounded shadow-sm">
-            <thead className="bg-orange-600 text-white">
-              <tr>
-                <th className="text-left p-3">Product Name</th>
-                <th className="text-left p-3">SKU</th>
-                <th className="text-left p-3">Order ID</th>
-                <th className="text-left p-3">Reference</th>
-                <th className="text-left p-3">Quantity</th>
+        <div className="overflow-auto rounded-lg border shadow">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="text-left p-3">Name</th>
+                <th className="text-left p-3">Category</th>
                 <th className="text-left p-3">Price</th>
+                <th className="text-left p-3">Stock</th>
+                <th className="text-left p-3">Quantity</th>
                 <th className="text-left p-3">Days Left</th>
-                <th className="text-left p-3">Revenue</th>
-                <th className="text-left p-3">Zip Code</th>
+                <th className="text-left p-3">Zip</th>
                 <th className="text-left p-3">Status</th>
-                <th className="text-left p-3">Action</th>
+                <th className="text-left p-3">Actions</th>
               </tr>
             </thead>
-
             <tbody>
-              {filteredInventory.map((product) => (
-                <tr
-                  key={product.id}
-                  className="border-t text-gray-450 dark:bg-gray-900 hover:bg-gray-50"
-                >
+              {products.map((product) => (
+                <tr key={product.id} className="border-t hover:bg-gray-50">
                   <td className="p-3">{product.name}</td>
-                  <td className="p-3">{product.sku}</td>
-                  <td className="p-3">{product.orderId}</td>
-                  <td className="p-3">{product.reference}</td>
-                  <td className="p-3">{product.quantity}</td>
-                  <td className="p-3">${product.price.toFixed(2)}</td>
-                  <td className="p-3">{product.daysLeft} days</td>
-                  <td className="p-3">${product.revenue.toFixed(2)}</td>
-                  <td className="p-3">{product.deliveryZip}</td>
+                  <td className="p-3">{product.category}</td>
+                  <td className="p-3">${parseFloat(product.price).toFixed(2)}</td>
+                  <td className="p-3">{product.stock}</td>
+                  <td className="p-3">{product.quantity || '-'}</td>
+                  <td className="p-3">{calculateDaysLeft(product.expirationDate)} days</td>
+                  <td className="p-3">{product.zip || '-'}</td>
                   <td className="p-3">
                     <span
-                      className={`px-2 py-1 text-sm rounded-full ${
+                      className={`text-sm font-medium ${
                         product.status === 'In Stock'
-                          ? 'bg-green-100 text-green-800'
-                          : product.status === 'Low Stock'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
+                          ? 'text-green-400'
+                          : product.status === 'Out of Stock'
+                            ? 'text-yellow-600'
+                            : 'text-red-400'
                       }`}
                     >
                       {product.status}
                     </span>
                   </td>
-                  <td className="p-3">
-                    <button
-                      onClick={() => startEdit(product)}
-                      className="text-blue-600 hover:underline text-sm"
-                    >
+                  <td className="p-3 flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => handleEdit(product)}>
                       Edit
-                    </button>
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleDeactivate(product.id)}
+                    >
+                      Disable
+                    </Button>
                   </td>
                 </tr>
               ))}
-              {filteredInventory.length === 0 && (
-                <tr>
-                  <td colSpan={11} className="p-3 text-center text-gray-500">
-                    No products found.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>

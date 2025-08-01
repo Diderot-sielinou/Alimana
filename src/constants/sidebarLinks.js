@@ -8,43 +8,10 @@ import {
   UserPlus,
   FileText,
   CreditCard,
+  Badge,
+  Tags,
 } from 'lucide-react';
-//   {
-//     href: '/dashboard',
-//     label: 'Dashboard',
-//     icon: LayoutDashboard,
-//   },
-//   {
-//     href: '/dashboard/products',
-//     label: 'Products',
-//     icon: Box,
-//   },
-//   {
-//     href: '/dashboard/sales',
-//     label: 'Sales',
-//     icon: ShoppingCart,
-//   },
-//   {
-//     href: '/dashboard/analytics',
-//     label: 'Analytics',
-//     icon: BarChart3,
-//   },
-//   {
-//     href: '/dashboard/inventory',
-//     label: 'Inventory',
-//     icon: Warehouse,
-//   },
-//   {
-//     href: '/dashboard/user-management',
-//     label: 'User Management',
-//     icon: UserPlus,
-//   },
-//   {
-//     href: '/dashboard/settings',
-//     label: 'Settings',
-//     icon: Settings,
-//   },
-// ];
+
 export const sidebarLinks = [
   {
     href: '/dashboard/overview',
@@ -53,17 +20,17 @@ export const sidebarLinks = [
     requiredPermissions: [], // visible à tous connectés
   },
   {
-    href: '/dashboard/products',
+    href: '/dashboard/product',
     label: 'Products',
     icon: Box,
     requiredPermissions: [],
   },
-  // {
-  //   href: '/dashboard/sales',
-  //   label: 'Sales',
-  //   icon: ShoppingCart,
-  //   requiredPermissions: [],
-  // },
+  {
+    href: '/dashboard/categories',
+    label: 'category',
+    icon: Tags,
+    requiredPermissions: [],
+  },
   {
     href: '/dashboard/post',
     label: 'Sales',
@@ -74,6 +41,15 @@ export const sidebarLinks = [
     href: '/dashboard/cash-registers',
     label: 'Sessions',
     icon: CreditCard,
+    requiredPermissions: [],
+  },
+  {
+    href: '/dashboard/manage-cash-register',
+    label: 'Cash Register',
+    icon: CreditCard,
+    href: '/dashboard/roles',
+    label: 'Roles',
+    icon: Badge,
     requiredPermissions: [],
   },
   {
