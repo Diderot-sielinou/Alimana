@@ -205,82 +205,81 @@ export default function DashboardPage() {
         {/*Colonne 1: Produits Populaires + Sales chart */}
         <div className="flex flex-col gap-6">
           {/* Produits populaires */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base md:text-lg">Produits populaires</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {products.slice(0, 5).map((product) => (
-                <div
-                  key={product.id}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div>
-                    <p className="font-medium text-gray-900">{product.name}</p>
-                    <p className="text-sm text-gray-500">{product.sellingPrice} XAF</p>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base md:text-lg">Produits populaires</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {products.slice(0, 5).map((product) => (
+                  <div
+                    key={product.id}
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div>
+                      <p className="font-medium text-gray-900">{product.name}</p>
+                      <p className="text-sm text-gray-500">{product.sellingPrice} XAF</p>
+                    </div>
+                    <div className="text-left sm:text-right mt-2 sm:mt-0">
+                      <p className="font-medium text-gray-900">Stock: {product.quantityInStock}</p>
+                      <p className="text-sm text-gray-500">{product.category?.name}</p>
+                    </div>
                   </div>
-                  <div className="text-left sm:text-right mt-2 sm:mt-0">
-                    <p className="font-medium text-gray-900">Stock: {product.quantityInStock}</p>
-                    <p className="text-sm text-gray-500">{product.category?.name}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow">
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow">
             {' '}
             <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">
               Sales Overview{' '}
             </h3>{' '}
-            <canvas ref={lineChartRef} className="h-64"/>{' '}
+            <canvas ref={lineChartRef} className="h-64" />{' '}
           </div>{' '}
         </div>
         {/* Colonne 2: Etat des caisses + Doughnut chart */}
         <div className="flex flex-col gap-6">
           {/* État des caisses */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base md:text-lg">État des caisses</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {cashRegisters.map((register) => (
-                <div
-                  key={register.id}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div>
-                    <p className="font-medium text-gray-900">{register.name}</p>
-                    <p className="text-sm text-gray-500">{register.store?.name}</p>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base md:text-lg">État des caisses</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {cashRegisters.map((register) => (
+                  <div
+                    key={register.id}
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div>
+                      <p className="font-medium text-gray-900">{register.name}</p>
+                      <p className="text-sm text-gray-500">{register.store?.name}</p>
+                    </div>
+                    <div className="flex mt-2 sm:mt-0 items-center space-x-2">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          register.currentOpenSession?.status === 'open'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {register.currentOpenSession?.status === 'open' ? 'Ouverte' : 'Fermée'}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex mt-2 sm:mt-0 items-center space-x-2">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        register.currentOpenSession?.status === 'open'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {register.currentOpenSession?.status === 'open' ? 'Ouverte' : 'Fermée'}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-        <div className="bg-white p-6 rounded-xl shadow">
-  <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">
-    Payment Methods
-  </h3>
-  <div className="mx-auto w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-96 xl:h-96">
-  <canvas ref={doughnutChartRef} className="w-full h-full" />
-</div>
-</div>
+          <div className="bg-white p-6 rounded-xl shadow">
+            <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">
+              Payment Methods
+            </h3>
+            <div className="mx-auto w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-96 xl:h-96">
+              <canvas ref={doughnutChartRef} className="w-full h-full" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
