@@ -8,6 +8,12 @@ import { ICashRegisterSession } from '@/types/cash-register-session.interface';
 import { IProduct } from '@/types/product.interface';
 import { IPaymentMethod } from '@/types/payment-method.interface';
 import { ICategory } from '@/types/category.interface';
+import {
+  GetRevenueSummary,
+  GetProfitSummary,
+  GetSalesSummary,
+  GetSalesOverview,
+} from '@/types/get-sales-summary.interface';
 import { IRole } from '@/types/role.interface';
 
 interface ShopDataState {
@@ -15,6 +21,10 @@ interface ShopDataState {
   categories: ICategory[];
   paymentMethods: IPaymentMethod[];
   cashRegisters: ICashRegister[];
+  revenueSummary: GetRevenueSummary;
+  salesSummary: GetSalesSummary;
+  profitSummary: GetProfitSummary;
+  salesOverview: GetSalesOverview[];
   // permissions?: Permission[];
 
   roles?: IRole[];
@@ -26,6 +36,10 @@ interface ShopDataContextType extends ShopDataState {
   refreshCategories: () => Promise<void>;
   refreshPaymentMethods: () => Promise<void>;
   refreshCashRegisters: () => Promise<void>;
+  refreshDailyRevenue: () => Promise<void>;
+  refreshDailyProfit: () => Promise<void>;
+  refreshDailySales: () => Promise<void>;
+  refreshSalesOverview: () => Promise<void>;
   findProductByBarcode: (barcode: string) => Promise<IProduct | null>;
   loadInitialData: () => Promise<void>;
   openSession: ICashRegisterSession | null;
@@ -42,6 +56,10 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     categories: [],
     paymentMethods: [],
     cashRegisters: [],
+    revenueSummary: {} as GetRevenueSummary,
+    salesSummary: {} as GetSalesSummary,
+    profitSummary: {} as GetProfitSummary,
+    salesOverview: [],
     isLoading: false,
   });
 
@@ -85,6 +103,42 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  const fetchDailyRevenue = async (storeId: number) => {
+    try {
+      const response = await api.get(`store/${storeId}/analytics/summary/revenue`);
+      setState((prev) => ({ ...prev, revenueSummary: response.data }));
+    } catch (error) {
+      console.error('Failed to load daily revenue', error);
+    }
+  };
+
+  const fetchDailyProfit = async (storeId: number) => {
+    try {
+      const response = await api.get(`store/${storeId}/analytics/summary/profit`);
+      setState((prev) => ({ ...prev, profitSummary: response.data }));
+    } catch (error) {
+      console.error('Failed to load daily revenue', error);
+    }
+  };
+
+  const fetchDailySales = async (storeId: number) => {
+    try {
+      const response = await api.get(`store/${storeId}/analytics/summary/sales`);
+      setState((prev) => ({ ...prev, salesSummary: response.data }));
+    } catch (error) {
+      console.error('Failed to load daily revenue', error);
+    }
+  };
+
+  const fetchSalesOverview = async (storeId: number) => {
+    try {
+      const response = await api.get(`store/${storeId}/analytics/sales-overview`);
+      setState((prev) => ({ ...prev, salesOverview: response.data }));
+    } catch (error) {
+      console.error('Failed to load daily revenue', error);
+    }
+  };
+
   const loadInitialData = useCallback(async () => {
     if (!storeContext?.storeId) {
       console.warn(' No storeContext.storeId — skipping data load');
@@ -98,6 +152,10 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       fetchCategories(storeContext.storeId),
       fetchPaymentMethods(storeContext.storeId),
       fetchCashRegisters(storeContext.storeId),
+      fetchDailyRevenue(storeContext.storeId),
+      fetchDailyProfit(storeContext.storeId),
+      fetchDailySales(storeContext.storeId),
+      fetchSalesOverview(storeContext.storeId),
     ]);
 
     setState((prev) => ({ ...prev, isLoading: false }));
@@ -157,6 +215,18 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     },
     refreshCashRegisters: async () => {
       if (storeContext?.storeId) await fetchCashRegisters(storeContext.storeId);
+    },
+    refreshDailyRevenue: async () => {
+      if (storeContext?.storeId) await fetchDailyRevenue(storeContext.storeId);
+    },
+    refreshDailyProfit: async () => {
+      if (storeContext?.storeId) await fetchDailyProfit(storeContext.storeId);
+    },
+    refreshDailySales: async () => {
+      if (storeContext?.storeId) await fetchDailySales(storeContext.storeId);
+    },
+    refreshSalesOverview: async () => {
+      if (storeContext?.storeId) await fetchSalesOverview(storeContext.storeId);
     },
     findProductByBarcode,
     loadInitialData,

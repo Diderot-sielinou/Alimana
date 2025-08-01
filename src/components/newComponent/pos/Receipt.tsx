@@ -21,7 +21,7 @@ export const Receipt: React.FC<ReceiptProps> = ({ isOpen, onClose, sale }) => {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Reçu - ${sale.sale?.id}</title>
+            <title>Receipt - ${sale.sale?.id}</title>
             <style>
               body { font-family: monospace; margin: 20px; }
               pre { white-space: pre-wrap; }
@@ -40,7 +40,7 @@ export const Receipt: React.FC<ReceiptProps> = ({ isOpen, onClose, sale }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Reçu de vente</DialogTitle>
+          <DialogTitle>Receipt</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -50,11 +50,11 @@ export const Receipt: React.FC<ReceiptProps> = ({ isOpen, onClose, sale }) => {
 
           <div className="flex space-x-3">
             <Button variant="outline" onClick={onClose} className="flex-1">
-              Fermer
+              Close
             </Button>
             <Button onClick={handlePrint} className="flex-1">
               <Printer className="w-4 h-4 mr-2" />
-              Imprimer
+              Print
             </Button>
           </div>
         </div>
