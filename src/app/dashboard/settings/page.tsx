@@ -7,7 +7,6 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 
 export default function SettingsPage() {
-
   // Store settings state
   const [storeData, setStoreData] = useState({
     storeName: '',
@@ -56,9 +55,7 @@ export default function SettingsPage() {
 
   return (
     <div className="flex min-h-screen">
-
       <main className="flex-1 p-6 ml-0 md:ml-64 space-y-8">
-
         {/* General Info */}
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">General Information</h2>
@@ -157,7 +154,7 @@ export default function SettingsPage() {
         </section>
 
         {/* Save Button */}
-        <Button onClick={handleSave} className="bg-orange-600 text-white hover:bg-orange-700">
+        <Button onClick={handleSave} className="bg-amber-600 text-white hover:bg-amber-700">
           Save Settings
         </Button>
       </main>

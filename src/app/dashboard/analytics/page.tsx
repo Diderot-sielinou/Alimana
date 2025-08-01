@@ -1,12 +1,9 @@
 'use client';
-
 import React, { useEffect, useRef } from 'react';
 import { Chart } from 'chart.js/auto';
-
 import { Card } from '@/components/ui/card';
 
 export default function AnalyticsPage() {
-
   const revenueChartRef = useRef(null);
   const performanceChartRef = useRef(null);
   const salesTrendChartRef = useRef(null);
