@@ -1,10 +1,10 @@
 'use client';
 
-import { Role } from '@/types/role';
+import { RoleDisplay } from '@/types/role';
 import { Edit3, Trash2 } from 'lucide-react'; // Icônes remplacées
 
 interface RoleCardProps {
-  role: Role;
+  role: RoleDisplay;
   onEdit: () => void;
   onDelete: () => void;
 }
