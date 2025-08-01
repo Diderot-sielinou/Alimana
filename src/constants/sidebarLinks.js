@@ -1,11 +1,13 @@
 import {
   LayoutDashboard,
   ShoppingCart,
+  Box,
   BarChart3,
   Warehouse,
   Settings,
   UserPlus,
   CreditCard,
+  Tags,
 } from 'lucide-react';
 
 export const sidebarLinks = [
@@ -13,14 +15,20 @@ export const sidebarLinks = [
     href: '/dashboard/overview',
     label: 'Dashboard',
     icon: LayoutDashboard,
+    requiredPermissions: [], // visible à tous connectés
+  },
+  {
+    href: '/dashboard/product',
+    label: 'Products',
+    icon: Box,
     requiredPermissions: [],
   },
-  // {
-  //   href: '/dashboard/sales',
-  //   label: 'Sales',
-  //   icon: ShoppingCart,
-  //   requiredPermissions: [],
-  // },
+  {
+    href: '/dashboard/categories',
+    label: 'category',
+    icon: Tags,
+    requiredPermissions: [],
+  },
   {
     href: '/dashboard/post',
     label: 'Sales',

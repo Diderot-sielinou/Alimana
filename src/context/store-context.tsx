@@ -8,12 +8,16 @@ import { ICashRegisterSession } from '@/types/cash-register-session.interface';
 import { IProduct } from '@/types/product.interface';
 import { IPaymentMethod } from '@/types/payment-method.interface';
 import { ICategory } from '@/types/category.interface';
+import { IRole } from '@/types/role.interface';
 
 interface ShopDataState {
   products: IProduct[];
   categories: ICategory[];
   paymentMethods: IPaymentMethod[];
   cashRegisters: ICashRegister[];
+  // permissions?: Permission[];
+
+  roles?: IRole[];
   isLoading: boolean;
 }
 
@@ -83,7 +87,7 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const loadInitialData = useCallback(async () => {
     if (!storeContext?.storeId) {
-      console.warn('⛔️ No storeContext.storeId — skipping data load');
+      console.warn(' No storeContext.storeId — skipping data load');
       return;
     }
 
