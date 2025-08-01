@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -11,6 +11,8 @@ import Step1StoreInfo from '@/components/steps/Step1StoreInfo';
 import Step2StoreLocation from '@/components/steps/Step2StoreLocation';
 import { useFormik } from 'formik';
 import { createStoreValidationSchema } from '@/schema/validation-schema';
+import { useAuth } from '@/context/auth-context';
+import { api } from '@/lib/api';
 export interface StoreData {
   name: string;
   description: string;
@@ -28,6 +30,7 @@ export interface StoreData {
 export default function CreateStorePage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const { user, fetchMe, storeContext } = useAuth();
 
   const formik = useFormik<StoreData>({
     initialValues: {
@@ -56,20 +59,16 @@ export default function CreateStorePage() {
           phone: values.phone || null,
           email: values.email || null,
           websiteUrl: values.websiteUrl || null,
-          logoUrl: values.profileImageUrl || null,
+          logoUrl: null, // ou l'url de ton logo si upload géré
           profileImageUrl: values.profileImageUrl || null,
         };
-        const response = await fetch('http://localhost:3000/api/store', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json', // Ensure this header is set
-          },
-          body: JSON.stringify(payload),
-          credentials: 'include',
-        });
-
-        if (!response.ok) throw new Error('Store creation failed');
-        router.push('/dashboard');
+        const response = await api.post('/store', payload); // <-- envoi direct ici
+        const accessToken = response.data?.accessToken;
+        localStorage.setItem('accessToken', accessToken);
+        fetchMe();
+        if (storeContext) {
+          router.replace('/dashboard');
+        }
       } catch (error) {
         console.error('Store creation error:', error);
       }
@@ -89,6 +88,12 @@ export default function CreateStorePage() {
       setStep(step + 1);
     }
   };
+
+  useEffect(() => {
+    if (!user) {
+      // router.replace('/signin')
+    }
+  }, [router, user]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">

@@ -10,9 +10,9 @@ const spinnerVariants = cva(
   {
     variants: {
       size: {
-        sm: 'h-4 w-4',   // Petite taille
-        md: 'h-6 w-6',   // Taille moyenne (par défaut)
-        lg: 'h-8 w-8',   // Grande taille
+        sm: 'h-4 w-4', // Petite taille
+        md: 'h-6 w-6', // Taille moyenne (par défaut)
+        lg: 'h-8 w-8', // Grande taille
         xl: 'h-12 w-12', // Très grande taille
       },
     },
@@ -23,10 +23,17 @@ const spinnerVariants = cva(
 );
 
 // Définir les props du composant LoadingSpinner
-export type LoadingSpinnerProps = VariantProps<typeof spinnerVariants>
+export type LoadingSpinnerProps = VariantProps<typeof spinnerVariants>;
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size }) => {
   return (
-    <Loader2 className={cn(spinnerVariants({ size }))} />
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300">
+      <div className="flex flex-col items-center gap-4">
+        <div className="animate-spin text-blue-600">
+          <Loader2 className={cn(spinnerVariants({ size }))} />
+        </div>
+        <p className="text-lg font-medium text-gray-700">chargement en cours...</p>
+      </div>
+    </div>
   );
 };

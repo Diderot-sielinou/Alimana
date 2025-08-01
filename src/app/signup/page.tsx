@@ -10,12 +10,11 @@ import { Label } from '@/components/ui/label';
 import { RequiredLabel } from '@/components/ui/required-label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { signUp, signUpWithGoogle } from '@/lib/auth';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { registerValidationSchema } from '@/schema/validation-schema';
+import { useAuth } from '@/context/auth-context';
 
-interface SignupValues {
+export interface SignupValues {
   fullName: string;
   email: string;
   password: string;
@@ -24,8 +23,15 @@ interface SignupValues {
   acceptTerms: boolean;
 }
 
+export interface ISignupValues {
+  fullName: string;
+  email: string;
+  password: string;
+  phone: string;
+}
+
 export default function SignupPage() {
-  const router = useRouter();
+  const { register, registerWithGoogle } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
@@ -43,13 +49,12 @@ export default function SignupPage() {
     onSubmit: async (values, { setSubmitting }) => {
       setGeneralError(null);
       try {
-        await signUp({
+        await register({
           fullName: values.fullName,
           email: values.email,
           password: values.password,
           phone: '+237' + values.phone.replace(/^(\+237)?/, ''),
         });
-        router.push('/create-store');
       } catch (error) {
         if (error instanceof Error) {
           setGeneralError(error.message);
@@ -83,7 +88,7 @@ export default function SignupPage() {
             <CardDescription>Create your account to get started with Alimana</CardDescription>
             <Button
               variant="outline"
-              onClick={signUpWithGoogle}
+              onClick={registerWithGoogle}
               className="w-full bg-transparent dark:hover:bg-slate-200 dark:text-slate-900"
             >
               <svg height="20" width="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
