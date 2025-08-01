@@ -85,8 +85,15 @@ export default function HeaderDasboard() {
           <div className="flex items-center">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="text-orange-700 mr-4 md:hidden"
+              className="text-amber-700 dark:text-amber-400 mr-4 md:hidden"
             >
+              <Menu className="w-6 h-6" />
+            </button>
+            <Link
+              href="/"
+              className="text-xl font-semibold text-amber-700 dark:text-amber-300 hover:text-amber-900"
+            ></Link>
+            <button>
               <Menu className="w-6 h-6" />
             </button>
             <Link href="/" className="text-xl font-semibold text-orange-700 hover:text-orange-900">
@@ -96,20 +103,25 @@ export default function HeaderDasboard() {
 
           {/* Header right */}
           <div className="flex items-center space-x-4">
-            <button className="text-orange-700 relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+            <button className="text-amber-700 dark:text-amber-300 relative">
+              <button className="text-orange-700 relative">
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+              </button>
+              <div className="flex items-center space-x-2">
+                <Image
+                  src="https://images.unsplash.com/photo-1644904105846-095e45fca990?w=500&auto=format&fit=crop&q=60"
+                  alt="User"
+                  width={400}
+                  height={300}
+                  className="w-8 h-8 rounded-full"
+                />
+                <span className="hidden md:inline text-amber-700 dark:text-amber-200 text-sm">
+                  Admin
+                </span>
+                <span className="hidden md:inline text-amber-700 text-sm">Admin</span>
+              </div>
             </button>
-            <div className="flex items-center space-x-2">
-              <Image
-                src="https://images.unsplash.com/photo-1644904105846-095e45fca990?w=500&auto=format&fit=crop&q=60"
-                alt="User"
-                width={400}
-                height={300}
-                className="w-8 h-8 rounded-full"
-              />
-              <span className="hidden md:inline text-orange-700 text-sm">Admin</span>
-            </div>
           </div>
         </div>
 
@@ -120,12 +132,12 @@ export default function HeaderDasboard() {
               <span className="mr-1">🔄</span> Last updated: Just now
             </p>
             <div className="flex space-x-2">
-              <select className="bg-orange-600 text-white px-3 py-1 rounded">
+              <select className="bg-amber-600 text-white px-3 py-1 rounded">
                 <option value="Today">Today</option>
                 <option value="This week">This Week</option>
                 <option value="This Month">This Month</option>
               </select>
-              <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm">Export</button>
+              <button className="bg-amber-600 text-white px-3 py-1 rounded text-sm">Export</button>
             </div>
           </div>
         </div>

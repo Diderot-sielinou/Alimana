@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Search, Edit, Trash2, Package, Loader2 } from 'lucide-react';
 import { Product } from '@/types/product';
 import toast from 'react-hot-toast';
-import { api } from '@/lib/api'; // Assurez-vous d'importer l'API
+import { api } from '@/lib/api'; 
 import { useShopData } from '@/context/store-context';
 import { ProductForm } from '@/components/newComponent/common/ProductForm';
 import { DeleteConfirmationDialog } from '@/components/newComponent/common/DeleteConfirmationDialog';
@@ -214,7 +214,6 @@ export default function ProductsPage() {
         <DataTable columns={columns} data={filteredProducts} />
       )}
 
-      {/* Dialogue de confirmation de suppression */}
       {deletingProduct && (
         <DeleteConfirmationDialog
           isOpen={!!deletingProduct}
