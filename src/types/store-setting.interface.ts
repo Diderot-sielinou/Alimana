@@ -11,3 +11,15 @@ export interface IStoreSetting {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface StoreSetting {
+  id: number;
+  key: string;
+  value: string;
+  type: 'STRING' | 'NUMBER' | 'BOOLEAN';
+  isEditable: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: { name: string };
+  updatedBy?: { name: string };
+}
