@@ -43,6 +43,9 @@ export const sidebarLinks = [
     requiredPermissions: [],
   },
   {
+    href: '/dashboard/manage-cash-register',
+    label: 'Cash Register',
+    icon: CreditCard,
     href: '/dashboard/roles',
     label: 'Roles',
     icon: Badge,
