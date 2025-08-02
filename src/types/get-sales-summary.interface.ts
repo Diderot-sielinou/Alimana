@@ -21,3 +21,18 @@ export interface GetSalesOverview {
   revenue: string; // Total revenue for that day (as string, will need parsing)
   profit: string; // Total profit for that day (as string, will need parsing)
 }
+
+export interface GetProductPerformance {
+  product: string;
+  units_sold: string;
+}
+
+export interface GetSalesTrend {
+  day: Date; // The day of the sale (time truncated to midnight)
+  total_units_sold: string;
+}
+
+export interface GetTopProducts {
+  product: string;
+  units_sold: string;
+}
