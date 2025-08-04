@@ -105,7 +105,6 @@ export default function InvitationPage() {
     }
   };
 
-  // Handle form field changes
   const handleFieldChange = (field: keyof InvitationFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (formErrors[field]) {
