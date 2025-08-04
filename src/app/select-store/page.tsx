@@ -6,18 +6,24 @@ import { Store, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { getMyStores, StoreSummary } from '@/services/utils';
 import { LoadingSpinner } from '@/components/dashboard/LoadingSpinner';
+import { useRouter } from 'next/navigation';
 
 export default function SelectStorePage() {
   const { user, selectStore } = useAuth();
 
   const [stores, setStores] = useState<StoreSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
   console.log(user);
 
   useEffect(() => {
     const fetchStores = async () => {
       try {
         const data = await getMyStores();
+        if (data.length <= 0) {
+          router.replace('/create-store');
+        }
         setStores(data);
       } catch (error) {
         console.error('Erreur lors de la récupération des boutiques :', error);
@@ -27,7 +33,7 @@ export default function SelectStorePage() {
     };
 
     fetchStores();
-  }, []);
+  }, [router]);
 
   const handleStoreSelect = (store: StoreSummary) => {
     selectStore(store.storeUserId);

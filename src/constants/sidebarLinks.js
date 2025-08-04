@@ -26,7 +26,7 @@ export const sidebarLinks = [
   },
   {
     href: '/dashboard/categories',
-    label: 'category',
+    label: 'Category',
     icon: Tags,
     requiredPermissions: [],
   },

@@ -31,7 +31,7 @@ interface AuthContextType {
   fetchMe: () => Promise<void>;
   hasFetchedMe: boolean;
   register: (credentials: ISignupValues) => Promise<void>;
-  registerWithGoogle: () => Promise<void>;
+  registerWithGoogle: (isRegister: boolean) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -109,25 +109,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (!hasFetchedMe || isLoading) return;
 
-    const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+    // const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+    const isPubli = PUBLIC_PATHS.some((path) => pathname === path);
     const safeRedirect = (path: string) => {
       if (pathname !== path) router.replace(path);
     };
 
-    if (!isAuthenticated && !isPublic) {
+    console.log(`router publique  : ${isPubli}`);
+
+    if (!isAuthenticated && pathname === '/create-store') {
       safeRedirect('/signin');
       return;
     }
 
-    // if (isAuthenticated ) {
-    //   safeRedirect('/select-store');
-    //   return;
-    // }
+    if (!isAuthenticated && !isPubli) {
+      safeRedirect('/signin');
+      return;
+    }
 
     if (isAuthenticated && !storeContext) {
       if (authFlow === 'signup') {
         safeRedirect('/create-store');
-      } else {
+      } else if (pathname !== '/create-store') {
         safeRedirect('/select-store');
       }
       return;
@@ -163,14 +166,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [fetchMe]
   );
 
-  const registerWithGoogle = useCallback(async () => {
-    try {
-      window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google`;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      toast.error("Échec de l'inscription avec Google");
-    }
-  }, []);
+  const registerWithGoogle = useCallback(
+    async (isRegister: boolean) => {
+      try {
+        window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google`;
+        if (isRegister) {
+          setAuthFlow('signup');
+          await fetchMe();
+          router.replace(`/create-store`);
+        } else {
+          await fetchMe();
+
+          // router.replace(`/select-store`);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        toast.error("Échec de l'inscription avec Google");
+      }
+    },
+    [fetchMe, router]
+  );
 
   const logout = useCallback(async () => {
     try {
