@@ -20,7 +20,7 @@ type SigninFormData = {
 };
 
 export default function SigninPage() {
-  const { login } = useAuth();
+  const { login, registerWithGoogle } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik<SigninFormData>({
@@ -58,6 +58,7 @@ export default function SigninPage() {
             <Button
               variant="outline"
               className="w-full bg-white mt-2 dark:hover:bg-slate-300 dark:text-black"
+              onClick={() => registerWithGoogle(false)}
             >
               <span className="mr-2">
                 <svg className="h-4 w-4" viewBox="0 0 48 48">

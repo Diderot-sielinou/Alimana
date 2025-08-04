@@ -27,7 +27,7 @@ export const sidebarLinks = [
   },
   {
     href: '/dashboard/categories',
-    label: 'category',
+    label: 'Category',
     icon: Tags,
     requiredPermissions: [],
   },
@@ -44,12 +44,15 @@ export const sidebarLinks = [
     requiredPermissions: [],
   },
   {
-    href: '/dashboard/manage-cash-register',
-    label: 'Cash Register',
-    icon: CreditCard,
     href: '/dashboard/roles',
     label: 'Roles',
     icon: Badge,
+    requiredPermissions: [],
+  },
+  {
+    href: '/dashboard/manage-cash-register',
+    label: 'Cash Register',
+    icon: CreditCard,
     requiredPermissions: [],
   },
   {
