@@ -40,10 +40,10 @@ export default function SelectStorePage() {
       <div className="w-full max-w-2xl">
         <div className="bg-white rounded-lg shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Select a store</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Sélectionnez votre boutique</h1>
             <p className="text-gray-500">
-              <span>Welcome {user?.fullName} </span>
-              Select the store you want to proceed with
+              <span>bienvenue {user?.fullName} </span>
+              Choisissez la boutique avec laquelle vous souhaitez travailler
             </p>
           </div>
 
@@ -61,10 +61,8 @@ export default function SelectStorePage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg text-gray-900">{store.name}</h3>
-                      <p className="text-gray-500 text-sm">Role: {store.roleName}</p>
-                      <p className="text-gray-400 text-xs">
-                        Currency: XAF • Fuseau: africa/daouala
-                      </p>
+                      <p className="text-gray-500 text-sm">vous avey le role de {store.roleName}</p>
+                      <p className="text-gray-400 text-xs">Devise: XAF • Fuseau: africa/daouala</p>
                     </div>
                   </div>
                   <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />

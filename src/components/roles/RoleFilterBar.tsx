@@ -2,7 +2,12 @@
 
 import { Search, Filter } from 'lucide-react';
 
-export default function RoleFilterBar() {
+interface RoleFilterBarProps {
+  searchTerm: string;
+  onSearchTermChange: (term: string) => void;
+}
+
+export default function RoleFilterBar({ searchTerm, onSearchTermChange }: RoleFilterBarProps) {
   return (
     <div className="bg-white p-4 rounded-lg shadow">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -11,6 +16,8 @@ export default function RoleFilterBar() {
           <input
             type="text"
             placeholder="Search role..."
+            value={searchTerm}
+            onChange={(e) => onSearchTermChange(e.target.value)}
             className="pl-10 pr-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

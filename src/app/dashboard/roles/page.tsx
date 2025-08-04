@@ -18,8 +18,13 @@ export default function RolesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const storeId = storeContext?.storeId;
+
+  const filteredRoles = roles.filter((role) =>
+    role.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+  );
 
   const fetchRoles = useCallback(async () => {
     if (!storeId) return;
@@ -58,6 +63,7 @@ export default function RolesPage() {
 
   const handleOpenModal = (role?: RoleDisplay) => {
     if (role) {
+      // Convert RoleDisplay back to Role for editing
       const fullRole: Role = {
         id: role.id,
         name: role.name,
@@ -80,7 +86,7 @@ export default function RolesPage() {
   };
 
   const handleRoleUpdated = () => {
-    fetchRoles();
+    fetchRoles(); // Refresh the roles list
     handleCloseModal();
   };
 
@@ -101,6 +107,7 @@ export default function RolesPage() {
     }
   };
 
+  // Show loading spinner while checking permissions or loading data
   if (!storeContext || loading) {
     return (
       <main className="pl-[260px] pr-6 pt-6">
@@ -111,6 +118,7 @@ export default function RolesPage() {
     );
   }
 
+  // Show error state
   if (error) {
     return (
       <main className="pl-[260px] pr-6 pt-6">
@@ -127,11 +135,12 @@ export default function RolesPage() {
     );
   }
 
+  // Check if user has permission to manage roles
   if (!hasPermission('manage_roles')) {
     return (
       <main className="pl-[260px] pr-6 pt-6">
         <div className="flex flex-col items-center justify-center h-64">
-          <div className="text-gray-600 mb-4">You don&apos;t have permission to manage roles.</div>
+          <div className="text-gray-600 mb-4">{"You don't have permission to manage roles."}</div>
         </div>
       </main>
     );
@@ -149,10 +158,10 @@ export default function RolesPage() {
         </button>
       </div>
 
-      <RoleFilterBar />
+      <RoleFilterBar searchTerm={searchTerm} onSearchTermChange={setSearchTerm} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {roles.map((role) => (
+        {filteredRoles.map((role) => (
           <RoleCard
             key={role.id}
             role={role}
@@ -162,7 +171,7 @@ export default function RolesPage() {
         ))}
       </div>
 
-      {roles.length === 0 && !loading && (
+      {filteredRoles.length === 0 && !loading && (
         <div className="text-center py-12">
           <div className="text-gray-500 mb-4">No roles found</div>
           <button

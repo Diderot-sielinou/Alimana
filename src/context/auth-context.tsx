@@ -146,7 +146,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = useCallback(
     async (credentials: Credentials) => {
       await api.post('/auth/login', credentials);
-      toast.success('Sign In');
+      toast.success('Connexion réussie');
+      setAuthFlow('login');
       await fetchMe();
     },
     [fetchMe]
@@ -174,7 +175,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = useCallback(async () => {
     try {
       await api.post('/auth/logout');
-      toast.success('Logout successful');
+      localStorage.removeItem('accessToken');
+      toast.success('Déconnexion réussie');
     } finally {
       setUser(null);
       setStoreContext(null);
@@ -188,10 +190,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await api.post('/auth/select-store', { storeUserId });
       const accessToken = response.data.accessToken;
       localStorage.setItem('accessToken', accessToken);
-      console.log(response);
-      await fetchMe(); // rafraîchir user + storeContext
-      toast.success('Store has been selected');
-      router.push('/dashboard');
+      await fetchMe();
+      toast.success('Boutique sélectionnée');
+      router.replace('/dashboard');
     },
     [fetchMe, router]
   );

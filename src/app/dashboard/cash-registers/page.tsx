@@ -50,13 +50,13 @@ export default function CashRegistersPage() {
   // Ouvrir une session de caisse
   const handleOpenSession = async () => {
     if (!selectedRegister || !initialCash.trim()) {
-      toast.error('Please select a cash register and enter an opening amount.');
+      toast.error('Veuillez sélectionner une caisse et un montant initial.');
       return;
     }
 
     const initialAmount = parseFloat(initialCash);
     if (isNaN(initialAmount) || initialAmount < 0) {
-      toast.error('Opening amount must be greater than 0.');
+      toast.error('Le montant initial doit être un nombre positif.');
       return;
     }
 
@@ -69,7 +69,7 @@ export default function CashRegistersPage() {
       console.log(`reponse de l'ouverture de sesssion ${response}`);
       setOpenSession(response.data);
       toast.success(
-        `Cash register session open for ${selectedRegister?.name} with ${initialAmount.toLocaleString()} XAF.`
+        `Session ouverte pour ${selectedRegister?.name} avec ${initialAmount.toLocaleString()} XAF.`
       );
       loadInitialData(); // Rafraîchir les données
       setIsOpeningSession(false);
@@ -77,7 +77,7 @@ export default function CashRegistersPage() {
       setInitialCash('');
     } catch (error) {
       console.error("Erreur lors de l'ouverture de session:", error);
-      toast.error('Failed to open cash register session.');
+      toast.error("Échec de l'ouverture de session.");
     } finally {
       setIsProcessingSession(false);
     }
@@ -89,12 +89,12 @@ export default function CashRegistersPage() {
 
     console.log(`session ouverte ${JSON.stringify(session)}`);
 
-    const closingAmount = prompt(`Confirm the closing amount ${session.id}`);
+    const closingAmount = prompt(`Confirmez le montant de clôture pour ${session.id}`);
     if (closingAmount === null) return; // Annulé par l'utilisateur
 
     const finalClosingAmount = parseFloat(closingAmount);
     if (isNaN(finalClosingAmount) || finalClosingAmount < 0) {
-      toast.error('The closing amount must be greater than 0');
+      toast.error('Le montant de clôture doit être un nombre positif.');
       return;
     }
 
@@ -106,12 +106,12 @@ export default function CashRegistersPage() {
         // closedByStoreUserId: user?.s, // Assurez-vous que l'ID de l'utilisateur est envoyé
       });
       toast.success(
-        `Casg=h register session ${session.id} closed with ${finalClosingAmount.toLocaleString()} XAF.`
+        `Session de ${session.id} fermée avec ${finalClosingAmount.toLocaleString()} XAF.`
       );
       loadInitialData(); // Rafraîchir les données
     } catch (error) {
       console.error('Erreur lors de la fermeture de session:', error);
-      toast.error('Failed to close cash register session.');
+      toast.error('Échec de la fermeture de session.');
     } finally {
       setIsProcessingSession(false);
     }
@@ -127,7 +127,7 @@ export default function CashRegistersPage() {
       setShowHistoryModal(true);
     } catch (error) {
       console.error("Erreur lors de la récupération de l'historique:", error);
-      toast.error('Failed to fetch history');
+      toast.error("Échec de la récupération de l'historique.");
     } finally {
       setIsFetchingHistory(false);
     }
@@ -136,7 +136,7 @@ export default function CashRegistersPage() {
   if (isLoading) {
     return (
       <div className="space-y-6 md:ml-64 min-h-screen bg-gray-50 dark:bg-gray-950 px-6 py-4">
-        <h1 className="text-3xl font-bold text-gray-900">Management of Cash registers</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Gestion des Caisses</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="animate-pulse">
@@ -159,12 +159,12 @@ export default function CashRegistersPage() {
     <div className="space-y-6 md:ml-64 min-h-screen bg-gray-50 dark:bg-gray-950 px-6 py-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Management of Cash registers</h1>
-          <p className="text-gray-500 mt-1">Manage your cash regiaters.</p>
+          <h1 className="text-3xl font-bold text-gray-900">Gestion des Caisses</h1>
+          <p className="text-gray-500 mt-1">Gérez les sessions de vos caisses enregistreuses.</p>
         </div>
         <Button onClick={() => setIsOpeningSession(true)} className="flex items-center">
           <PlusCircle className="w-4 h-4 mr-2" />
-          Open a new session
+          Ouvrir une nouvelle session
         </Button>
       </div>
 
@@ -182,23 +182,25 @@ export default function CashRegistersPage() {
                     : 'bg-gray-100 text-gray-800'
                 }`}
               >
-                {register?.currentOpenSession?.status === 'open' ? 'Open' : 'Closed / Inactive'}
+                {register?.currentOpenSession?.status === 'open'
+                  ? 'Session Ouverte'
+                  : 'Fermée / Inactive'}
               </span>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-gray-600">Location: {register?.store?.name}</p>
+              <p className="text-sm text-gray-600">Lieu: {register?.store?.name}</p>
               {register?.currentOpenSession?.status === 'open' ? (
                 <div className="text-sm text-gray-700">
                   <p className="flex items-center mt-1">
                     <PlayCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Opened at:{' '}
+                    Ouverte depuis:{' '}
                     {format(new Date(register?.currentOpenSession.openedAt), 'dd/MM/yyyy HH:mm', {
                       locale: fr,
                     })}
                   </p>
                   <p className="flex items-center mt-1">
                     <DollarSign className="w-4 h-4 mr-2 text-blue-500" />
-                    Initial sales: {register?.currentOpenSession.initialCash.toLocaleString()} XAF
+                    Solde initial: {register?.currentOpenSession.initialCash.toLocaleString()} XAF
                   </p>
                   {/* {register?.currentOpenSession. !== undefined && (
                     <p className="flex items-center mt-1 font-bold text-primary">
@@ -216,7 +218,7 @@ export default function CashRegistersPage() {
                     ) : (
                       <StopCircle className="w-4 h-4 mr-2" />
                     )}
-                    Close session
+                    Fermer la session
                   </Button>
                 </div>
               ) : (
@@ -234,7 +236,7 @@ export default function CashRegistersPage() {
                   ) : (
                     <PlayCircle className="w-4 h-4 mr-2" />
                   )}
-                  Open session
+                  Ouvrir la session
                 </Button>
               )}
               <Button
@@ -248,7 +250,7 @@ export default function CashRegistersPage() {
                 ) : (
                   <History className="w-4 h-4 mr-2" />
                 )}
-                View History
+                Voir lhistorique
               </Button>
             </CardContent>
           </Card>
@@ -259,7 +261,7 @@ export default function CashRegistersPage() {
       <Dialog open={isOpeningSession} onOpenChange={setIsOpeningSession}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Open a cash register session</DialogTitle>
+            <DialogTitle>Ouvrir une session de caisse</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -267,7 +269,7 @@ export default function CashRegistersPage() {
                 htmlFor="register-select"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Select a cash register
+                Sélectionner la caisse
               </label>
               <select
                 id="register-select"
@@ -280,7 +282,7 @@ export default function CashRegistersPage() {
                   );
                 }}
               >
-                <option value="">-- Select a cash register --</option>
+                <option value="">-- Choisir une caisse --</option>
                 {currentStoreCashRegisters
                   .filter(
                     (cr) => !cr.currentOpenSession || cr.currentOpenSession.status === 'closed'
@@ -297,7 +299,7 @@ export default function CashRegistersPage() {
                 htmlFor="initial-cash"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Initial Amount (XAF)
+                Montant initial (XAF)
               </label>
               <Input
                 id="initial-cash"
@@ -311,7 +313,7 @@ export default function CashRegistersPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsOpeningSession(false)}>
-              Cancel
+              Annuler
             </Button>
             <Button onClick={handleOpenSession} disabled={isProcessingSession}>
               {isProcessingSession ? (
@@ -319,7 +321,7 @@ export default function CashRegistersPage() {
               ) : (
                 <PlusCircle className="mr-2 h-4 w-4" />
               )}
-              Open session
+              Ouvrir la session
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -330,13 +332,15 @@ export default function CashRegistersPage() {
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Cash register session hisory (
+              Historique des sessions (
               {currentStoreCashRegisters.find((cr) => cr.id === historyRegisterId)?.name})
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             {registerHistory?.length === 0 ? (
-              <p className="text-gray-500 text-center">No history for this cash register</p>
+              <p className="text-gray-500 text-center">
+                Aucune session historique trouvée pour cette caisse.
+              </p>
             ) : (
               registerHistory.map((session) => (
                 <Card key={session.id}>
@@ -354,16 +358,16 @@ export default function CashRegistersPage() {
                       </span>
                     </div>
                     <p className="text-sm text-gray-700">
-                      Opened by: {session.openedBy?.user?.fullName || 'N/A'} le{' '}
+                      Ouverte par: {session.openedBy?.user?.fullName || 'N/A'} le{' '}
                       {format(new Date(session.openedAt), 'dd/MM/yyyy HH:mm', { locale: fr })}
                     </p>
                     <p className="text-sm text-gray-700">
-                      Initial Amount: {session.initialCash.toLocaleString()} XAF
+                      Montant initial: {session.initialCash.toLocaleString()} XAF
                     </p>
                     {session.status === 'closed' && (
                       <>
                         <p className="text-sm text-gray-700">
-                          Closed by: {session.closedBy?.user?.fullName || 'N/A'} le{' '}
+                          Fermée par: {session.closedBy?.user?.fullName || 'N/A'} le{' '}
                           {format(new Date(session.closedAt!), 'dd/MM/yyyy HH:mm', { locale: fr })}
                         </p>
                         <p className="text-sm text-gray-700 font-medium">
@@ -376,7 +380,7 @@ export default function CashRegistersPage() {
                               : 'text-green-600'
                           }`}
                         >
-                          Balance: {session.discrepancy.toLocaleString()} XAF
+                          Différence: {session.discrepancy.toLocaleString()} XAF
                         </p>
                       </>
                     )}
@@ -384,7 +388,7 @@ export default function CashRegistersPage() {
                       {/* Nombre de ventes: {session. || 0} */}
                     </p>
                     <p className="text-sm text-gray-700 font-semibold">
-                      Total sales:{' '}
+                      Total des ventes:{' '}
                       {((session.closingCash || 0) - (session.initialCash || 0)).toLocaleString()}{' '}
                       XAF
                     </p>
@@ -394,7 +398,7 @@ export default function CashRegistersPage() {
             )}
           </div>
           <DialogFooter>
-            <Button onClick={() => setShowHistoryModal(false)}>Close</Button>
+            <Button onClick={() => setShowHistoryModal(false)}>Fermer</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

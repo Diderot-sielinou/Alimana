@@ -4,55 +4,42 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Chart } from 'chart.js/auto';
 import { useShopData } from '@/context/store-context';
-import { useAuth } from '@/context/auth-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, ShoppingCart, CreditCard, TrendingUp } from 'lucide-react';
 
 export default function DashboardPage() {
-  const {
-    products,
-    cashRegisters,
-    isLoading,
-    salesSummary,
-    profitSummary,
-    revenueSummary,
-    salesOverview,
-  } = useShopData();
+  const { products, cashRegisters, isLoading } = useShopData();
   const [, setIsDarkMode] = useState(false);
-  const doughnutChartRef = useRef<HTMLCanvasElement>(null);
   const lineChartRef = useRef<HTMLCanvasElement>(null);
-  const chartInstance = useRef<Chart | null>(null);
+  const doughnutChartRef = useRef<HTMLCanvasElement>(null);
 
   console.log(`product ${products}`);
   console.log(`cashregister ${cashRegisters}`);
 
-  const { storeContext } = useAuth();
-  const storeId = storeContext?.storeId;
-
   const stats = [
     {
-      title: 'Active Products',
+      title: 'Produits actifs',
       value: products?.filter((p) => p.isActive).length,
       icon: Package,
       color: 'text-blue-600',
       bgColor: 'bg-blue-100',
     },
     {
-      title: 'Total Number Of Products',
+      title: 'Stock total',
       value: products?.reduce((sum, p) => sum + p.quantityInStock, 0),
       icon: TrendingUp,
       color: 'text-green-600',
       bgColor: 'bg-green-100',
     },
     {
-      title: 'Active Cash Registers',
+      title: 'Caisses actives',
       value: cashRegisters.filter((c) => c.active).length,
       icon: CreditCard,
       color: 'text-primary',
       bgColor: 'bg-orange-100',
     },
     {
-      title: 'Open Cash Sessions',
+      title: 'Sessions ouvertes',
       value: cashRegisters?.filter((c) => c.currentOpenSession?.status === 'open').length,
       icon: ShoppingCart,
       color: 'text-purple-600',
@@ -75,86 +62,45 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!lineChartRef.current) return;
 
-    const fetchData = async () => {
-      try {
-        const salesData = salesOverview;
-        console.log(salesData);
-
-        // Process data
-        const labels = salesData.map((item) =>
-          new Date(item.day).toLocaleDateString('fr-FR', { weekday: 'short' })
-        );
-
-        const revenueData = salesData.map((item) => parseFloat(item.revenue));
-        const profitData = salesData.map((item) => parseFloat(item.profit));
-
-        // Destroy previous chart
-        if (chartInstance.current) {
-          chartInstance.current.destroy();
-        }
-
-        // Create new chart
-        chartInstance.current = new Chart(lineChartRef.current!, {
-          type: 'line',
-          data: {
-            labels,
-            datasets: [
-              {
-                label: 'Revenue (FCFA)',
-                data: revenueData,
-                borderColor: '#F76605',
-                backgroundColor: 'rgba(255,123,0,0.2)',
-                tension: 0.3,
-              },
-              {
-                label: 'Profit (FCFA)',
-                data: profitData,
-                borderColor: '#10B981',
-                backgroundColor: 'rgba(16,185,129,0.2)',
-                tension: 0.3,
-              },
-            ],
+    const chart = new Chart(lineChartRef.current, {
+      type: 'line',
+      data: {
+        labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+        datasets: [
+          {
+            label: 'Revenu (FCFA)',
+            data: [120000, 135000, 140000, 150000, 160000, 145000, 155000],
+            borderColor: '#F76605',
+            backgroundColor: 'rgba(255,123,0,0.2)',
+            tension: 0.3,
           },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { position: 'top' },
-              tooltip: {
-                callbacks: {
-                  label: (context) =>
-                    `${context.dataset.label}: ${(context.raw as number).toLocaleString()} FCFA`,
-                },
-              },
-            },
-            scales: {
-              y: {
-                ticks: {
-                  callback: (value) => `${value.toLocaleString()} FCFA`,
-                },
-              },
-            },
+          {
+            label: 'Profit (FCFA)',
+            data: [20000, 25000, 23000, 27000, 30000, 28000, 29000],
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16,185,129,0.2)',
+            tension: 0.3,
           },
-        });
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+        },
+      },
+    });
 
-    fetchData();
+    return () => chart.destroy();
+  }, []);
 
-    return () => {
-      if (chartInstance.current) {
-        chartInstance.current.destroy();
-      }
-    };
-  }, [storeId, salesOverview]);
   useEffect(() => {
     if (!doughnutChartRef.current) return;
 
     const chart = new Chart(doughnutChartRef.current, {
       type: 'doughnut',
       data: {
-        labels: ['Cash', 'Card', 'Mobile Money', 'Bank Transfer'],
+        labels: ['Cash', 'Carte', 'Mobile Money', 'Virement'],
         datasets: [
           {
             data: [40, 25, 20, 15],
@@ -191,43 +137,39 @@ export default function DashboardPage() {
     );
   }
 
-  const getTrendColor = (current: number, previous: number): string => {
-    return current > previous ? 'text-green-500' : 'text-red-500';
-  };
-
   return (
     <div className="md:ml-64 min-h-screen bg-gray-50 dark:bg-gray-950 px-6 py-4">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">📊 Dashboard</h1>
-        <p className="text-gray-500 mt-1 mb-8 text-center">Summary of Store Performance</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">📊 Tableau de bord</h1>
+        <p className="text-gray-500 mt-1 mb-8 text-center">Vue densemble de votre boutique</p>
       </div>
 
       {/* Résumé des revenus */}
-      <div className="grid grid-cols-1 mb-6 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 mb-6 md:grid-cols-4 gap-6">
         {[
           {
-            title: `Today's Revenue`,
-            value: `${revenueSummary.revenue_today}`,
-            change: `${revenueSummary.percentage_change}%`,
-            color: getTrendColor(
-              revenueSummary.revenue_today || 0,
-              revenueSummary.revenue_yesterday || 0
-            ),
+            title: 'Revenu journalier',
+            value: '150,000 FCFA',
+            change: '+12%',
+            color: 'text-green-500',
           },
           {
-            title: `Today's sales`,
-            value: `${salesSummary.units_today}`,
-            change: `${salesSummary.percentage_change}%`,
-            color: getTrendColor(salesSummary.units_today || 0, salesSummary.units_yesterday || 0),
+            title: 'Nombre de ventes',
+            value: '45',
+            change: '+5%',
+            color: 'text-green-500',
           },
           {
             title: 'Bénéfice net',
-            value: `${profitSummary.profit_today}`,
-            change: `${profitSummary.percentage_change}%`,
-            color: getTrendColor(
-              profitSummary.profit_today || 0,
-              profitSummary.profit_yesterday || 0
-            ),
+            value: '50,000 FCFA',
+            change: '-8%',
+            color: 'text-red-500',
+          },
+          {
+            title: 'Dépenses',
+            value: '30,000 FCFA',
+            change: '-15%',
+            color: 'text-red-500',
           },
         ].map((card) => (
           <div
@@ -236,7 +178,7 @@ export default function DashboardPage() {
           >
             <h2 className="text-sm text-gray-500 dark:text-gray-400">{card.title}</h2>
             <p className="text-xl font-bold text-gray-900 dark:text-white">{card.value}</p>
-            <p className={`${card.color} text-xs`}>{card.change} compared to yesterday</p>
+            <p className={`${card.color} text-xs`}>{card.change} par rapport à hier</p>
           </div>
         ))}
       </div>
@@ -265,7 +207,7 @@ export default function DashboardPage() {
           {/* Produits populaires */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base md:text-lg">Popular Products</CardTitle>
+              <CardTitle className="text-base md:text-lg">Produits populaires</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -300,7 +242,7 @@ export default function DashboardPage() {
           {/* État des caisses */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base md:text-lg">Cash Registers</CardTitle>
+              <CardTitle className="text-base md:text-lg">État des caisses</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">

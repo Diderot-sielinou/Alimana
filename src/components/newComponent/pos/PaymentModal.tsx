@@ -64,18 +64,18 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const addPayment = () => {
     if (!selectedMethod || !amount || parseFloat(amount) <= 0) {
-      toast.error('Choose a method of payment and enter an amount');
+      toast.error('Veuillez sélectionner une méthode et saisir un montant');
       return;
     }
 
     if (selectedMethod.requiresReference && !reference.trim()) {
-      toast.error('This payment method needs a reference');
+      toast.error('Cette méthode de paiement nécessite une référence');
       return;
     }
 
     const paymentAmount = parseFloat(amount);
     if (paymentAmount > remaining) {
-      toast.error('The amount exceeds the remaining total');
+      toast.error('Le montant dépasse le total restant');
       return;
     }
 
@@ -97,7 +97,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const processSale = async () => {
     if (remaining > 0) {
-      toast.error('Payment incomplete');
+      toast.error("Le paiement n'est pas complet");
       return;
     }
 
@@ -120,7 +120,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       onPaymentComplete(response.data);
     } catch (error) {
       const err = error as Error;
-      toast.error(`Error saving the sale ${err.message}`);
+      toast.error(`Erreur lors de l\'enregistrement de la vente ${err.message}`);
     } finally {
       setIsProcessing(false);
     }
@@ -130,18 +130,18 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Payment</DialogTitle>
+          <DialogTitle>Paiement</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Résumé */}
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex justify-between items-center mb-2">
-              <span>Sub-total:</span>
+              <span>Sous-total:</span>
               <span>{total.toLocaleString()} XAF</span>
             </div>
             <div className="flex justify-between items-center mb-2">
-              <span>Balance:</span>
+              <span>Remise:</span>
               <Input
                 type="number"
                 value={discount}
@@ -159,7 +159,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* Méthodes de paiement */}
           <div>
-            <h3 className="font-medium text-gray-900 mb-3">Add a payment method</h3>
+            <h3 className="font-medium text-gray-900 mb-3">Ajouter un paiement</h3>
             <div className="grid grid-cols-2 gap-2 mb-4">
               {paymentMethods
                 .filter((m) => m.isActive)
@@ -184,7 +184,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Amount (XAF)
+                      Montant (XAF)
                     </label>
                     <Input
                       type="number"
@@ -198,7 +198,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   {selectedMethod.requiresReference && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Reference
+                        Référence
                       </label>
                       <Input
                         value={reference}
@@ -209,7 +209,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   )}
                 </div>
                 <Button onClick={addPayment} className="w-full">
-                  Add Payment
+                  Ajouter le paiement
                 </Button>
               </div>
             )}
@@ -218,7 +218,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           {/* Paiements ajoutés */}
           {payments.length > 0 && (
             <div>
-              <h3 className="font-medium text-gray-900 mb-3">Payment</h3>
+              <h3 className="font-medium text-gray-900 mb-3">Paiements</h3>
               <div className="space-y-2">
                 {payments.map((payment, index) => {
                   const method = paymentMethods.find((m) => m.id === payment.paymentMethodId);
@@ -252,7 +252,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </div>
               <div className="mt-3 p-3 bg-gray-50 rounded-lg">
                 <div className="flex justify-between items-center">
-                  <span>Amount to be paid:</span>
+                  <span>Restant à payer:</span>
                   <span
                     className={`font-bold ${remaining === 0 ? 'text-green-600' : 'text-red-600'}`}
                   >
@@ -265,7 +265,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Notes (optionnel)
+            </label>
             <Input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -276,7 +278,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           {/* Actions */}
           <div className="flex space-x-3">
             <Button variant="outline" onClick={onClose} className="flex-1">
-              Cancel
+              Annuler
             </Button>
             <Button
               onClick={processSale}

@@ -50,13 +50,13 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
         if (product) {
           onProductSelect(product);
           setSearchTerm('');
-          toast.success(`Product not found: ${product.name}`);
+          toast.success(`Produit trouvé: ${product.name}`);
         } else {
-          toast.error('Product not found');
+          toast.error('Produit non trouvé');
         }
       } catch (error) {
         const err = error as Error;
-        toast.error(`Error while searching,${err.message}`);
+        toast.error(`Erreur lors de la recherche,${err.message}`);
       } finally {
         setIsScanning(false);
       }
@@ -74,13 +74,13 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
   return (
     <div className="bg-white rounded-lg shadow-sm border p-6">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Search a product</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Rechercher un produit</h2>
 
         {/* Barre de recherche */}
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
-            placeholder="Name of product or barcode..."
+            placeholder="Nom du produit ou code-barres..."
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-10 pr-10"
@@ -119,7 +119,7 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
         {filteredProducts.length === 0 ? (
           <div className="text-center py-8">
             <Package className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-500">No product found</p>
+            <p className="text-gray-500">Aucun produit trouvé</p>
           </div>
         ) : (
           filteredProducts.map((product) => (
@@ -149,7 +149,7 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
                   {product.sellingPrice.toLocaleString()} XAF
                 </p>
                 <Button size="sm" className="mt-1">
-                  Add
+                  Ajouter
                 </Button>
               </div>
             </div>

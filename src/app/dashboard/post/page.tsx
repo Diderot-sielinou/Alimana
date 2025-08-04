@@ -41,7 +41,7 @@ export default function PosPage() {
       // Vérifier le stock avant d'ajouter
       if (existingItem.quantity + 1 > product.quantityInStock) {
         toast.error(
-          `Insufficient stock for ${product.name}. Available: ${product.quantityInStock}`
+          `Stock insuffisant pour ${product.name}. Disponible: ${product.quantityInStock}`
         );
         return;
       }
@@ -67,7 +67,7 @@ export default function PosPage() {
         },
       ]);
     }
-    toast.success(`${product.name} added to cart.`);
+    toast.success(`${product.name} ajouté au panier.`);
   };
 
   // Fonction pour mettre à jour un article du panier
@@ -79,7 +79,7 @@ export default function PosPage() {
           // Assurez-vous que la quantité ne dépasse pas le stock
           if (updatedItem.quantity && updatedItem.quantity > item.product.quantityInStock) {
             toast.error(
-              `Insufficient stock for ${item.product.name}. Max: ${item.product.quantityInStock}`
+              `Stock insuffisant pour ${item.product.name}. Max: ${item.product.quantityInStock}`
             );
             updatedItem.quantity = item.product.quantityInStock;
           }
@@ -97,13 +97,13 @@ export default function PosPage() {
   // Fonction pour retirer un article du panier
   const removeFromCart = (productId: number) => {
     setCart((prevCart) => prevCart.filter((item) => item.product.id !== productId));
-    toast.success('Product removed from cart.');
+    toast.success('Article retiré du panier.');
   };
 
   // Fonction pour vider le panier
   const clearCart = () => {
     setCart([]);
-    toast.error('Cart emptied.');
+    toast.error('Panier vidé.');
   };
 
   // Calcul du montant total du panier
@@ -125,11 +125,13 @@ export default function PosPage() {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center">
         <Calculator className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">No cash register is open</h2>
-        <p className="text-gray-500 mb-6">Open a cash register session to make a sale</p>
-        <Button onClick={() => router.push('/dashboard/cash-registers')}>
-          Manage Cash Registers
-        </Button>
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          Aucune session de caisse ouverte
+        </h2>
+        <p className="text-gray-500 mb-6">
+          Vous devez ouvrir une session de caisse pour commencer les ventes.
+        </p>
+        <Button onClick={() => router.push('/dashboard/cash-registers')}>Gérer les caisses</Button>
       </div>
     );
   }
@@ -138,12 +140,12 @@ export default function PosPage() {
     <div className="h-full flex flex-col  md:ml-64 min-h-screen bg-gray-50 dark:bg-gray-950 px-6 py-4">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Sales</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Point de Vente</h1>
           <p className="text-gray-500">
-            Session: {openSession?.id} • Initial cash: {openSession?.initialCash?.toLocaleString()}{' '}
+            Session: {openSession?.id} • Solde Initial: {openSession?.initialCash?.toLocaleString()}{' '}
             XAF
             {openSession?.id !== undefined && ( // Afficher le solde actuel si disponible
-              <span className="ml-4">cashier: {openSession.openedBy?.user?.fullName}</span>
+              <span className="ml-4">caisier: {openSession.openedBy?.user?.fullName}</span>
             )}
           </p>
         </div>
