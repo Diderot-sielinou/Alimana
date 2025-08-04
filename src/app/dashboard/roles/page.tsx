@@ -9,6 +9,7 @@ import RoleModal from '@/components/roles/RoleModal';
 import RoleFilterBar from '@/components/roles/RoleFilterBar';
 import { LoadingSpinner } from '@/components/dashboard/LoadingSpinner';
 import { getRoles, deleteRole, getPermissions, transformRoleForDisplay } from '@/lib/api/roles';
+import { Plus } from 'lucide-react';
 
 export default function RolesPage() {
   const { storeContext, hasPermission } = useAuth();
@@ -19,12 +20,18 @@ export default function RolesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const storeId = storeContext?.storeId;
 
-  const filteredRoles = roles.filter((role) =>
-    role.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
-  );
+  const filteredRoles = roles.filter((role) => {
+    const matchesSearch = role.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === 'all' ||
+      (statusFilter === 'active' && role.active) ||
+      (statusFilter === 'inactive' && !role.active);
+    return matchesSearch && matchesStatus;
+  });
 
   const fetchRoles = useCallback(async () => {
     if (!storeId) return;
@@ -63,7 +70,6 @@ export default function RolesPage() {
 
   const handleOpenModal = (role?: RoleDisplay) => {
     if (role) {
-      // Convert RoleDisplay back to Role for editing
       const fullRole: Role = {
         id: role.id,
         name: role.name,
@@ -86,16 +92,14 @@ export default function RolesPage() {
   };
 
   const handleRoleUpdated = () => {
-    fetchRoles(); // Refresh the roles list
+    fetchRoles();
     handleCloseModal();
   };
 
   const handleDeleteRole = async (id: number) => {
     if (!storeId) return;
 
-    if (!confirm('Are you sure you want to delete this role?')) {
-      return;
-    }
+    if (!confirm('Are you sure you want to delete this role?')) return;
 
     try {
       await deleteRole(storeId, id);
@@ -107,7 +111,6 @@ export default function RolesPage() {
     }
   };
 
-  // Show loading spinner while checking permissions or loading data
   if (!storeContext || loading) {
     return (
       <main className="pl-[260px] pr-6 pt-6">
@@ -118,7 +121,6 @@ export default function RolesPage() {
     );
   }
 
-  // Show error state
   if (error) {
     return (
       <main className="pl-[260px] pr-6 pt-6">
@@ -135,7 +137,6 @@ export default function RolesPage() {
     );
   }
 
-  // Check if user has permission to manage roles
   if (!hasPermission('manage_roles')) {
     return (
       <main className="pl-[260px] pr-6 pt-6">
@@ -152,13 +153,19 @@ export default function RolesPage() {
         <h1 className="text-2xl font-bold text-gray-800">Manage Roles</h1>
         <button
           onClick={() => handleOpenModal()}
-          className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700"
+          className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 flex items-center space-x-2"
         >
-          <i className="fas fa-plus mr-2"></i>Add Role
+          <Plus className="w-4 h-4" />
+          <span>Add Role</span>
         </button>
       </div>
 
-      <RoleFilterBar searchTerm={searchTerm} onSearchTermChange={setSearchTerm} />
+      <RoleFilterBar
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {filteredRoles.map((role) => (
@@ -173,12 +180,16 @@ export default function RolesPage() {
 
       {filteredRoles.length === 0 && !loading && (
         <div className="text-center py-12">
-          <div className="text-gray-500 mb-4">No roles found</div>
+          <div className="text-gray-500 mb-4">
+            {statusFilter === 'active' && 'No active roles found'}
+            {statusFilter === 'inactive' && 'No inactive roles found'}
+            {statusFilter === 'all' && 'No roles found'}
+          </div>
           <button
             onClick={() => handleOpenModal()}
             className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700"
           >
-            Create your first role
+            Create role
           </button>
         </div>
       )}
