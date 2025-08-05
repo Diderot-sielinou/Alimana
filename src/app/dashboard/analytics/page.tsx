@@ -141,7 +141,7 @@ export default function AnalyticsPage() {
             <canvas ref={topProductsChartRef} height={180} />
           </Card>
 
-          <Card className="p-4 md:col-span-2">
+          <Card className="p-4">
             <h2 className="text-lg font-semibold mb-2">Customer Insights</h2>
             <canvas ref={customerInsightsChartRef} height={200} />
           </Card>

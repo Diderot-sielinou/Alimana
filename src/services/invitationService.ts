@@ -24,7 +24,7 @@ interface AxiosErrorResponse {
 export class InvitationService {
   // Get all invitations for a store
   static async getStoreInvitations(storeId: number): Promise<IInvitation[]> {
-    const response = await api.get(`/store/${storeId}/invitations`);
+    const response = await api.get(`/stores/${storeId}/invitations`);
     return response.data;
   }
 
@@ -126,13 +126,13 @@ export class InvitationService {
 
   // Revoke invitation
   static async revokeInvitation(storeId: number, invitationId: number): Promise<void> {
-    await api.delete(`/store/${storeId}/invitations/${invitationId}`);
+    await api.delete(`/stores/${storeId}/invitations/${invitationId}`);
   }
 
   // Accept invitation (public endpoint)
   static async acceptInvitation(token: string, password: string): Promise<void> {
     const payload: AcceptInvitationRequest = { token, password };
-    await api.post('/auth/invitations/accept', payload);
+    await api.post('/invitations/accept', payload);
   }
 
   // Validate invitation token (public endpoint)
