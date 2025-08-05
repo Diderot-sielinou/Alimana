@@ -230,19 +230,19 @@ export default function ProductsPage() {
     <div className="space-y-6 ml-0 md:ml-64 ">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Produits</h1>
-          <p className="text-gray-600">Gérez les produits de votre boutique</p>
+          <h1 className="text-2xl font-bold text-gray-900">Products</h1>
+          <p className="text-gray-600">Manage your store products</p>
         </div>
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
             <Button className="bg-orange-500 hover:bg-orange-600">
               <Plus className="w-4 h-4 mr-2" />
-              Nouveau produit
+              New Product
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Créer un nouveau produit</DialogTitle>
+              <DialogTitle>Create new product</DialogTitle>
             </DialogHeader>
             <ProductForm onSubmit={handleCreateProduct} />
           </DialogContent>
@@ -254,7 +254,7 @@ export default function ProductsPage() {
             <SelectValue placeholder="Filtrer par catégorie" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Toutes les catégories</SelectItem>
+            <SelectItem value="all">All categories</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id.toString()}>
                 {category.name}
@@ -280,7 +280,7 @@ export default function ProductsPage() {
       <Dialog open={!!editingProduct} onOpenChange={() => setEditingProduct(null)}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Modifier le produit</DialogTitle>
+            <DialogTitle>Update product</DialogTitle>
           </DialogHeader>
           {editingProduct && (
             <ProductForm initialData={editingProduct} onSubmit={handleUpdateProduct} />

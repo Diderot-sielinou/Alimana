@@ -8,8 +8,8 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel, // Pour la pagination
-  ColumnFiltersState,    // Pour le filtrage
-  getFilteredRowModel,   // Pour le filtrage
+  ColumnFiltersState, // Pour le filtrage
+  getFilteredRowModel, // Pour le filtrage
 } from '@tanstack/react-table';
 
 import {
@@ -28,21 +28,16 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
+export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(), // Active la pagination
-    onColumnFiltersChange: setColumnFilters,        // Gère les filtres
-    getFilteredRowModel: getFilteredRowModel(),     // Active le filtrage
+    onColumnFiltersChange: setColumnFilters, // Gère les filtres
+    getFilteredRowModel: getFilteredRowModel(), // Active le filtrage
     state: {
       columnFilters,
     },
@@ -59,10 +54,7 @@ export function DataTable<TData, TValue>({
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 );
               })}
@@ -72,10 +64,7 @@ export function DataTable<TData, TValue>({
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-              >
+              <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -86,7 +75,7 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                Aucun résultat.
+                No results found.
               </TableCell>
             </TableRow>
           )}
@@ -100,7 +89,7 @@ export function DataTable<TData, TValue>({
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          <ChevronLeft className="h-4 w-4" /> Précédent
+          <ChevronLeft className="h-4 w-4" /> Previous
         </Button>
         <Button
           variant="outline"
@@ -108,7 +97,7 @@ export function DataTable<TData, TValue>({
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Suivant <ChevronRight className="h-4 w-4" />
+          Next <ChevronRight className="h-4 w-4" />
         </Button>
         <span className="text-sm text-gray-700">
           Page {table.getState().pagination.pageIndex + 1} sur {table.getPageCount()}

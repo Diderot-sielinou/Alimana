@@ -213,10 +213,10 @@ interface SignupValues {
 export const register = async (data: SignupValues) => {
   try {
     await api.post('/auth/register', data);
-    toast.success('Compte créé avec succès');
+    toast.success('Account created successfully');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    toast.error(error.response?.data?.error || "Erreur lors de l'inscription");
+    toast.error(error.response?.data?.error || 'Error during registration');
     throw error;
   }
 };

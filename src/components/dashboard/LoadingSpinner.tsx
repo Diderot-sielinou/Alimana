@@ -32,7 +32,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size }) => {
         <div className="animate-spin text-blue-600">
           <Loader2 className={cn(spinnerVariants({ size }))} />
         </div>
-        <p className="text-lg font-medium text-gray-700">chargement en cours...</p>
+        <p className="text-lg font-medium text-gray-700"> Loading...</p>
       </div>
     </div>
   );
