@@ -137,7 +137,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     if (isAuthenticated && storeContext && pathname === '/select-store') {
-      safeRedirect('/dashboard');
+      // Prevent redirect if user just landed on select-store after login
+      // and hasn't clicked a store yet.
+      // Use sessionStorage to track it.
+      const hasSelectedStore = sessionStorage.getItem('storeSelected') === 'true';
+
+      if (hasSelectedStore) {
+        safeRedirect('/dashboard');
+      }
     }
 
     // reset authFlow une fois utilisé

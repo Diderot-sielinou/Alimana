@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,8 @@ export default function SigninPage() {
   const { login, registerWithGoogle } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
 
+  const router = useRouter();
+
   const formik = useFormik<SigninFormData>({
     initialValues: {
       email: '',
@@ -31,7 +34,12 @@ export default function SigninPage() {
     },
     validationSchema: loginValidationSchema,
     onSubmit: async (values) => {
-      await login({ email: values.email, password: values.password });
+      try {
+        await login({ email: values.email, password: values.password });
+        router.push('/select-store'); // redirect after successful login
+      } catch (error) {
+        console.error('Login error:', error);
+      }
     },
 
     validateOnBlur: false,
