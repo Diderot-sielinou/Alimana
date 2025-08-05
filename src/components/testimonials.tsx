@@ -73,7 +73,7 @@ export default function TestimonialSection() {
           }}
           autoplay={{ delay: 5000 }}
           pagination={{ clickable: true }}
-          navigation
+          // navigation
           className="pb-10"
         >
           {testimonials.map((testimonial, index) => (
