@@ -82,11 +82,12 @@ export default function DashboardPage() {
 
         // Process data
         const labels = salesData.map((item) =>
-          new Date(item.day).toLocaleDateString('fr-FR', { weekday: 'short' })
+          new Date(item.day).toLocaleDateString('en-US', { weekday: 'short' })
         );
 
         const revenueData = salesData.map((item) => parseFloat(item.revenue));
         const profitData = salesData.map((item) => parseFloat(item.profit));
+        console.log(profitData);
 
         // Destroy previous chart
         if (chartInstance.current) {
@@ -221,7 +222,7 @@ export default function DashboardPage() {
             color: getTrendColor(salesSummary.units_today || 0, salesSummary.units_yesterday || 0),
           },
           {
-            title: 'Bénéfice net',
+            title: `Today's Profit`,
             value: `${profitSummary.profit_today}`,
             change: `${profitSummary.percentage_change}%`,
             color: getTrendColor(
