@@ -12,23 +12,23 @@ import { toast } from 'react-hot-toast';
 import Joi from 'joi';
 import { api } from '@/lib/api';
 
-// Schéma de validation Joi pour le formulaire d'acceptation d'invitation
+// Joi validation schema for the invitation acceptance form
 const acceptInviteSchema = Joi.object({
   password: Joi.string().min(6).required().messages({
-    'string.min': 'Le mot de passe doit contenir au moins {#limit} caractères.',
-    'string.empty': 'Le mot de passe est requis.',
-    'any.required': 'Le mot de passe est requis.',
+    'string.min': 'Password must be at least {#limit} characters.',
+    'string.empty': 'Password is required.',
+    'any.required': 'Password is required.',
   }),
   confirmPassword: Joi.string().valid(Joi.ref('password')).required().messages({
-    'any.only': 'Les mots de passe ne correspondent pas.',
-    'string.empty': 'La confirmation du mot de passe est requise.',
-    'any.required': 'La confirmation du mot de passe est requise.',
+    'any.only': 'Passwords do not match.',
+    'string.empty': 'Password confirmation is required.',
+    'any.required': 'Password confirmation is required.',
   }),
 });
 
 /**
- * Page d'acceptation d'invitation.
- * Permet à un utilisateur invité de définir son mot de passe et de rejoindre une boutique.
+ * Invitation acceptance page.
+ * Allows an invited user to set their password and join a store.
  */
 export default function AcceptInvitePage() {
   const router = useRouter();
@@ -37,16 +37,16 @@ export default function AcceptInvitePage() {
   const [invitationValid, setInvitationValid] = useState(true);
   const [invitationDetails, setInvitationDetails] = useState<any>(null);
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm();
 
-  // Vérifie la validité du token d'invitation au chargement de la page
+  // Checks the validity of the invitation token when the page loads
   useEffect(() => {
     const token = searchParams.get('token');
-    // if (!token) {
-    //   toast.error('Token d\'invitation manquant.');
-    //   router.replace('/signin');
-    //   return;
-    // }
 
     const verifyInvitation = async () => {
       try {
@@ -54,8 +54,8 @@ export default function AcceptInvitePage() {
         setInvitationDetails(response.data);
         setInvitationValid(true);
       } catch (error: any) {
-        console.error('Erreur de vérification d\'invitation:', error);
-        toast.error(error.response?.data?.message || 'Token d\'invitation invalide ou expiré.');
+        console.error('Invitation verification error:', error);
+        toast.error(error.response?.data?.message || 'Invalid or expired invitation token.');
         router.replace('/signin');
       } finally {
         setLoading(false);
@@ -65,26 +65,26 @@ export default function AcceptInvitePage() {
     verifyInvitation();
   }, [searchParams, router]);
 
-  // Gère la soumission du formulaire pour accepter l'invitation
+  // Handles the form submission to accept the invitation
   const onSubmit = async (data: any) => {
-    // --- Validation manuelle avec Joi ---
+    // --- Manual validation with Joi ---
     const { error } = acceptInviteSchema.validate(data, { abortEarly: false });
 
     if (error) {
-      // Mapper les erreurs Joi vers React Hook Form
-      error.details.forEach(detail => {
+      // Map Joi errors to React Hook Form
+      error.details.forEach((detail) => {
         setError(detail.path[0] as string, {
           type: 'manual',
           message: detail.message,
         });
       });
-      return; // Arrêter la soumission si la validation échoue
+      return; // Stop submission if validation fails
     }
-    // --- Fin de la validation manuelle ---
+    // --- End of manual validation ---
 
     const token = searchParams.get('token');
     if (!token) {
-      toast.error('Token d\'invitation manquant.');
+      toast.error('Invitation token is missing.');
       return;
     }
 
@@ -93,18 +93,18 @@ export default function AcceptInvitePage() {
         token: token,
         password: data.password,
       });
-      toast.success('Invitation acceptée ! Vous pouvez maintenant vous connecter.');
-      router.replace('/login'); // Redirige vers la page de connexion
+      toast.success('Invitation accepted! You can now log in.');
+      router.replace('/login'); // Redirects to login page
     } catch (error: any) {
-      console.error('Erreur lors de l\'acceptation de l\'invitation:', error);
-      toast.error(error.response?.data?.message || 'Échec de l\'acceptation de l\'invitation.');
+      console.error('Error while accepting the invitation:', error);
+      toast.error(error.response?.data?.message || 'Failed to accept the invitation.');
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-lg text-gray-700">Vérification de l&apos;invitation...</p>
+        <p className="text-lg text-gray-700">Verifying invitation...</p>
       </div>
     );
   }
@@ -113,9 +113,11 @@ export default function AcceptInvitePage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-red-50 p-4">
         <div className="text-center p-8 bg-white rounded-xl shadow-2xl border border-red-200">
-          <h1 className="text-3xl font-bold text-red-700 mb-4">Invitation Invalide</h1>
-          <p className="text-gray-600">Le lien d&apos;invitation est invalide ou a expiré.</p>
-          <Button onClick={() => router.replace('/')} className="mt-6">Retour a landing page </Button>
+          <h1 className="text-3xl font-bold text-red-700 mb-4">Invalid Invitation</h1>
+          <p className="text-gray-600">The invitation link is invalid or has expired.</p>
+          <Button onClick={() => router.replace('/')} className="mt-6">
+            Back to landing page
+          </Button>
         </div>
       </div>
     );
@@ -125,21 +127,21 @@ export default function AcceptInvitePage() {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl border border-gray-200">
         <h1 className="text-4xl font-extrabold text-center text-gray-900 mb-6">
-          Accepter lInvitation
+          Accept Invitation
         </h1>
         {invitationDetails && (
           <p className="text-center text-gray-700 mb-6">
-            Vous avez été invité(e) à rejoindre la boutique{' '}
-            <span className="font-semibold text-blue-600">{invitationDetails.storeName}</span> en tant que{' '}
+            You have been invited to join the store{' '}
+            <span className="font-semibold text-blue-600">{invitationDetails.storeName}</span> as a{' '}
             <span className="font-semibold text-blue-600">{invitationDetails.roleName}</span>.
             <br />
-            Votre email: <span className="font-semibold">{invitationDetails.email}</span>
+            Your email: <span className="font-semibold">{invitationDetails.email}</span>
           </p>
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
-            <Label htmlFor="password">Nouveau Mot de Passe</Label>
+            <Label htmlFor="password">New Password</Label>
             <Input
               id="password"
               type="password"
@@ -147,11 +149,13 @@ export default function AcceptInvitePage() {
               {...register('password')}
               className="w-full"
             />
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message as string}</p>}
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password.message as string}</p>
+            )}
           </div>
 
           <div>
-            <Label htmlFor="confirmPassword">Confirmer le Mot de Passe</Label>
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
             <Input
               id="confirmPassword"
               type="password"
@@ -159,11 +163,15 @@ export default function AcceptInvitePage() {
               {...register('confirmPassword')}
               className="w-full"
             />
-            {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message as string}</p>}
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword.message as string}
+              </p>
+            )}
           </div>
 
           <Button type="submit" className="w-full py-3 text-lg" disabled={isSubmitting}>
-            {isSubmitting ? 'Acceptation en cours...' : 'Accepter l\'Invitation'}
+            {isSubmitting ? 'Submitting...' : 'Accept Invitation'}
           </Button>
         </form>
       </div>

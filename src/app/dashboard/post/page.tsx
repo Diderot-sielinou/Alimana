@@ -27,13 +27,6 @@ export default function PosPage() {
   const [showReceipt, setShowReceipt] = React.useState(false);
   const [currentSale, setCurrentSale] = React.useState<ISaleResponse | null>(null);
 
-  // const openSession: CashRegisterSession | undefined = React.useMemo(() => {
-  //   return cashRegisters.find(cr =>
-  //     // cr.storeId === currentStore?.id &&
-  //     cr.currentSession?.status === 'open'
-  //   )?.currentSession;
-  // }, [cashRegisters, currentStore]);
-
   // Fonction pour ajouter un produit au panier
   const addToCart = (product: IProduct) => {
     const existingItem = cart.find((item) => item.product.id === product.id);
