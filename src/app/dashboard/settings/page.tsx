@@ -3,13 +3,12 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/auth-context';
-import SettingsTable from '@/components/dashboard/SettingsTable';
 import { StoreInfoForm } from '@/components/dashboard/StoreInfoForm';
+import { PaymentMethodsForm } from '@/components/dashboard/PaymentMethod';
 
 export default function StoreSettingsPage() {
   const { storeContext } = useAuth();
   const storeId: number = storeContext?.storeId || 1;
-  const [settings, setSettings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -17,7 +16,6 @@ export default function StoreSettingsPage() {
     try {
       const res = await api.get(`/store/${storeId}/settings`);
       console.log(res);
-      setSettings(res.data);
     } catch (err) {
       console.error(err);
       setError('Failed to load settings');
@@ -40,7 +38,7 @@ export default function StoreSettingsPage() {
         <p className="text-gray-600 mt-2">Manage your store configuration and preferences</p>
       </div>
       <StoreInfoForm />
-      <SettingsTable settings={settings} storeId={storeId.toString()} onUpdate={fetchSettings} />
+      <PaymentMethodsForm storeId={storeId} />
     </div>
   );
 }
