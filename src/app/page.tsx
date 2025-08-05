@@ -72,9 +72,11 @@ export default function LandingPage() {
       </main>
 
       {/* Features Section */}
-      <section id="features" className="bg-white py-16 px-6 md:px-12">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-gray-800 mb-12">Powerful Features, Simplified</h2>
+      <section id="features" className="bg-white py-16 px:8">
+        <div className="max-w-6xl mx-auto text-center mt-6">
+          <h2 className="text-4xl font-bold text-gray-800 mb-12 pb-6">
+            Powerful Features, Simplified
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Feature Card 1 */}
             <div className="p-6 rounded-lg border border-slate-300 hover:shadow-lg transition-shadow duration-300">
