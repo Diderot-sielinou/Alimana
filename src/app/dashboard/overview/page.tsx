@@ -87,6 +87,7 @@ export default function DashboardPage() {
 
         const revenueData = salesData.map((item) => parseFloat(item.revenue));
         const profitData = salesData.map((item) => parseFloat(item.profit));
+        console.log(profitData);
 
         // Destroy previous chart
         if (chartInstance.current) {
