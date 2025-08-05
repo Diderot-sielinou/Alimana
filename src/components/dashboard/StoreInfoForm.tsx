@@ -49,7 +49,7 @@ export function StoreInfoForm() {
         console.log(response.data);
         setStoreData({
           name: response.data.name || '',
-          websiteUrl: response.data.url || '',
+          websiteUrl: response.data.websiteUrl || '',
           description: response.data.description || '',
           logoUrl: response.data.logoUrl,
           email: response.data.email || '',
@@ -75,7 +75,6 @@ export function StoreInfoForm() {
   const handleSaveBasicInfo = async () => {
     try {
       setIsSaving(true);
-      console.log(storeData.websiteUrl);
       await api.patch(`/store/${storeId}`, {
         name: storeData.name,
         websiteUrl: storeData.websiteUrl,
@@ -133,9 +132,9 @@ export function StoreInfoForm() {
             <div className="space-y-2">
               <Label htmlFor="url">Store URL</Label>
               <Input
-                id="url"
+                id="websiteUrl"
                 placeholder="mystore.com"
-                value={storeData.websiteUrl}
+                value={storeData.websiteUrl || ''}
                 onChange={handleInputChange}
               />
             </div>
