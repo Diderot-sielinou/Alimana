@@ -7,7 +7,14 @@ import { api } from '@/lib/api';
 import { StoreContext, User } from '@/types/auth';
 import { ISignupValues } from '@/app/signup/page';
 
-const PUBLIC_PATHS = ['/', '/signin', '/signup', '/auth/callback/google', '/accept-invite'];
+const PUBLIC_PATHS = [
+  '/',
+  '/signin',
+  '/signup',
+  '/auth/callback/google',
+  '/accept-invite',
+  '/invite',
+];
 
 type PermissionKey = string;
 type Credentials = { email: string; password: string };
@@ -109,8 +116,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (!hasFetchedMe || isLoading) return;
 
-    // const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
-    const isPubli = PUBLIC_PATHS.some((path) => pathname === path);
+    // Check if current path is public (exact match or starts with for dynamic routes like /invite/[token])
+    const isPubli = PUBLIC_PATHS.some(
+      (path) => pathname === path || pathname.startsWith(path + '/')
+    );
     const safeRedirect = (path: string) => {
       if (pathname !== path) router.replace(path);
     };
