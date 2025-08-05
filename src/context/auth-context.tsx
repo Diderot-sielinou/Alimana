@@ -124,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (pathname !== path) router.replace(path);
     };
 
-    console.log(`router publique  : ${isPubli}`);
+    console.log(`router public  : ${isPubli}`);
 
     if (!isAuthenticated && pathname === '/create-store') {
       safeRedirect('/signin');
@@ -167,7 +167,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = useCallback(
     async (credentials: ISignupValues) => {
       await api.post('/auth/register', credentials);
-      toast.success('Inscription réussie');
+      toast.success('Registration successfull');
       setAuthFlow('signup');
       await fetchMe();
     },
@@ -189,7 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        toast.error("Échec de l'inscription avec Google");
+        toast.error('Failed to sign up with Google');
       }
     },
     [fetchMe, router]

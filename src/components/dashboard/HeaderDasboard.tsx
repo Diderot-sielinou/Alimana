@@ -140,23 +140,6 @@ export default function HeaderDasboard() {
             </div>
           </div>
         </div>
-
-        {/* Filters & Export */}
-        {/* <div className="px-6 py-2 bg-gray-50 dark:bg-gray-800">
-          <div className="flex justify-between">
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              <span className="mr-1">🔄</span> Last updated: Just now
-            </p>
-            <div className="flex space-x-2">
-              <select className="bg-orange-600 text-white px-3 py-1 rounded">
-                <option value="Today">Today</option>
-                <option value="This week">This Week</option>
-                <option value="This Month">This Month</option>
-              </select>
-              <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm">Export</button>
-            </div>
-          </div>
-        </div> */}
       </header>
     </div>
   );
