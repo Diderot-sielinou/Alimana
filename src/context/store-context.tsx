@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from './auth-context';
 import { ICashRegister } from '@/types/cash-register.interface';
@@ -50,6 +51,7 @@ const ShopDataContext = createContext<ShopDataContextType | undefined>(undefined
 
 export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { storeContext, hasFetchedMe } = useAuth();
+  const pathname = usePathname();
   const [openSession, setOpenSession] = useState<ICashRegisterSession | null>(null);
   const [state, setState] = useState<ShopDataState>({
     products: [],
@@ -108,7 +110,9 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const response = await api.get(`store/${storeId}/analytics/summary/revenue`);
       setState((prev) => ({ ...prev, revenueSummary: response.data }));
     } catch (error) {
-      console.error('Failed to load daily revenue', error);
+      console.warn('⚠️ Analytics endpoint not available - revenue data skipped:', error);
+      // Set empty data instead of failing
+      setState((prev) => ({ ...prev, revenueSummary: {} as GetRevenueSummary }));
     }
   };
 
@@ -117,7 +121,9 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const response = await api.get(`store/${storeId}/analytics/summary/profit`);
       setState((prev) => ({ ...prev, profitSummary: response.data }));
     } catch (error) {
-      console.error('Failed to load daily revenue', error);
+      console.warn('⚠️ Analytics endpoint not available - profit data skipped:', error);
+      // Set empty data instead of failing
+      setState((prev) => ({ ...prev, profitSummary: {} as GetProfitSummary }));
     }
   };
 
@@ -126,7 +132,9 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const response = await api.get(`store/${storeId}/analytics/summary/sales`);
       setState((prev) => ({ ...prev, salesSummary: response.data }));
     } catch (error) {
-      console.error('Failed to load daily revenue', error);
+      console.warn('⚠️ Analytics endpoint not available - sales data skipped:', error);
+      // Set empty data instead of failing
+      setState((prev) => ({ ...prev, salesSummary: {} as GetSalesSummary }));
     }
   };
 
@@ -135,38 +143,86 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const response = await api.get(`store/${storeId}/analytics/sales-overview`);
       setState((prev) => ({ ...prev, salesOverview: response.data }));
     } catch (error) {
-      console.error('Failed to load daily revenue', error);
+      console.warn('⚠️ Analytics endpoint not available - sales overview skipped:', error);
+      // Set empty data instead of failing
+      setState((prev) => ({ ...prev, salesOverview: [] }));
     }
   };
 
   const loadInitialData = useCallback(async () => {
     if (!storeContext?.storeId) {
-      console.warn(' No storeContext.storeId — skipping data load');
+      console.warn('⚠️ No storeContext.storeId — skipping data load');
       return;
     }
 
     setState((prev) => ({ ...prev, isLoading: true }));
 
-    await Promise.all([
+    // Load essential data first (required for core functionality)
+    const essentialDataPromises = [
       fetchProducts(storeContext.storeId),
       fetchCategories(storeContext.storeId),
       fetchPaymentMethods(storeContext.storeId),
       fetchCashRegisters(storeContext.storeId),
+    ];
+
+    // Load analytics data separately (optional, can fail without breaking the app)
+    const analyticsPromises = [
       fetchDailyRevenue(storeContext.storeId),
       fetchDailyProfit(storeContext.storeId),
       fetchDailySales(storeContext.storeId),
       fetchSalesOverview(storeContext.storeId),
-    ]);
+    ];
 
-    setState((prev) => ({ ...prev, isLoading: false }));
+    try {
+      // Wait for essential data
+      await Promise.all(essentialDataPromises);
+      console.log('✅ Essential store data loaded successfully');
+
+      // Load analytics data in background (don't wait for it)
+      Promise.all(analyticsPromises)
+        .then(() => {
+          console.log('✅ Analytics data loaded successfully');
+        })
+        .catch(() => {
+          console.warn('⚠️ Analytics data failed to load - continuing without analytics');
+        });
+    } catch (error) {
+      console.error('❌ Failed to load essential store data:', error);
+    } finally {
+      setState((prev) => ({ ...prev, isLoading: false }));
+    }
   }, [storeContext]);
 
+  // Helper function to determine if current page needs store data
+  const needsStoreData = useCallback(() => {
+    if (!pathname) return false;
+
+    // Pages that need store data
+    const storeDataPages = [
+      '/dashboard',
+      '/store',
+      '/pos',
+      '/inventory',
+      '/sales',
+      '/analytics',
+      '/reports',
+    ];
+
+    return storeDataPages.some((page) => pathname.startsWith(page));
+  }, [pathname]);
+
   useEffect(() => {
-    if (hasFetchedMe && storeContext?.storeId) {
-      console.log('🔄 Loading shop data for storeId:', storeContext.storeId);
+    // Only load store data if:
+    // 1. User authentication has been fetched
+    // 2. User has a valid store context
+    // 3. We're on a page that actually needs store data
+    if (hasFetchedMe && storeContext?.storeId && needsStoreData()) {
+      console.log('🔄 Loading shop data for storeId:', storeContext.storeId, 'on page:', pathname);
       loadInitialData();
+    } else if (hasFetchedMe && storeContext?.storeId) {
+      console.log('⏭️ Skipping store data load - not needed on page:', pathname);
     }
-  }, [hasFetchedMe, storeContext, loadInitialData]);
+  }, [hasFetchedMe, storeContext, loadInitialData, needsStoreData, pathname]);
 
   useEffect(() => {
     console.log('🧪 Products updated:', state.products);
@@ -229,10 +285,5 @@ export const useShopData = () => {
   return context;
 };
 
-export const StoreContext = createContext<ShopDataContextType | undefined>(undefined);
 
-export const useStore = () => {
-  const context = useContext(StoreContext);
-  if (!context) throw new Error('useStore must be used within a StoreProvider');
-  return context;
-};
+// Note: StoreContext and useStore removed as they were unused and causing TypeScript erro

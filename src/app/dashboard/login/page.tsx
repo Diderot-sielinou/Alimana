@@ -11,12 +11,10 @@ import { Store, Eye, EyeOff } from 'lucide-react';
 import { use2Auth } from '@/context/AuthContext';
 
 const SignInSchema = Yup.object().shape({
-  email: Yup.string()
-    .email('Email invalide')
-    .required('Email requis'),
+  email: Yup.string().email('Email invalid').required('Email required'),
   password: Yup.string()
-    .min(6, 'Le mot de passe doit contenir au moins 6 caractères')
-    .required('Mot de passe requis'),
+    .min(6, 'Password need to contain at least 6 character')
+    .required('Password required'),
 });
 
 export default function SignInPage() {
@@ -34,7 +32,7 @@ export default function SignInPage() {
     try {
       await signin(values.email, values.password);
       router.push('/select-store');
-    } catch (error) {
+    } catch {
       // L'erreur est déjà gérée dans le context
     }
   };
@@ -49,7 +47,7 @@ export default function SignInPage() {
               <Store className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">ShopManager</h1>
-            <p className="text-gray-500 mt-2">Connectez-vous à votre compte</p>
+            <p className="text-gray-500 mt-2">Connect to your account</p>
           </div>
 
           <Formik
@@ -60,9 +58,7 @@ export default function SignInPage() {
             {({ errors, touched, isSubmitting }) => (
               <Form className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                   <Field
                     as={Input}
                     name="email"
@@ -76,16 +72,16 @@ export default function SignInPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Mot de passe
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                   <div className="relative">
                     <Field
                       as={Input}
                       name="password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-                      className={errors.password && touched.password ? 'border-red-500 pr-10' : 'pr-10'}
+                      className={
+                        errors.password && touched.password ? 'border-red-500 pr-10' : 'pr-10'
+                      }
                     />
                     <button
                       type="button"
@@ -100,11 +96,7 @@ export default function SignInPage() {
                   )}
                 </div>
 
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full"
-                >
+                <Button type="submit" disabled={isSubmitting} className="w-full">
                   {isSubmitting ? 'Connexion...' : 'Se connecter'}
                 </Button>
               </Form>
@@ -112,14 +104,10 @@ export default function SignInPage() {
           </Formik>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
-              Démo: admin@shop.com / password
-            </p>
+            <p className="text-sm text-gray-500">Demo: admin@shop.com / password</p>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-

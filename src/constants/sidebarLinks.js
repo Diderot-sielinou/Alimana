@@ -45,12 +45,15 @@ export const sidebarLinks = [
     requiredPermissions: [],
   },
   {
-    href: '/dashboard/manage-cash-register',
-    label: 'Cash Register',
-    icon: CreditCard,
     href: '/dashboard/roles',
     label: 'Roles',
     icon: Badge,
+    requiredPermissions: [],
+  },
+  {
+    href: '/dashboard/manage-cash-register',
+    label: 'Cash Register',
+    icon: CreditCard,
     requiredPermissions: [],
   },
   {
@@ -66,10 +69,10 @@ export const sidebarLinks = [
     requiredPermissions: [],
   },
   {
-    href: '/dashboard/user-management',
-    label: 'User Management',
+    href: '/dashboard/invitation',
+    label: 'Invitation',
     icon: UserPlus,
-    requiredPermissions: [], // OU tu peux filtrer par l’un ou l’autre
+    requiredPermissions: [],
   },
   {
     href: '/dashboard/profile',
