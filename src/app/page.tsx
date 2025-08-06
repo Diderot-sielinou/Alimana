@@ -114,7 +114,7 @@ export default function LandingPage() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section id="whyus" className="py-16 px-4 sm:px-6 lg:px-8">
+      <section id="whyus" className="py-16 px-4 sm:px-6 sm:py-64 lg:px-8">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-primary dark:text-black">
             Why Choose ALIMANA?
