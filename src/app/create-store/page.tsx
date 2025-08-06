@@ -59,7 +59,7 @@ export default function CreateStorePage() {
           phone: values.phone || null,
           email: values.email || null,
           websiteUrl: values.websiteUrl || null,
-          logoUrl: null, // ou l'url de ton logo si upload géré
+          logoUrl: null,
           profileImageUrl: values.profileImageUrl || null,
         };
         const response = await api.post('/store', payload); // <-- envoi direct ici
