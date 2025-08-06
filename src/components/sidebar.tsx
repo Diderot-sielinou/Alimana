@@ -18,7 +18,7 @@ export interface SidebarLink {
 export default function Sidebar() {
   const pathname = usePathname();
   // const router = useRouter();
-  const { isLoading, hasPermission, sidebarOpen, setSidebarOpen, logout } = useAuth();
+  const { isLoading, hasPermission, sidebarOpen, setSidebarOpen, logout, storeInfo } = useAuth();
 
   if (isLoading) return null;
 
@@ -50,7 +50,7 @@ export default function Sidebar() {
         <div className="flex items-center justify-between h-16 px-4 border-b border-amber-500">
           <Link href="/dashboard" className="flex items-center gap-2 text-xl font-bold text-white">
             <Store className="w-6 h-6" />
-            <span>STORE</span>
+            <span>{storeInfo?.name ? storeInfo.name : 'STORE'}</span>
           </Link>
           <button onClick={() => setSidebarOpen(false)} className="md:hidden text-white text-2xl">
             ✕

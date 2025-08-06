@@ -187,6 +187,48 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
               />
             </div>
           </div>
+          {/* upload product image  */}
+          <div>
+            <Label htmlFor="image">Image du produit</Label>
+            <Input
+              id="image"
+              name="image"
+              type="file"
+              accept="image/*"
+              onChange={async (event) => {
+                const file = event.currentTarget.files?.[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                  const res = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_BASE_URL}/upload/image?folder=products`,
+                    {
+                      method: 'POST',
+                      body: formData,
+                      // headers: {
+                      //   'Content-Type': 'application/json',
+                      // },
+                    }
+                  );
+
+                  if (!res.ok) {
+                    throw new Error('Erreur lors de l’upload');
+                  }
+
+                  const data = await res.json();
+                  console.log(data);
+                  setFieldValue('imageUrl', data.url);
+                } catch (error) {
+                  console.error('Erreur upload image:', error);
+                  alert('Erreur lors de l’envoi de l’image.');
+                }
+              }}
+            />
+            <ErrorMessage name="imageUrl" component="div" className="text-red-500 text-sm mt-1" />
+          </div>
           <div>
             <Label htmlFor="imageUrl">Image URL</Label>
             <Field as={Input} id="imageUrl" name="imageUrl" placeholder="https://..." />

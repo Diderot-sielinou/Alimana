@@ -9,7 +9,7 @@ import React from 'react';
 import { useAuth } from '@/context/auth-context';
 
 export default function HeaderDasboard() {
-  const { setSidebarOpen } = useAuth();
+  const { setSidebarOpen, ProfileUser } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const lineChartRef = useRef<HTMLCanvasElement>(null);
@@ -128,14 +128,18 @@ export default function HeaderDasboard() {
             </button>
             <div className="flex items-center space-x-2">
               <Image
-                src="https://images.unsplash.com/photo-1644904105846-095e45fca990?w=500&auto=format&fit=crop&q=60"
+                src={
+                  ProfileUser?.avatarUrl
+                    ? ProfileUser.avatarUrl
+                    : 'https://images.unsplash.com/photo-1644904105846-095e45fca990?w=500&auto=format&fit=crop&q=60'
+                }
                 alt="User"
                 width={400}
                 height={300}
                 className="w-8 h-8 rounded-full"
               />
               <span className="hidden md:inline text-orange-700 dark:text-orange-200 text-sm">
-                Admin
+                {ProfileUser?.currentStoreRole.name}
               </span>
             </div>
           </div>

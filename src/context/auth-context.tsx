@@ -6,6 +6,8 @@ import { toast } from 'react-hot-toast';
 import { api } from '@/lib/api';
 import { StoreContext, User } from '@/types/auth';
 import { ISignupValues } from '@/app/signup/page';
+import { StoreProfileResponse, UserProfileResponse } from '@/types/store.interface';
+import { IUser } from '@/types/user.interface';
 
 const PUBLIC_PATHS = [
   '/',
@@ -24,12 +26,17 @@ interface AuthContextType {
   isLoading: boolean;
   user: User | null;
   storeContext: StoreContext | null;
+  ProfileUser: UserProfileResponse | null;
+  storeInfo: StoreProfileResponse | null;
   login: (credentials: Credentials) => Promise<void>;
   logout: () => Promise<void>;
   selectStore: (storeUserId: number) => Promise<void>;
   hasPermission: (key: PermissionKey) => boolean;
   hasAnyPermission: (keys: PermissionKey[]) => boolean;
   hasAllPermissions: (keys: PermissionKey[]) => boolean;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  updateProfile: (updatedData: Partial<IUser>) => Promise<void>;
+
   hasStoreContext: boolean;
   sidebarOpen: boolean;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -52,12 +59,14 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [storeContext, setStoreContext] = useState<StoreContext | null>(null);
+  const [ProfileUser, setProfileUser] = useState<UserProfileResponse | null>(null);
+  const [storeInfo, setStoreInfo] = useState<StoreProfileResponse | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [hasFetchedMe, setHasFetchedMe] = useState(false);
   const [cashRegisterSessionId, setCashRegisterSessionId] = useState<number | null>(null);
-  const [authFlow, setAuthFlow] = useState<'signup' | 'login' | null>(null); // 👈 ajouté
+  const [authFlow, setAuthFlow] = useState<'signup' | 'login' | null>(null);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -81,6 +90,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return null;
     }
   }, []);
+
+  const fetchProfileUser = async () => {
+    try {
+      const response = await api.get(`auth/profile/me`);
+      console.log('✅ profileUser loaded:', response.data);
+      setProfileUser(response.data);
+    } catch (error) {
+      console.error('❌ Failed to load fetchProfileUser:', error);
+    }
+  };
+
+  const fetchStoreInfo = useCallback(async (storeId: number) => {
+    try {
+      const response = await api.get(`store/profile/${storeId}`);
+      console.log('✅ store Info loaded:', response.data);
+      setStoreInfo(response.data);
+    } catch (error) {
+      console.error('❌ Failed to load fetchStoreInfo:', error);
+    }
+  }, []);
+
+  const loadProfileUser = useCallback(async () => {
+    await fetchProfileUser();
+  }, []);
+
+  const loadStoreInfo = useCallback(async () => {
+    if (!storeContext?.storeId) {
+      // console.warn(' No storeContext.storeId — skipping data load');
+      return;
+    }
+    await fetchStoreInfo(storeContext?.storeId);
+  }, [fetchStoreInfo, storeContext?.storeId]);
+
+  useEffect(() => {
+    if (storeContext?.storeId) {
+      // console.log('🔄 profileUser and StoreInfo data for storeId:', storeContext.storeId);
+      loadProfileUser();
+      loadStoreInfo();
+    }
+  }, [loadProfileUser, loadStoreInfo, storeContext]);
+
+  useEffect(() => {
+    // console.log('🆕 ProfileUser updated:', ProfileUser);
+  }, [ProfileUser]);
+
+  useEffect(() => {
+    // console.log('🆕 storeInfo updated:', storeInfo);
+  }, [storeInfo]);
 
   const fetchMe = useCallback(async () => {
     setIsLoading(true);
@@ -107,11 +164,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [fetchMe]);
 
-  useEffect(() => {
-    console.log(
-      `utilisateur authentifier ${JSON.stringify(user)}, isAuthenticated: ${isAuthenticated} flow Auth ${authFlow}`
-    );
-  }, [authFlow, fetchMe, isAuthenticated, user]);
+  // useEffect(() => {
+  //   console.log(
+  //     `utilisateur authentifier ${JSON.stringify(user)}, isAuthenticated: ${isAuthenticated} flow Auth ${authFlow}`
+  //   );
+  // }, [authFlow, fetchMe, isAuthenticated, user]);
 
   useEffect(() => {
     if (!hasFetchedMe || isLoading) return;
@@ -124,7 +181,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (pathname !== path) router.replace(path);
     };
 
-    console.log(`router public  : ${isPubli}`);
+    // console.log(`router publique  : ${isPubli}`);
+
 
     if (!isAuthenticated && pathname === '/create-store') {
       safeRedirect('/signin');
@@ -195,9 +253,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [fetchMe, router]
   );
 
+  const updateProfile = useCallback(
+    async (updatedData: Partial<IUser>) => {
+      await api.patch('/auth/profile', updatedData);
+      loadProfileUser();
+    },
+    [loadProfileUser]
+  );
+
+  const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
+    try {
+      const response = await api.post('/auth/change-password', { currentPassword, newPassword });
+      console.log(response);
+    } catch (err) {
+      throw err;
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await api.post('/auth/logout');
+      localStorage.removeItem('accessToken');
       toast.success('Logout successful');
     } finally {
       setUser(null);
@@ -212,7 +288,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await api.post('/auth/select-store', { storeUserId });
       const accessToken = response.data.accessToken;
       localStorage.setItem('accessToken', accessToken);
-      console.log(response);
       await fetchMe(); // rafraîchir user + storeContext
       toast.success('Store has been selected');
       router.push('/dashboard');
@@ -247,6 +322,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       hasPermission,
       hasAnyPermission,
       hasAllPermissions,
+      changePassword,
       hasStoreContext: !!storeContext,
       sidebarOpen,
       setSidebarOpen,
@@ -256,6 +332,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       hasFetchedMe,
       register,
       registerWithGoogle,
+      ProfileUser,
+      storeInfo,
+      updateProfile,
     }),
     [
       isAuthenticated,
@@ -268,6 +347,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       hasPermission,
       hasAnyPermission,
       hasAllPermissions,
+      changePassword,
       sidebarOpen,
       setSidebarOpen,
       cashRegisterSessionId,
@@ -276,6 +356,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       hasFetchedMe,
       register,
       registerWithGoogle,
+      ProfileUser,
+      storeInfo,
+      updateProfile,
     ]
   );
 

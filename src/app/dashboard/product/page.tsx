@@ -20,6 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { useShopData } from '@/context/store-context';
 import { IProduct } from '@/types/product.interface';
@@ -141,8 +142,14 @@ export default function ProductsPage() {
           {product.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={product.imageUrl}
+              src={
+                product.imageUrl
+                  ? product.imageUrl
+                  : 'https://fastly.picsum.photos/id/791/200/300.jpg?hmac=Ah_2kp5UqnZv5O0c333s3M4p-FqkCZ6ViRd1V_pAHYk'
+              }
               alt={product.name}
+              width={40}
+              height={10}
               className="w-10 h-10 rounded-md object-cover"
             />
           ) : (
