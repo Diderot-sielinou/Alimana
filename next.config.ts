@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
         hostname: 'images.unsplash.com',
       },
     ],
+    domains: [
+      'res.cloudinary.com',
+      'lemagdelaconso.ouest-france.fr',
+      'example.com',
+      'cdn.yourapp.com',
+      'images.unsplash.com',
+      'picsum.photos',
+    ],
   },
 };
 

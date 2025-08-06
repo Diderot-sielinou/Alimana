@@ -10,6 +10,7 @@ import {
   CreditCard,
   Badge,
   Tags,
+  User,
 } from 'lucide-react';
 
 export const sidebarLinks = [
@@ -73,6 +74,13 @@ export const sidebarLinks = [
     icon: UserPlus,
     requiredPermissions: [],
   },
+  {
+    href: '/dashboard/profile',
+    label: 'Profile',
+    icon: User,
+    requiredPermissions: [],
+  },
+
   {
     href: '/dashboard/settings',
     label: 'Settings',
