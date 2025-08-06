@@ -1,27 +1,34 @@
 'use client';
 
-import type React from 'react';
-
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Lock, Eye, EyeOff, Store, CheckCircle, AlertCircle } from 'lucide-react';
+import {
+  ArrowLeft,
+  Lock,
+  Eye,
+  EyeOff,
+  Store,
+  CheckCircle,
+  AlertCircle,
+  RefreshCw,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { RoleBadge } from '@/components/dashboard/role-badge';
-import type { UserRole } from '@/lib/auth';
+import { Badge } from '@/components/ui/badge';
+import { InvitationService } from '@/services/invitationService';
+import { IInvitation } from '@/types/invitation.interface';
+import { formatInvitationDate, validatePassword } from '@/utils/invitationUtils';
 
-interface InvitationData {
-  id: string;
-  email: string;
-  fullName: string;
-  role: UserRole;
-  name: string;
-  invitedAt: string;
-  expiresAt: string;
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
 }
 
 export default function InvitePage() {
@@ -29,7 +36,7 @@ export default function InvitePage() {
   const router = useRouter();
   const token = params.token as string;
 
-  const [invitation, setInvitation] = useState<InvitationData | null>(null);
+  const [invitation, setInvitation] = useState<IInvitation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -45,28 +52,25 @@ export default function InvitePage() {
 
   useEffect(() => {
     const fetchInvitation = async () => {
+      if (!token) {
+        setError('Invalid invitation link');
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await fetch(`/api/invitations/${token}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-          setError(data.error || 'Invalid or expired invitation');
-          return;
-        }
-
-        setInvitation(data.invitation);
-      } catch (err) {
-        if (err) {
-          setError('Failed to load invitation');
-        }
+        const invitationData = await InvitationService.validateInvitation(token);
+        setInvitation(invitationData);
+      } catch (err: unknown) {
+        const errorMessage =
+          (err as ApiError).response?.data?.message || 'Invalid or expired invitation';
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
     };
 
-    if (token) {
-      fetchInvitation();
-    }
+    fetchInvitation();
   }, [token]);
 
   const updateFormData = (field: string, value: string) => {
@@ -81,8 +85,11 @@ export default function InvitePage() {
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+    } else {
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.isValid) {
+        newErrors.password = passwordValidation.errors[0]; // Show first error
+      }
     }
 
     if (!formData.confirmPassword) {
@@ -104,34 +111,17 @@ export default function InvitePage() {
     setError('');
 
     try {
-      const response = await fetch('/api/invitations/accept', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || 'Failed to create account');
-        return;
-      }
-
+      await InvitationService.acceptInvitation(token, formData.password);
       setIsSuccess(true);
 
-      // Redirect to signin after 2 seconds
+      // Redirect to signin after 3 seconds
       setTimeout(() => {
         router.push('/signin');
-      }, 2000);
-    } catch (err) {
-      if (err) {
-        setError('Failed to create account. Please try again.');
-      }
+      }, 3000);
+    } catch (err: unknown) {
+      const errorMessage =
+        (err as ApiError).response?.data?.message || 'Failed to create account. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -141,7 +131,7 @@ export default function InvitePage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <RefreshCw className="animate-spin h-12 w-12 text-amber-600 mx-auto mb-4" />
           <p className="text-gray-600">Loading invitation...</p>
         </div>
       </div>
@@ -201,7 +191,7 @@ export default function InvitePage() {
               </div>
               <CardTitle className="text-xl">Account Created Successfully!</CardTitle>
               <CardDescription>
-                Welcome to {invitation?.name}! You can now sign in to your account.
+                Welcome to {invitation?.store?.name}! You can now sign in to your account.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -217,8 +207,6 @@ export default function InvitePage() {
       </div>
     );
   }
-  if (loading) return;
-  if (error && !invitation) return;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
@@ -236,38 +224,40 @@ export default function InvitePage() {
             <Store className="h-8 w-8 text-amber-600" />
             <span className="text-2xl font-bold text-gray-900">ALIMANA</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Join {invitation?.name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Join {invitation?.store?.name}</h1>
           <p className="text-gray-600 mt-2">Create your account to get started</p>
         </div>
 
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-4">
-            <CardTitle className="text-xl">You are Invited!</CardTitle>
+            <CardTitle className="text-xl">You&apos;re Invited!</CardTitle>
             <CardDescription>
-              Complete your account setup to join {invitation?.name}
+              Complete your account setup to join {invitation?.store?.name}
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
             {/* Invitation Details */}
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="space-y-2">
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Store:</span>
-                  <span className="font-medium">{invitation?.name}</span>
+                  <span className="text-sm font-medium text-gray-600">Store:</span>
+                  <span className="font-semibold text-gray-900">{invitation?.store?.name}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Email:</span>
-                  <span className="font-medium">{invitation?.email}</span>
+                  <span className="text-sm font-medium text-gray-600">Email:</span>
+                  <span className="font-medium text-gray-700">{invitation?.email}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Role:</span>
-                  <RoleBadge role={invitation!.role} />
+                  <span className="text-sm font-medium text-gray-600">Role:</span>
+                  <Badge variant="outline" className="font-medium">
+                    {invitation?.role?.name || 'Team Member'}
+                  </Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Expires:</span>
-                  <span className="text-sm text-red-600">
-                    {invitation && new Date(invitation.expiresAt).toLocaleDateString()}
+                  <span className="text-sm font-medium text-gray-600">Expires:</span>
+                  <span className="text-sm font-medium text-red-600">
+                    {invitation && formatInvitationDate(invitation.expiresAt)}
                   </span>
                 </div>
               </div>
@@ -289,7 +279,7 @@ export default function InvitePage() {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Create a strong password"
-                    className="pl-10 pr-10"
+                    className={`pl-10 pr-10 ${formErrors.password ? 'border-red-500' : ''}`}
                     value={formData.password}
                     onChange={(e) => updateFormData('password', e.target.value)}
                   />
@@ -302,8 +292,14 @@ export default function InvitePage() {
                   </button>
                 </div>
                 {formErrors.password && (
-                  <p className="text-sm text-red-600">{formErrors.password}</p>
+                  <p className="text-sm text-red-600 flex items-center">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    {formErrors.password}
+                  </p>
                 )}
+                <p className="text-xs text-gray-500">
+                  Password must be at least 8 characters with uppercase, lowercase, and number
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -314,7 +310,7 @@ export default function InvitePage() {
                     id="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
                     placeholder="Confirm your password"
-                    className="pl-10 pr-10"
+                    className={`pl-10 pr-10 ${formErrors.confirmPassword ? 'border-red-500' : ''}`}
                     value={formData.confirmPassword}
                     onChange={(e) => updateFormData('confirmPassword', e.target.value)}
                   />
@@ -331,16 +327,26 @@ export default function InvitePage() {
                   </button>
                 </div>
                 {formErrors.confirmPassword && (
-                  <p className="text-sm text-red-600">{formErrors.confirmPassword}</p>
+                  <p className="text-sm text-red-600 flex items-center">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    {formErrors.confirmPassword}
+                  </p>
                 )}
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-amber-600 hover:bg-amber-700"
+                className="w-full bg-amber-600 hover:bg-amber-700 disabled:opacity-50"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Creating Account...' : 'Create Account & Join Store'}
+                {isSubmitting ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  'Create Account & Join Store'
+                )}
               </Button>
             </form>
 

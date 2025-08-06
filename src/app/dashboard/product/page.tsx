@@ -55,15 +55,15 @@ export default function ProductsPage() {
         Object.entries(rawParams).filter(([_, v]) => v !== undefined && v !== '')
       );
 
-      console.log(`parametre de requette ${JSON.stringify(params)}`);
+      console.log(`request params ${JSON.stringify(params)}`);
       const response = await productAPI.getAll(params, storeId);
-      console.log(`reponse du fetch avec pagination ${JSON.stringify(response)}`);
+      console.log(`response from paginated fetch ${JSON.stringify(response)}`);
       const data = response.data as PaginatedResponse<IProduct>;
 
       setProducts(data.data);
       setTotalPages(data.pagination.totalPages);
     } catch (error) {
-      toast.error('Erreur lors du chargement des produits');
+      toast.error('Error loading products');
       console.error(error);
     } finally {
       setLoading(false);
@@ -72,7 +72,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     if (!storeId) return;
-    console.log(`le store id ${storeId}`);
+    console.log(`store id ${storeId}`);
 
     fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,7 +85,7 @@ export default function ProductsPage() {
           <div className="animate-spin text-blue-600">
             <Loader2 size={48} />
           </div>
-          <p className="text-lg font-medium text-gray-700">chargement en cours</p>
+          <p className="text-lg font-medium text-gray-700">Loading...</p>
         </div>
       </div>
     );
@@ -94,21 +94,21 @@ export default function ProductsPage() {
   const handleToggleActive = async (product: IProduct) => {
     try {
       await productAPI.toggleActive(product.id, storeId);
-      toast.success(`Produit ${product.isActive ? 'désactivé' : 'activé'} avec succès`);
+      toast.success(`Product ${product.isActive ? 'deactivated' : 'activated'} successfully`);
       await fetchProducts();
     } catch (error) {
-      toast.error('Erreur lors de la modification du statut');
+      toast.error('Error updating status');
     }
   };
 
   const handleCreateProduct = async (data: Partial<IProduct>) => {
     try {
       await productAPI.create(data, storeId);
-      toast.success('Produit créé avec succès');
+      toast.success('Product created successfully');
       setIsCreateModalOpen(false);
       await fetchProducts();
     } catch (error) {
-      toast.error('Erreur lors de la création du produit');
+      toast.error('Error creating product');
     }
   };
 
@@ -117,16 +117,16 @@ export default function ProductsPage() {
 
     try {
       await productAPI.update(editingProduct.id, data, storeId);
-      toast.success('Produit modifié avec succès');
+      toast.success('Product updated successfully');
       setEditingProduct(null);
       await fetchProducts();
     } catch (error) {
-      toast.error('Erreur lors de la modification du produit');
+      toast.error('Error updating product');
     }
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'XAF',
     }).format(price);
@@ -135,7 +135,7 @@ export default function ProductsPage() {
   const columns = [
     {
       key: 'name' as keyof IProduct,
-      header: 'Nom',
+      header: 'Name',
       render: (product: IProduct) => (
         <div className="flex items-center space-x-3">
           {product.imageUrl ? (
@@ -159,16 +159,16 @@ export default function ProductsPage() {
     },
     {
       key: 'category' as keyof IProduct,
-      header: 'Catégorie',
+      header: 'Category',
       render: (product: IProduct) => (
         <Badge variant="secondary" className="bg-orange-50 text-orange-700">
-          {product.category?.name || 'Sans catégorie'}
+          {product.category?.name || 'Uncategorized'}
         </Badge>
       ),
     },
     {
       key: 'sellingPrice' as keyof IProduct,
-      header: 'Prix de vente',
+      header: 'Selling Price',
       render: (product: IProduct) => (
         <span className="font-medium">{formatPrice(product.sellingPrice)}</span>
       ),
@@ -193,16 +193,16 @@ export default function ProductsPage() {
                 : 'bg-red-100 text-red-800'
           }
         >
-          {product.quantityInStock} {product.unit || 'unités'}
+          {product.quantityInStock} {product.unit || 'units'}
         </Badge>
       ),
     },
     {
       key: 'isActive' as keyof IProduct,
-      header: 'Statut',
+      header: 'Status',
       render: (product: IProduct) => (
         <Badge variant={product.isActive ? 'default' : 'secondary'}>
-          {product.isActive ? 'Actif' : 'Inactif'}
+          {product.isActive ? 'Active' : 'Inactive'}
         </Badge>
       ),
     },
@@ -230,19 +230,19 @@ export default function ProductsPage() {
     <div className="space-y-6 ml-0 md:ml-64 ">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Produits</h1>
-          <p className="text-gray-600">Gérez les produits de votre boutique</p>
+          <h1 className="text-2xl font-bold text-gray-900">Products</h1>
+          <p className="text-gray-600">Manage your store products</p>
         </div>
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
             <Button className="bg-orange-500 hover:bg-orange-600">
               <Plus className="w-4 h-4 mr-2" />
-              Nouveau produit
+              New Product
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Créer un nouveau produit</DialogTitle>
+              <DialogTitle>Create New Product</DialogTitle>
             </DialogHeader>
             <ProductForm onSubmit={handleCreateProduct} />
           </DialogContent>
@@ -251,10 +251,10 @@ export default function ProductsPage() {
       <div className="flex items-center space-x-4">
         <Select value={selectedCategory} onValueChange={setSelectedCategory}>
           <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filtrer par catégorie" />
+            <SelectValue placeholder="Filter by category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Toutes les catégories</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id.toString()}>
                 {category.name}
@@ -268,19 +268,19 @@ export default function ProductsPage() {
         columns={columns}
         searchValue={searchValue}
         onSearchChange={setSearchValue}
-        searchPlaceholder="Rechercher un produit..."
+        searchPlaceholder="Search for a product..."
         pagination={{
           page: currentPage,
           totalPages,
           onPageChange: setCurrentPage,
         }}
         loading={loading}
-        emptyMessage="Aucun produit trouvé"
+        emptyMessage="No products found"
       />
       <Dialog open={!!editingProduct} onOpenChange={() => setEditingProduct(null)}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Modifier le produit</DialogTitle>
+            <DialogTitle>Edit Product</DialogTitle>
           </DialogHeader>
           {editingProduct && (
             <ProductForm initialData={editingProduct} onSubmit={handleUpdateProduct} />

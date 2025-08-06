@@ -53,11 +53,11 @@ export default function CategoriesPage() {
     setLoading(true);
     try {
       await categoryAPI.create(data, storeContext?.storeId);
-      toast.success('Catégorie créée avec succès');
+      toast.success('Category successfully created');
       setIsCreateModalOpen(false);
       await refreshCategories();
     } catch (error) {
-      toast.error('Erreur lors de la création de la catégorie');
+      toast.error('Error while creating the category');
     } finally {
       setLoading(false);
     }
@@ -69,11 +69,11 @@ export default function CategoriesPage() {
     setLoading(true);
     try {
       await categoryAPI.update(editingCategory.id, data, storeContext?.storeId);
-      toast.success('Catégorie modifiée avec succès');
+      toast.success('Category successfully updated');
       setEditingCategory(null);
       await refreshCategories();
     } catch (error) {
-      toast.error('Erreur lors de la modification de la catégorie');
+      toast.error('Error while updating the category');
     } finally {
       setLoading(false);
     }
@@ -83,10 +83,10 @@ export default function CategoriesPage() {
     setLoading(true);
     try {
       await categoryAPI.delete(category.id, storeContext?.storeId);
-      toast.success('Catégorie supprimée avec succès');
+      toast.success('Category successfully deleted');
       await refreshCategories();
     } catch (error) {
-      toast.error('Erreur lors de la suppression de la catégorie');
+      toast.error('Error while deleting the category');
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ export default function CategoriesPage() {
   const columns = [
     {
       key: 'name' as keyof ICategory,
-      header: 'Nom',
+      header: 'Name',
       render: (category: ICategory) => (
         <div className="flex items-center space-x-3">
           <div
@@ -113,20 +113,20 @@ export default function CategoriesPage() {
     },
     {
       key: 'products' as keyof ICategory,
-      header: 'Produits',
+      header: 'Products',
       render: (category: ICategory) => (
         <Badge variant="secondary" className="bg-blue-50 text-blue-700">
           <Package className="w-3 h-3 mr-1" />
-          {category.products?.length || 0} produits
+          {category.products?.length || 0} products
         </Badge>
       ),
     },
     {
       key: 'createdAt' as keyof ICategory,
-      header: 'Date de création',
+      header: 'Creation Date',
       render: (category: ICategory) => (
         <span className="text-sm text-gray-500">
-          {new Date(category.createdAt).toLocaleDateString('fr-FR')}
+          {new Date(category.createdAt).toLocaleDateString('en-US')}
         </span>
       ),
     },
@@ -146,20 +146,19 @@ export default function CategoriesPage() {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Supprimer la catégorie</AlertDialogTitle>
+                <AlertDialogTitle>Delete Category</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Êtes-vous sûr de vouloir supprimer la catégorie
-                  {category.name} ? Cette action est irréversible et tous les produits associés
-                  perdront leur catégorie.
+                  Are you sure you want to delete the category {category.name}? This action is
+                  irreversible and all associated products will lose their category.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => handleDeleteCategory(category)}
                   className="bg-red-600 hover:bg-red-700"
                 >
-                  Supprimer
+                  Delete
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -173,19 +172,19 @@ export default function CategoriesPage() {
     <div className="space-y-6 px-6 py-4 ml-0 md:ml-64 ">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Catégories</h1>
-          <p className="text-gray-600">Organisez vos produits par catégories</p>
+          <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
+          <p className="text-gray-600">Organize your products by categories</p>
         </div>
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
             <Button className="bg-orange-500 hover:bg-orange-600">
               <Plus className="w-4 h-4 mr-2" />
-              Nouvelle catégorie
+              New Category
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Créer une nouvelle catégorie</DialogTitle>
+              <DialogTitle>Create a New Category</DialogTitle>
             </DialogHeader>
             <CategoryForm onSubmit={handleCreateCategory} />
           </DialogContent>
@@ -196,15 +195,15 @@ export default function CategoriesPage() {
         columns={columns}
         searchValue={searchValue}
         onSearchChange={setSearchValue}
-        searchPlaceholder="Rechercher une catégorie..."
+        searchPlaceholder="Search a category..."
         loading={loading}
-        emptyMessage="Aucune catégorie trouvée"
+        emptyMessage="No categories found"
       />
       {/* Edit Category Modal */}
       <Dialog open={!!editingCategory} onOpenChange={() => setEditingCategory(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Modifier la catégorie</DialogTitle>
+            <DialogTitle>Edit Category</DialogTitle>
           </DialogHeader>
           {editingCategory && (
             <CategoryForm initialData={editingCategory} onSubmit={handleUpdateCategory} />

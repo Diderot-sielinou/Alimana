@@ -1,14 +1,8 @@
-'use client'; // Indique que ce fichier est un Composant Client
+'use client'; // Indicates that this file is a Client Component
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-// Définition du type des données de boutique
+// Definition of the shop data type
 type ShopData = {
   id: string;
   name: string;
@@ -16,17 +10,17 @@ type ShopData = {
   timezone: string;
 };
 
-// Valeur initiale du contexte
+// Initial value of the context
 type ShopContextType = {
   shopData: ShopData | null;
   loadingShop: boolean;
   updateShopInfo: (newInfo: Partial<ShopData>) => void;
 };
 
-// Création du contexte avec type explicite ou null par défaut
+// Create the context with explicit type or null by default
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
-// Props attendues pour le provider
+// Expected props for the provider
 type ShopProviderProps = {
   children: ReactNode;
 };
@@ -41,13 +35,13 @@ export function ShopProvider({ children }: ShopProviderProps) {
         await new Promise((resolve) => setTimeout(resolve, 300));
         const mockData: ShopData = {
           id: 'shop1',
-          name: 'Ma Boutique Next.js',
+          name: 'My Next.js Shop',
           currency: 'FCFA',
           timezone: 'Africa/Douala',
         };
         setShopData(mockData);
       } catch (error) {
-        console.error("Erreur lors du chargement des données de la boutique:", error);
+        console.error('Error while loading shop data:', error);
       } finally {
         setLoadingShop(false);
       }
@@ -57,8 +51,8 @@ export function ShopProvider({ children }: ShopProviderProps) {
   }, []);
 
   const updateShopInfo = (newInfo: Partial<ShopData>) => {
-    setShopData((prev) => prev ? { ...prev, ...newInfo } : null);
-    // Optionnel : appel API pour persister les modifications
+    setShopData((prev) => (prev ? { ...prev, ...newInfo } : null));
+    // Optional: API call to persist changes
   };
 
   const shopContextValue: ShopContextType = {
@@ -68,20 +62,16 @@ export function ShopProvider({ children }: ShopProviderProps) {
   };
 
   if (loadingShop) {
-    return <div>Chargement des données de la boutique...</div>;
+    return <div>Loading shop data...</div>;
   }
 
-  return (
-    <ShopContext.Provider value={shopContextValue}>
-      {children}
-    </ShopContext.Provider>
-  );
+  return <ShopContext.Provider value={shopContextValue}>{children}</ShopContext.Provider>;
 }
 
 export const useShop = (): ShopContextType => {
   const context = useContext(ShopContext);
   if (context === undefined) {
-    throw new Error('useShop doit être utilisé à l\'intérieur d\'un ShopProvider');
+    throw new Error('useShop must be used within a ShopProvider');
   }
   return context;
 };

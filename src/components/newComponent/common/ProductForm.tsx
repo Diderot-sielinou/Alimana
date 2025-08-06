@@ -23,27 +23,23 @@ interface ProductFormProps {
 }
 
 const productSchema = Yup.object({
-  name: Yup.string().required('Le nom est requis'),
+  name: Yup.string().required('Name is required'),
   description: Yup.string(),
   barcode: Yup.string(),
   sku: Yup.string(),
   brand: Yup.string(),
   unit: Yup.string(),
-  sellingPrice: Yup.number()
-    .min(0, 'Le prix doit être positif')
-    .required('Le prix de vente est requis'),
-  costPrice: Yup.number()
-    .min(0, 'Le prix doit être positif')
-    .required('Le prix de revient est requis'),
+  sellingPrice: Yup.number().min(0, 'Price must be positive').required('Selling price is required'),
+  costPrice: Yup.number().min(0, 'Price must be positive').required('Cost price is required'),
   discountPercentage: Yup.number()
-    .min(0, 'La remise doit être positive')
-    .max(100, 'La remise ne peut pas dépasser 100%')
+    .min(0, 'Discount must be positive')
+    .max(100, 'Discount cannot exceed 100%')
     .default(0),
   quantityInStock: Yup.number()
-    .min(0, 'La quantité doit être positive')
-    .required('La quantité en stock est requise'),
+    .min(0, 'Quantity must be positive')
+    .required('Stock quantity is required'),
   categoryId: Yup.number().nullable(),
-  imageUrl: Yup.string().url('URL invalide'),
+  imageUrl: Yup.string().url('Invalid URL'),
 });
 
 export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
@@ -77,13 +73,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
         <Form className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="name">Nom du produit *</Label>
-              <Field as={Input} id="name" name="name" placeholder="Nom du produit" />
+              <Label htmlFor="name">Product Name *</Label>
+              <Field as={Input} id="name" name="name" placeholder="Product name" />
               <ErrorMessage name="name" component="div" className="text-red-500 text-sm mt-1" />
             </div>
             <div>
               <Label htmlFor="sku">SKU</Label>
-              <Field as={Input} id="sku" name="sku" placeholder="Code produit" />
+              <Field as={Input} id="sku" name="sku" placeholder="Product code" />
               <ErrorMessage name="sku" component="div" className="text-red-500 text-sm mt-1" />
             </div>
           </div>
@@ -93,7 +89,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
               as={Textarea}
               id="description"
               name="description"
-              placeholder="Description du produit"
+              placeholder="Product description"
             />
             <ErrorMessage
               name="description"
@@ -103,19 +99,19 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="barcode">Code-barres</Label>
-              <Field as={Input} id="barcode" name="barcode" placeholder="Code-barres" />
+              <Label htmlFor="barcode">Barcode</Label>
+              <Field as={Input} id="barcode" name="barcode" placeholder="Barcode" />
               <ErrorMessage name="barcode" component="div" className="text-red-500 text-sm mt-1" />
             </div>
             <div>
-              <Label htmlFor="brand">Marque</Label>
-              <Field as={Input} id="brand" name="brand" placeholder="Marque" />
+              <Label htmlFor="brand">Brand</Label>
+              <Field as={Input} id="brand" name="brand" placeholder="Brand" />
               <ErrorMessage name="brand" component="div" className="text-red-500 text-sm mt-1" />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="sellingPrice">Prix de vente *</Label>
+              <Label htmlFor="sellingPrice">Selling Price *</Label>
               <Field as={Input} id="sellingPrice" name="sellingPrice" type="number" step="0.01" />
               <ErrorMessage
                 name="sellingPrice"
@@ -124,7 +120,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
               />
             </div>
             <div>
-              <Label htmlFor="costPrice">Prix de revient *</Label>
+              <Label htmlFor="costPrice">Cost Price *</Label>
               <Field as={Input} id="costPrice" name="costPrice" type="number" step="0.01" />
               <ErrorMessage
                 name="costPrice"
@@ -133,7 +129,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
               />
             </div>
             <div>
-              <Label htmlFor="discountPercentage">Remise (%)</Label>
+              <Label htmlFor="discountPercentage">Discount (%)</Label>
               <Field
                 as={Input}
                 id="discountPercentage"
@@ -151,7 +147,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="quantityInStock">Quantité en stock *</Label>
+              <Label htmlFor="quantityInStock">Stock Quantity *</Label>
               <Field as={Input} id="quantityInStock" name="quantityInStock" type="number" min="0" />
               <ErrorMessage
                 name="quantityInStock"
@@ -160,12 +156,12 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
               />
             </div>
             <div>
-              <Label htmlFor="unit">Unité</Label>
-              <Field as={Input} id="unit" name="unit" placeholder="kg, pièce, litre..." />
+              <Label htmlFor="unit">Unit</Label>
+              <Field as={Input} id="unit" name="unit" placeholder="kg, piece, liter..." />
               <ErrorMessage name="unit" component="div" className="text-red-500 text-sm mt-1" />
             </div>
             <div>
-              <Label htmlFor="categoryId">Catégorie</Label>
+              <Label htmlFor="categoryId">Category</Label>
               <Select
                 value={values.categoryId?.toString() || ''}
                 onValueChange={(value) =>
@@ -173,10 +169,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner une catégorie" />
+                  <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Aucune catégorie</SelectItem>
+                  <SelectItem value="all">No category</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category.id} value={category.id.toString()}>
                       {category.name}
@@ -192,7 +188,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
             </div>
           </div>
           <div>
-            <Label htmlFor="imageUrl">URL de limage</Label>
+            <Label htmlFor="imageUrl">Image URL</Label>
             <Field as={Input} id="imageUrl" name="imageUrl" placeholder="https://..." />
             <ErrorMessage name="imageUrl" component="div" className="text-red-500 text-sm mt-1" />
           </div>
@@ -202,7 +198,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
               disabled={isSubmitting}
               className="bg-orange-500 hover:bg-orange-600"
             >
-              {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+              {isSubmitting ? 'Saving...' : 'Save'}
             </Button>
           </div>
         </Form>

@@ -14,28 +14,7 @@ interface DashboardLayoutProps {
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-  const { isAuthenticated, storeContext, isLoading } = useAuth();
-  // const router = useRouter();
-
-  // React.useEffect(() => {
-  //   if (!isLoading) {
-  //     if (!isAuthenticated) {
-  //       router.push('/signin');
-  //     } else if (!storeContext) {
-  //       router.push('/select-store');
-  //     }
-  //   }
-  // }, [isAuthenticated, storeContext, isLoading, router]);
-
-  // if (isLoading) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center">
-  //       ijoooooooooooooo
-  //       {/* <LoadingSpinner size="lg" /> */}
-  //     </div>
-  //   );
-  // }
-
+  const { isAuthenticated, storeContext } = useAuth();
   if (!isAuthenticated || !storeContext) {
     return null;
   }
@@ -45,9 +24,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="flex-1 overflow-auto p-6">
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
     </div>
   );
