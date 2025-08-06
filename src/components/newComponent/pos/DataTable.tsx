@@ -1,4 +1,3 @@
-// src/components/common/DataTable.tsx
 'use client';
 
 import React from 'react';
@@ -7,9 +6,9 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  getPaginationRowModel, // Pour la pagination
-  ColumnFiltersState, // Pour le filtrage
-  getFilteredRowModel, // Pour le filtrage
+  getPaginationRowModel, // For pagination
+  ColumnFiltersState, // For filtering
+  getFilteredRowModel, // For filtering
 } from '@tanstack/react-table';
 
 import {
@@ -35,9 +34,9 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(), // Active la pagination
-    onColumnFiltersChange: setColumnFilters, // Gère les filtres
-    getFilteredRowModel: getFilteredRowModel(), // Active le filtrage
+    getPaginationRowModel: getPaginationRowModel(), // Enables pagination
+    onColumnFiltersChange: setColumnFilters, // Handles filters
+    getFilteredRowModel: getFilteredRowModel(), // Enables filtering
     state: {
       columnFilters,
     },
@@ -81,7 +80,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           )}
         </TableBody>
       </Table>
-      {/* Contrôles de pagination */}
+      {/* Pagination controls */}
       <div className="flex items-center justify-end space-x-2 py-4 px-4">
         <Button
           variant="outline"
@@ -100,7 +99,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           Next <ChevronRight className="h-4 w-4" />
         </Button>
         <span className="text-sm text-gray-700">
-          Page {table.getState().pagination.pageIndex + 1} sur {table.getPageCount()}
+          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
         </span>
       </div>
     </div>

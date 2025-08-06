@@ -10,16 +10,6 @@ export default function DashboardRedirector() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirection immédiate vers overview (peut être personnalisée plus tard avec des permissions)
-    // if (hasPermission('dashboard.view')) {
-    //   router.replace('/dashboard/overview');
-    // } else if (hasPermission('products.read')) {
-    //   router.replace('/dashboard/products');
-    // } else if (hasPermission('sales.view')) {
-    //   router.replace('/dashboard/sales');
-    // } else {
-    //   router.replace('/unauthorized'); // Page d'erreur custom
-    // }
     router.replace('/dashboard/overview');
   }, [hasPermission, router]);
 

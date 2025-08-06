@@ -1,28 +1,28 @@
 // src/components/common/LoadingSpinner.tsx
 import React from 'react';
-import { Loader2 } from 'lucide-react'; // Importer l'icône de chargement de Lucide React
-import { cva, type VariantProps } from 'class-variance-authority'; // Pour gérer les variantes de taille
-import { cn } from '@/lib/utils'; // Pour fusionner les classes Tailwind
+import { Loader2 } from 'lucide-react'; // Import the loading icon from Lucide React
+import { cva, type VariantProps } from 'class-variance-authority'; // To handle size variants
+import { cn } from '@/lib/utils'; // To merge Tailwind classes
 
-// Définir les variantes de taille pour le spinner
+// Define size variants for the spinner
 const spinnerVariants = cva(
-  'animate-spin text-primary', // Classes de base: animation de rotation et couleur primaire
+  'animate-spin text-primary', // Base classes: spin animation and primary color
   {
     variants: {
       size: {
-        sm: 'h-4 w-4', // Petite taille
-        md: 'h-6 w-6', // Taille moyenne (par défaut)
-        lg: 'h-8 w-8', // Grande taille
-        xl: 'h-12 w-12', // Très grande taille
+        sm: 'h-4 w-4', // Small size
+        md: 'h-6 w-6', // Medium size (default)
+        lg: 'h-8 w-8', // Large size
+        xl: 'h-12 w-12', // Extra large size
       },
     },
     defaultVariants: {
-      size: 'md', // Taille par défaut si non spécifiée
+      size: 'md', // Default size if not specified
     },
   }
 );
 
-// Définir les props du composant LoadingSpinner
+// Define the props for the LoadingSpinner component
 export type LoadingSpinnerProps = VariantProps<typeof spinnerVariants>;
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size }) => {
@@ -32,7 +32,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size }) => {
         <div className="animate-spin text-blue-600">
           <Loader2 className={cn(spinnerVariants({ size }))} />
         </div>
-        <p className="text-lg font-medium text-gray-700"> Loading...</p>
+        <p className="text-lg font-medium text-gray-700">Loading...</p>
       </div>
     </div>
   );

@@ -26,3 +26,19 @@ export interface IInvitation {
   createdAt: string;
   updatedAt: string;
 }
+
+// Frontend-specific types for forms
+export interface CreateInvitationRequest {
+  email: string;
+  roleId: number;
+}
+
+export interface InvitationFormData {
+  email: string;
+  roleId: string; // String for form handling, converted to number
+}
+
+export interface AcceptInvitationRequest {
+  token: string;
+  password: string;
+}

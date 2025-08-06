@@ -15,14 +15,14 @@ import { api } from '@/lib/api';
 // Joi validation schema for the invitation acceptance form
 const acceptInviteSchema = Joi.object({
   password: Joi.string().min(6).required().messages({
-    'string.min': 'Le mot de passe doit contenir au moins {#limit} caractères.',
-    'string.empty': 'Le mot de passe est requis.',
-    'any.required': 'Le mot de passe est requis.',
+    'string.min': 'Password must be at least {#limit} characters.',
+    'string.empty': 'Password is required.',
+    'any.required': 'Password is required.',
   }),
   confirmPassword: Joi.string().valid(Joi.ref('password')).required().messages({
-    'any.only': 'Les mots de passe ne correspondent pas.',
-    'string.empty': 'La confirmation du mot de passe est requise.',
-    'any.required': 'La confirmation du mot de passe est requise.',
+    'any.only': 'Passwords do not match.',
+    'string.empty': 'Password confirmation is required.',
+    'any.required': 'Password confirmation is required.',
   }),
 });
 
@@ -44,14 +44,9 @@ export default function AcceptInvitePage() {
     setError,
   } = useForm();
 
-  // Check invitation token validity on page load
+  // Checks the validity of the invitation token when the page loads
   useEffect(() => {
     const token = searchParams.get('token');
-    // if (!token) {
-    //   toast.error('Token d\'invitation manquant.');
-    //   router.replace('/signin');
-    //   return;
-    // }
 
     const verifyInvitation = async () => {
       try {
@@ -59,8 +54,8 @@ export default function AcceptInvitePage() {
         setInvitationDetails(response.data);
         setInvitationValid(true);
       } catch (error: any) {
-        console.error("Erreur de vérification d'invitation:", error);
-        toast.error(error.response?.data?.message || "Token d'invitation invalide ou expiré.");
+        console.error('Invitation verification error:', error);
+        toast.error(error.response?.data?.message || 'Invalid or expired invitation token.');
         router.replace('/signin');
       } finally {
         setLoading(false);
@@ -70,7 +65,7 @@ export default function AcceptInvitePage() {
     verifyInvitation();
   }, [searchParams, router]);
 
-  // Handles form submission for accepting the invitation
+  // Handles the form submission to accept the invitation
   const onSubmit = async (data: any) => {
     // --- Manual validation with Joi ---
     const { error } = acceptInviteSchema.validate(data, { abortEarly: false });
@@ -83,13 +78,13 @@ export default function AcceptInvitePage() {
           message: detail.message,
         });
       });
-      return; // Arrêter la soumission si la validation échoue
+      return; // Stop submission if validation fails
     }
-    // --- Fin de la validation manuelle ---
+    // --- End of manual validation ---
 
     const token = searchParams.get('token');
     if (!token) {
-      toast.error("Token d'invitation manquant.");
+      toast.error('Invitation token is missing.');
       return;
     }
 
@@ -98,11 +93,11 @@ export default function AcceptInvitePage() {
         token: token,
         password: data.password,
       });
-      toast.success('Invitation acceptée ! Vous pouvez maintenant vous connecter.');
-      router.replace('/login'); // Redirige vers la page de connexion
+      toast.success('Invitation accepted! You can now log in.');
+      router.replace('/login'); // Redirects to login page
     } catch (error: any) {
-      console.error("Erreur lors de l'acceptation de l'invitation:", error);
-      toast.error(error.response?.data?.message || "Échec de l'acceptation de l'invitation.");
+      console.error('Error while accepting the invitation:', error);
+      toast.error(error.response?.data?.message || 'Failed to accept the invitation.');
     }
   };
 
@@ -118,10 +113,10 @@ export default function AcceptInvitePage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-red-50 p-4">
         <div className="text-center p-8 bg-white rounded-xl shadow-2xl border border-red-200">
-          <h1 className="text-3xl font-bold text-red-700 mb-4">Invitation Invalid</h1>
+          <h1 className="text-3xl font-bold text-red-700 mb-4">Invalid Invitation</h1>
           <p className="text-gray-600">The invitation link is invalid or has expired.</p>
           <Button onClick={() => router.replace('/')} className="mt-6">
-            Return to landing page{' '}
+            Back to landing page
           </Button>
         </div>
       </div>
@@ -176,7 +171,7 @@ export default function AcceptInvitePage() {
           </div>
 
           <Button type="submit" className="w-full py-3 text-lg" disabled={isSubmitting}>
-            {isSubmitting ? 'Acceptation en cours...' : "Accepter l'Invitation"}
+            {isSubmitting ? 'Submitting...' : 'Accept Invitation'}
           </Button>
         </form>
       </div>

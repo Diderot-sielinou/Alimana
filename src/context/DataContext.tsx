@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { api } from '@/lib/api'; // Ton utilitaire d'appel API
+import { api } from '@/lib/api'; // Your API call utility
 import { mockData } from '@/constants/mocks/mockData';
 import { useAuth } from './auth-context';
 
@@ -44,7 +44,7 @@ type DataContextType = {
 
   refreshAll: () => Promise<void>;
 
-  // Méthodes génériques pour chaque entité
+  // Generic methods for each entity
 
   addProduct: (p: Product) => Promise<void>;
   updateProductStatus: (id: string, status: string) => Promise<void>;
@@ -93,7 +93,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [storeContext]);
 
-  //  Chargement initial
+  // Initial data loading
   const refreshAll = async () => {
     setLoading(true);
     try {
@@ -120,13 +120,13 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       setCashRegister(cashRes.data);
       setRoles(roleRes.data);
     } catch (err) {
-      console.error('Erreur lors du chargement des données:', err);
+      console.error('Error loading data:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  //  Ajouter un produit
+  // Add product
   const addProduct = async (product: Product) => {
     try {
       if (USE_MOCK) {
@@ -134,14 +134,14 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       } else {
         await api.post('/products', product);
         await refreshAll();
-        logAudit('Ajout Produit', `Produit "${product.name}" ajouté.`);
+        logAudit('Add Product', `Product "${product.name}" added.`);
       }
     } catch (err) {
-      console.error('Erreur ajout produit:', err);
+      console.error('Error adding product:', err);
     }
   };
 
-  //  Mettre à jour le statut d’un produit
+  // Update product status
   const updateProductStatus = async (productId: string, newStatus: string) => {
     try {
       if (USE_MOCK) {
@@ -151,10 +151,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       } else {
         await api.patch(`/products/${productId}/status`, { status: newStatus });
         await refreshAll();
-        logAudit('Mise à jour statut', `Statut produit ${productId} → ${newStatus}`);
+        logAudit('Update Status', `Product status ${productId} → ${newStatus}`);
       }
     } catch (err) {
-      console.error('Erreur mise à jour statut:', err);
+      console.error('Error updating status:', err);
     }
   };
 
@@ -165,14 +165,14 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       } else {
         await api.delete(`/products/${productId}`);
         await refreshAll();
-        logAudit('Suppression Produit', `Produit ID ${productId} supprimé.`);
+        logAudit('Delete Product', `Product ID ${productId} deleted.`);
       }
     } catch (err) {
-      console.error('Erreur suppression produit:', err);
+      console.error('Error deleting product:', err);
     }
   };
 
-  //  Catégories
+  // Categories
   const addCategory = async (c: Category) => {
     if (USE_MOCK) {
       setCategories((prev) => [...prev, c]);
@@ -180,7 +180,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       await api.post('/categories', c);
       await refreshAll();
     }
-    logAudit('Ajout catégorie', c.name);
+    logAudit('Add Category', c.name);
   };
 
   const deleteCategory = async (id: string) => {
@@ -190,10 +190,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       await api.delete(`/categories/${id}`);
       await refreshAll();
     }
-    logAudit('Suppression catégorie', id);
+    logAudit('Delete Category', id);
   };
 
-  //  Méthodes de paiement
+  // Payment Methods
   const addPaymentMethod = async (p: PaymentMethod) => {
     if (USE_MOCK) {
       setPaymentMethod((prev) => [...prev, p]);
@@ -201,7 +201,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       await api.post('/payment-methods', p);
       await refreshAll();
     }
-    logAudit('Ajout méthode paiement', p.name);
+    logAudit('Add Payment Method', p.name);
   };
 
   const deletePaymentMethod = async (id: string) => {
@@ -211,10 +211,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       await api.delete(`/payment-methods/${id}`);
       await refreshAll();
     }
-    logAudit('Suppression méthode paiement', id);
+    logAudit('Delete Payment Method', id);
   };
 
-  //  Caisse
+  // Cash Register
   const addCashRegister = async (r: CashRegister) => {
     if (USE_MOCK) {
       setCashRegister((prev) => [...prev, r]);
@@ -222,7 +222,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       await api.post('/cash-registers', r);
       await refreshAll();
     }
-    logAudit('Ajout caisse', r.label);
+    logAudit('Add Cash Register', r.label);
   };
 
   const toggleCashRegister = async (id: string) => {
@@ -232,10 +232,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       await api.patch(`/cash-registers/${id}/toggle`);
       await refreshAll();
     }
-    logAudit('Toggle caisse', id);
+    logAudit('Toggle Cash Register', id);
   };
 
-  //  Rôles
+  // Roles
   const addRole = async (r: Role) => {
     if (USE_MOCK) {
       setRoles((prev) => [...prev, r]);
@@ -243,7 +243,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       await api.post('/roles', r);
       await refreshAll();
     }
-    logAudit('Ajout rôle', r.name);
+    logAudit('Add Role', r.name);
   };
 
   const deleteRole = async (id: string) => {
@@ -253,7 +253,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       await api.delete(`/roles/${id}`);
       await refreshAll();
     }
-    logAudit('Suppression rôle', id);
+    logAudit('Delete Role', id);
   };
 
   const logAudit = (action: string, description: string) => {
@@ -264,7 +264,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         timestamp: new Date().toISOString(),
         action,
         description,
-        user: 'Utilisateur API', // à personnaliser selon auth
+        user: 'API User', // customize based on auth
         role: 'Admin',
       },
     ]);
@@ -278,9 +278,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         await api.patch(`/employees/${id}`, updates);
         await refreshAll();
       }
-      logAudit('Modification employé', `Champs modifiés pour l'employé ID ${id}`);
+      logAudit('Edit Employee', `Fields updated for employee ID ${id}`);
     } catch (err) {
-      console.error('Erreur lors de la modification des champs de l’employé:', err);
+      console.error('Error updating employee fields:', err);
     }
   };
 
@@ -292,9 +292,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         await api.patch(`/employees/${id}/permissions`, { permissions });
         await refreshAll();
       }
-      logAudit('Modification permissions', `Permissions modifiées pour employé ID ${id}`);
+      logAudit('Edit Permissions', `Permissions updated for employee ID ${id}`);
     } catch (err) {
-      console.error('Erreur lors de la mise à jour des permissions:', err);
+      console.error('Error updating permissions:', err);
     }
   };
 
@@ -309,12 +309,12 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         });
         await refreshAll();
       } else {
-        console.log(`[MOCK] Envoi image profil pour employé ID ${id}`);
+        console.log(`[MOCK] Upload profile picture for employee ID ${id}`);
       }
 
-      logAudit('Photo de profil modifiée', `Employé ID ${id}`);
+      logAudit('Profile Picture Updated', `Employee ID ${id}`);
     } catch (err) {
-      console.error('Erreur lors du changement de photo de profil:', err);
+      console.error('Error updating profile picture:', err);
     }
   };
 
@@ -328,9 +328,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         await api.patch(`/employees/${id}/disable`);
         await refreshAll();
       }
-      logAudit('Désactivation employé', `Employé ID "${id}" désactivé`);
+      logAudit('Disable Employee', `Employee ID "${id}" disabled`);
     } catch (err) {
-      console.error('Erreur désactivation employé:', err);
+      console.error('Error disabling employee:', err);
     }
   };
 
@@ -365,13 +365,13 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <DataContext.Provider value={value}>
-      {loading ? <div>Chargement des données...</div> : children}
+      {loading ? <div>Loading data...</div> : children}
     </DataContext.Provider>
   );
 };
 
 export const useData = (): DataContextType => {
   const context = useContext(DataContext);
-  if (!context) throw new Error('useData doit être utilisé dans un DataProvider');
+  if (!context) throw new Error('useData must be used within a DataProvider');
   return context;
 };
