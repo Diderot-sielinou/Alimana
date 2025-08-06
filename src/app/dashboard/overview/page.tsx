@@ -199,7 +199,7 @@ export default function DashboardPage() {
   return (
     <div className="md:ml-64 min-h-screen bg-gray-50 dark:bg-gray-950 px-6 py-4">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">📊 Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white pb-8">📊 Dashboard</h1>
       </div>
 
       {/* Résumé des revenus */}
