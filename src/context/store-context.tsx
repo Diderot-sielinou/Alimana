@@ -66,7 +66,7 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const fetchProducts = async (storeId: number) => {
     try {
       const response = await api.get(`store/${storeId}/product/all`);
-      console.log('✅ Products loaded:', response.data);
+      // console.log('✅ Products loaded:', response.data);
       setState((prev) => ({ ...prev, products: response.data }));
     } catch (error) {
       console.error('❌ Failed to load products:', error);
@@ -76,7 +76,7 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const fetchCategories = async (storeId: number) => {
     try {
       const response = await api.get(`store/${storeId}/category`);
-      console.log('✅ Categories loaded:', response.data);
+      // console.log('✅ Categories loaded:', response.data);
       setState((prev) => ({ ...prev, categories: response.data }));
     } catch (error) {
       console.error('❌ Failed to load categories:', error);
@@ -186,22 +186,6 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  useEffect(() => {
-    console.log('🆕 Products updated:', state.products);
-  }, [state.products]);
-
-  useEffect(() => {
-    console.log('📁 Categories updated:', state.categories);
-  }, [state.categories]);
-
-  useEffect(() => {
-    console.log('💳 Payment methods updated:', state.paymentMethods);
-  }, [state.paymentMethods]);
-
-  useEffect(() => {
-    console.log('🖥️ Cash registers updated:', state.cashRegisters);
-  }, [state.cashRegisters]);
-
   const value: ShopDataContextType = {
     ...state,
     refreshProducts: async () => {
@@ -245,7 +229,7 @@ export const useShopData = () => {
   return context;
 };
 
-export const StoreContext = createContext<StoreContextType | undefined>(undefined);
+export const StoreContext = createContext<ShopDataContextType | undefined>(undefined);
 
 export const useStore = () => {
   const context = useContext(StoreContext);

@@ -10,6 +10,7 @@ import {
   CreditCard,
   Badge,
   Tags,
+  User,
 } from 'lucide-react';
 
 export const sidebarLinks = [
@@ -70,6 +71,13 @@ export const sidebarLinks = [
     icon: UserPlus,
     requiredPermissions: [], // OU tu peux filtrer par l’un ou l’autre
   },
+  {
+    href: '/dashboard/profile',
+    label: 'Profile',
+    icon: User,
+    requiredPermissions: [],
+  },
+
   {
     href: '/dashboard/settings',
     label: 'Settings',
