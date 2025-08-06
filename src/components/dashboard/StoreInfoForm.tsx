@@ -112,7 +112,7 @@ export function StoreInfoForm() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mb-6">
       <Card>
         <CardHeader>
           <CardTitle>Store Information</CardTitle>

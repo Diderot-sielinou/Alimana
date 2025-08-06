@@ -37,9 +37,7 @@ export default function Page() {
         <div className="animate-spin text-blue-600">
           <Loader2 size={48} />
         </div>
-        <p className="text-lg font-medium text-gray-700">
-          Redirection vers votre tableau de bord...
-        </p>
+        <p className="text-lg font-medium text-gray-700">Redirecting to your dashboard...</p>
       </div>
     </div>
   );
