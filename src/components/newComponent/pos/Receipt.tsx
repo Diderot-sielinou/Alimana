@@ -14,7 +14,6 @@ interface ReceiptProps {
 }
 
 export const Receipt: React.FC<ReceiptProps> = ({ isOpen, onClose, sale }) => {
-  console.log(`sale recus ${sale}`);
   const handlePrint = () => {
     const printWindow = window.open('', '_blank');
     if (printWindow) {

@@ -46,7 +46,6 @@ export function StoreInfoForm() {
     const fetchStoreData = async () => {
       try {
         const response = await api.get(`/store/${storeId}`);
-        console.log(response.data);
         setStoreData({
           name: response.data.name || '',
           websiteUrl: response.data.websiteUrl || '',
@@ -112,7 +111,7 @@ export function StoreInfoForm() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mb-6">
       <Card>
         <CardHeader>
           <CardTitle>Store Information</CardTitle>

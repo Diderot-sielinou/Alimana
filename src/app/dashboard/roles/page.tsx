@@ -13,6 +13,7 @@ import { getRoles, deleteRole, getPermissions, transformRoleForDisplay } from '@
 export default function RolesPage() {
   const { storeContext, hasPermission } = useAuth();
   const [roles, setRoles] = useState<RoleDisplay[]>([]);
+  const [filteredRoles, setFilteredRoles] = useState<RoleDisplay[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -30,6 +31,7 @@ export default function RolesPage() {
       const rolesData = await getRoles(storeId);
       const displayRoles = rolesData.map(transformRoleForDisplay);
       setRoles(displayRoles);
+      setFilteredRoles(displayRoles); // Initialize filtered roles
     } catch (err) {
       console.error('Error fetching roles:', err);
       setError('Failed to load roles. Please try again.');
@@ -84,21 +86,51 @@ export default function RolesPage() {
     handleCloseModal();
   };
 
-  const handleDeleteRole = async (id: number) => {
+  const handleDeleteRole = (id: number) => {
     if (!storeId) return;
 
-    if (!confirm('Are you sure you want to delete this role?')) {
-      return;
+    toast.custom((t) => (
+      <div className="bg-white shadow-md p-4 rounded-lg flex items-center justify-between gap-4 w-[320px]">
+        <div className="text-gray-800 text-sm">Confirm deletion of this role?</div>
+        <div className="flex gap-2">
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                await deleteRole(storeId, id);
+                setRoles((prev) => prev.filter((role) => role.id !== id));
+                setFilteredRoles((prev) => prev.filter((role) => role.id !== id));
+                toast.success('Role deleted successfully');
+              } catch (err) {
+                console.error('Error deleting role:', err);
+                toast.error('Failed to delete role');
+              }
+            }}
+            className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
+          >
+            Yes
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 text-xs px-3 py-1 rounded"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ));
+  };
+
+  const handleSearch = (query: string, status: 'all' | 'active' | 'inactive') => {
+    let result = roles.filter((role) => role.name.toLowerCase().includes(query.toLowerCase()));
+
+    if (status === 'active') {
+      result = result.filter((role) => role.active);
+    } else if (status === 'inactive') {
+      result = result.filter((role) => !role.active);
     }
 
-    try {
-      await deleteRole(storeId, id);
-      setRoles((prev) => prev.filter((role) => role.id !== id));
-      toast.success('Role deleted successfully');
-    } catch (err) {
-      console.error('Error deleting role:', err);
-      toast.error('Failed to delete role');
-    }
+    setFilteredRoles(result);
   };
 
   if (!storeContext || loading) {
@@ -143,16 +175,20 @@ export default function RolesPage() {
         <h1 className="text-2xl font-bold text-gray-800">Manage Roles</h1>
         <button
           onClick={() => handleOpenModal()}
-          className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700"
+          className="bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800"
         >
           <i className="fas fa-plus mr-2"></i>Add Role
         </button>
       </div>
 
-      <RoleFilterBar />
+      <RoleFilterBar
+        filteredRoles={filteredRoles}
+        onSearch={handleSearch}
+        // onCreateRole={() => handleOpenModal()}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {roles.map((role) => (
+        {filteredRoles.map((role) => (
           <RoleCard
             key={role.id}
             role={role}
@@ -162,14 +198,14 @@ export default function RolesPage() {
         ))}
       </div>
 
-      {roles.length === 0 && !loading && (
+      {filteredRoles.length === 0 && !loading && (
         <div className="text-center py-12">
           <div className="text-gray-500 mb-4">No roles found</div>
           <button
             onClick={() => handleOpenModal()}
             className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700"
           >
-            Create your first role
+            Create roles
           </button>
         </div>
       )}

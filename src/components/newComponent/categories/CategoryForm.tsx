@@ -15,20 +15,20 @@ interface CategoryFormProps {
 }
 
 const categorySchema = Yup.object({
-  name: Yup.string().required('Le nom est requis'),
+  name: Yup.string().required('Name is required'),
   description: Yup.string(),
   color: Yup.string(),
 });
 
 const colorOptions = [
-  { value: '#ef4444', label: 'Rouge', bg: 'bg-red-500' },
+  { value: '#ef4444', label: 'Red', bg: 'bg-red-500' },
   { value: '#f97316', label: 'Orange', bg: 'bg-orange-500' },
-  { value: '#eab308', label: 'Jaune', bg: 'bg-yellow-500' },
-  { value: '#22c55e', label: 'Vert', bg: 'bg-green-500' },
-  { value: '#3b82f6', label: 'Bleu', bg: 'bg-blue-500' },
+  { value: '#eab308', label: 'Yellow', bg: 'bg-yellow-500' },
+  { value: '#22c55e', label: 'Green', bg: 'bg-green-500' },
+  { value: '#3b82f6', label: 'Blue', bg: 'bg-blue-500' },
   { value: '#8b5cf6', label: 'Violet', bg: 'bg-purple-500' },
   { value: '#ec4899', label: 'Rose', bg: 'bg-pink-500' },
-  { value: '#6b7280', label: 'Gris', bg: 'bg-gray-500' },
+  { value: '#6b7280', label: 'Gray', bg: 'bg-gray-500' },
 ];
 
 export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, onSubmit }) => {
@@ -50,8 +50,8 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, onSubmi
       {({ isSubmitting, setFieldValue, values }) => (
         <Form className="space-y-4">
           <div>
-            <Label htmlFor="name">Nom de la catégorie *</Label>
-            <Field as={Input} id="name" name="name" placeholder="Nom de la catégorie" />
+            <Label htmlFor="name">Category Name</Label>
+            <Field as={Input} id="name" name="name" placeholder="Category name" />
             <ErrorMessage name="name" component="div" className="text-red-500 text-sm mt-1" />
           </div>
           <div>
@@ -60,7 +60,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, onSubmi
               as={Textarea}
               id="description"
               name="description"
-              placeholder="Description de la catégorie"
+              placeholder="Description of category"
             />
             <ErrorMessage
               name="description"
@@ -69,7 +69,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, onSubmi
             />
           </div>
           <div>
-            <Label>Couleur</Label>
+            <Label>Color</Label>
             <div className="grid grid-cols-4 gap-2 mt-2">
               {colorOptions.map((option) => (
                 <button
@@ -92,9 +92,9 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, onSubmi
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-orange-500 hover:bg-orange-600"
+              className="bg-slate-900 hover:bg-slate-800"
             >
-              {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+              {isSubmitting ? 'Creating...' : 'Create'}
             </Button>
           </div>
         </Form>

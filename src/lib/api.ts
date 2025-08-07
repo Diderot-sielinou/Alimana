@@ -65,19 +65,19 @@ api.interceptors.response.use(
     }
 
     if (status === 403 && isClientSide) {
-      toast.error("Accès refusé. Vous n'avez pas la permission.");
+      toast.error('Access denied, you do not have the permissions to access this page.');
       window.location.href = '/unauthorized';
     }
 
     if (status >= 500) {
-      toast.error('Erreur interne du serveur. Réessayez plus tard.');
+      toast.error('Internal server error, try again later.');
     }
 
     if (status >= 400 && status < 500 && status !== 401 && status !== 403) {
       const message =
         error.response?.data?.error ||
         error.response?.data?.message ||
-        'Erreur lors de la requête.';
+        'An error occurred while making the request';
       toast.error(message);
     }
 

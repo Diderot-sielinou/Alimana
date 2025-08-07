@@ -41,13 +41,13 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
         }
       );
 
-      if (!res.ok) throw new Error('Erreur serveur');
+      if (!res.ok) throw new Error('Internal server error occurred');
 
       const data = await res.json();
       setFieldValue(name, data.url);
-    } catch (err) {
-      console.error(err);
-      alert("Erreur lors de l'upload de l'image");
+    } catch (error) {
+      console.error(error);
+      alert('Error occurred uploading image');
     }
   };
 

@@ -7,6 +7,7 @@ import { useShopData } from '@/context/store-context';
 import { useAuth } from '@/context/auth-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, ShoppingCart, CreditCard, TrendingUp } from 'lucide-react';
+import { PaymentAnalyticsChart } from '@/components/dashboard/PaymentAnalyticsChart';
 
 export default function DashboardPage() {
   const {
@@ -24,7 +25,7 @@ export default function DashboardPage() {
   const chartInstance = useRef<Chart | null>(null);
 
   const { storeContext } = useAuth();
-  const storeId = storeContext?.storeId;
+  const storeId = storeContext?.storeId || 0;
 
   const stats = [
     {
@@ -75,7 +76,6 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         const salesData = salesOverview;
-        // console.log(salesData);
 
         // Process data
         const labels = salesData.map((item) =>
@@ -84,7 +84,6 @@ export default function DashboardPage() {
 
         const revenueData = salesData.map((item) => parseFloat(item.revenue));
         const profitData = salesData.map((item) => parseFloat(item.profit));
-        // console.log(profitData);
 
         // Destroy previous chart
         if (chartInstance.current) {
@@ -196,8 +195,7 @@ export default function DashboardPage() {
   return (
     <div className="md:ml-64 min-h-screen bg-gray-50 dark:bg-gray-950 px-6 py-4">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">📊 Dashboard</h1>
-        <p className="text-gray-500 mt-1 mb-8 text-center">Summary of Store Performance</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white pb-8">📊 Dashboard</h1>
       </div>
 
       {/* Résumé des revenus */}
@@ -319,7 +317,7 @@ export default function DashboardPage() {
                             : 'bg-gray-100 text-gray-800'
                         }`}
                       >
-                        {register.currentOpenSession?.status === 'open' ? 'Ouverte' : 'Fermée'}
+                        {register.currentOpenSession?.status === 'open' ? 'Opened' : 'Closed'}
                       </span>
                     </div>
                   </div>
@@ -329,12 +327,7 @@ export default function DashboardPage() {
           </Card>
 
           <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">
-              Payment Methods
-            </h3>
-            <div className="mx-auto w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-96 xl:h-96">
-              <canvas ref={doughnutChartRef} className="w-full h-full" />
-            </div>
+            <PaymentAnalyticsChart storeId={storeId} />
           </div>
         </div>
       </div>

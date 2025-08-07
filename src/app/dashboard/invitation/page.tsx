@@ -123,7 +123,7 @@ export default function InvitationPage() {
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-amber-600 hover:bg-amber-700 text-white">Invite User</Button>
+              <Button className="bg-slate-900 hover:bg-slate-800 text-white">Invite User</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl">
               <DialogHeader>
@@ -192,7 +192,7 @@ export default function InvitationPage() {
                 {/* Submit Button */}
                 <Button
                   type="submit"
-                  className="w-full text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50"
+                  className="w-full text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-50"
                   disabled={isSubmitting || rolesLoading}
                 >
                   {isSubmitting ? (

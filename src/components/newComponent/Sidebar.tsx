@@ -20,22 +20,22 @@ import { useAuth } from '@/context/auth-context';
 
 const menuItems = [
   {
-    title: 'Tableau de bord',
+    title: 'Overview',
     href: '/dashboard',
     icon: Store,
   },
   {
-    title: 'Infos boutique',
+    title: 'Settings',
     href: '/dashboard/shop-info',
     icon: Settings,
   },
   {
-    title: 'Produits',
+    title: 'Products',
     href: '/dashboard/products',
     icon: Package,
   },
   {
-    title: 'Point de vente',
+    title: 'Point of sell',
     href: '/dashboard/pos',
     icon: ShoppingCart,
   },
@@ -45,7 +45,7 @@ const menuItems = [
     icon: CreditCard,
   },
   {
-    title: 'Rôles & Permissions',
+    title: 'Roles & Permissions',
     href: '/dashboard/roles',
     icon: Users,
   },
@@ -55,7 +55,7 @@ const menuItems = [
     icon: Mail,
   },
   {
-    title: 'Méthodes de paiement',
+    title: 'Payment method',
     href: '/dashboard/payment-methods',
     icon: CreditCard,
   },
@@ -111,7 +111,7 @@ export const Sidebar: React.FC = () => {
           className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
         >
           <LogOut className="w-5 h-5 mr-3" />
-          Déconnexion
+          Logout
         </Button>
       </div>
     </div>

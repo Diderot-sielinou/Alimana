@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -71,7 +72,9 @@ export default function CreateStorePage() {
         console.log(storeContext);
         // router.replace('/dashboard');
       } catch (error) {
-        console.error('Store creation error:', error);
+        if (error) {
+          toast.error('Store creation error:');
+        }
       }
     },
   });

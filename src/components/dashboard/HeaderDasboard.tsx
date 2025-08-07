@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Chart } from 'chart.js/auto';
 import { Bell, Menu } from 'lucide-react';
 import Image from 'next/image';
@@ -10,31 +10,9 @@ import { useAuth } from '@/context/auth-context';
 
 export default function HeaderDasboard() {
   const { setSidebarOpen, ProfileUser } = useAuth();
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const lineChartRef = useRef<HTMLCanvasElement>(null);
   const doughnutChartRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      setIsDarkMode(true);
-    } else {
-      // Par défaut, on reste en light mode
-      document.documentElement.classList.remove('dark');
-      setIsDarkMode(false);
-    }
-  }, []);
-
-  // Toggle dark mode manually
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    localStorage.setItem('theme', newMode ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark', newMode);
-  };
 
   // Line chart (Sales Overview)
   useEffect(() => {
@@ -119,9 +97,6 @@ export default function HeaderDasboard() {
 
           {/* Header right */}
           <div className="flex items-center space-x-4">
-            <button onClick={toggleDarkMode} title="Toggle dark mode">
-              {isDarkMode ? '🌙' : '☀️'}
-            </button>
             <button className="text-orange-700 dark:text-orange-300 relative">
               <Bell className="w-5 h-5" />
               <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
