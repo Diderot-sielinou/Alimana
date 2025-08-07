@@ -13,6 +13,7 @@ import { getRoles, deleteRole, getPermissions, transformRoleForDisplay } from '@
 export default function RolesPage() {
   const { storeContext, hasPermission } = useAuth();
   const [roles, setRoles] = useState<RoleDisplay[]>([]);
+  const [filteredRoles, setFilteredRoles] = useState<RoleDisplay[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -30,6 +31,7 @@ export default function RolesPage() {
       const rolesData = await getRoles(storeId);
       const displayRoles = rolesData.map(transformRoleForDisplay);
       setRoles(displayRoles);
+      setFilteredRoles(displayRoles); // Initialize filtered roles
     } catch (err) {
       console.error('Error fetching roles:', err);
       setError('Failed to load roles. Please try again.');
@@ -94,11 +96,24 @@ export default function RolesPage() {
     try {
       await deleteRole(storeId, id);
       setRoles((prev) => prev.filter((role) => role.id !== id));
+      setFilteredRoles((prev) => prev.filter((role) => role.id !== id));
       toast.success('Role deleted successfully');
     } catch (err) {
       console.error('Error deleting role:', err);
       toast.error('Failed to delete role');
     }
+  };
+
+  const handleSearch = (query: string, status: 'all' | 'active' | 'inactive') => {
+    let result = roles.filter((role) => role.name.toLowerCase().includes(query.toLowerCase()));
+
+    if (status === 'active') {
+      result = result.filter((role) => role.active);
+    } else if (status === 'inactive') {
+      result = result.filter((role) => !role.active);
+    }
+
+    setFilteredRoles(result);
   };
 
   if (!storeContext || loading) {
@@ -149,10 +164,15 @@ export default function RolesPage() {
         </button>
       </div>
 
-      <RoleFilterBar />
+      <RoleFilterBar
+        // roles={roles}
+        filteredRoles={filteredRoles}
+        onSearch={handleSearch}
+        // onCreateRole={() => handleOpenModal()}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {roles.map((role) => (
+        {filteredRoles.map((role) => (
           <RoleCard
             key={role.id}
             role={role}
@@ -162,14 +182,14 @@ export default function RolesPage() {
         ))}
       </div>
 
-      {roles.length === 0 && !loading && (
+      {filteredRoles.length === 0 && !loading && (
         <div className="text-center py-12">
           <div className="text-gray-500 mb-4">No roles found</div>
           <button
             onClick={() => handleOpenModal()}
             className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700"
           >
-            Create your first role
+            Create roles
           </button>
         </div>
       )}
