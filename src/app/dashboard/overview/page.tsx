@@ -322,7 +322,7 @@ export default function DashboardPage() {
                             : 'bg-gray-100 text-gray-800'
                         }`}
                       >
-                        {register.currentOpenSession?.status === 'open' ? 'Ouverte' : 'Fermée'}
+                        {register.currentOpenSession?.status === 'open' ? 'Opened' : 'Closed'}
                       </span>
                     </div>
                   </div>
