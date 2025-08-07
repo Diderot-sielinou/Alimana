@@ -99,7 +99,7 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
             size="sm"
             onClick={() => setSelectedCategory(null)}
           >
-            Toutes
+            All
           </Button>
           {categories.map((category) => (
             <Button

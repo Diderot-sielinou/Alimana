@@ -283,7 +283,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               disabled={remaining > 0 || isProcessing}
               className="flex-1"
             >
-              {isProcessing ? 'Traitement...' : 'Finaliser la vente'}
+              {isProcessing ? 'Processing...' : 'Complete payment'}
             </Button>
           </div>
         </div>

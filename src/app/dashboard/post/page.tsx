@@ -29,6 +29,7 @@ export default function PosPage() {
 
   // Fonction pour ajouter un produit au panier
   const addToCart = (product: IProduct) => {
+    console.log(product);
     const existingItem = cart.find((item) => item.product.id === product.id);
     if (existingItem) {
       // Vérifier le stock avant d'ajouter
@@ -44,7 +45,9 @@ export default function PosPage() {
             ? {
                 ...item,
                 quantity: item.quantity + 1,
-                subtotal: (item.quantity + 1) * item.product.sellingPrice - item.discount,
+                subtotal:
+                  Number(item.quantity + 1) * Number(item.product.sellingPrice) -
+                  Number(item.discount),
               }
             : item
         )
@@ -56,7 +59,7 @@ export default function PosPage() {
           product,
           quantity: 1,
           discount: 0,
-          subtotal: product.sellingPrice, // Initial subtotal without discount
+          subtotal: Number(product.sellingPrice), // Initial subtotal without discount
         },
       ]);
     }
