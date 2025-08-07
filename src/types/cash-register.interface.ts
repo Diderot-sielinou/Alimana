@@ -8,6 +8,7 @@ export interface ICashRegister {
   storeId: number;
   store?: Store; // Optional, might be deeply nested or just basic info
   name: string;
+  active: boolean;
   description: string | null;
   createdAt: string; // Use string for Date objects from API
   updatedAt: string; // Use string for Date objects from API
