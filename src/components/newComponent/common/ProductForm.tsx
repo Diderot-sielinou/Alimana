@@ -3,12 +3,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
+import { api } from '@/lib/api';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -17,8 +17,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { useShopData } from '@/context/store-context';
+import { useAuth } from '@/context/auth-context';
 import { IProduct } from '@/types/product.interface';
+
+interface ICategory {
+  id: number;
+  name: string;
+}
 
 interface ProductFormProps {
   initialData?: IProduct;
@@ -34,43 +39,91 @@ const productSchema = Yup.object({
   unit: Yup.string(),
   sellingPrice: Yup.number().min(0, 'Price must be positive').required('Selling price is required'),
   costPrice: Yup.number().min(0, 'Price must be positive').required('Cost price is required'),
-  discountPercentage: Yup.number()
-    .min(0, 'Discount must be positive')
-    .max(100, 'Discount cannot exceed 100%')
-    .default(0),
-  quantityInStock: Yup.number()
-    .min(0, 'Quantity must be positive')
-    .required('Stock quantity is required'),
+  discountPercentage: Yup.number().min(0).max(100).default(0),
+  quantityInStock: Yup.number().min(0).required('Stock quantity is required'),
   categoryId: Yup.number().nullable(),
   imageUrl: Yup.string().url('Invalid URL'),
 });
 
-const mockBarcodeDatabase: Record<string, Partial<IProduct>> = {
-  '123456': {
-    name: 'Scanned Product A',
-    description: 'Auto-filled from barcode A',
-    sellingPrice: 29.99,
-    costPrice: 15.0,
-    quantityInStock: 10,
-    brand: 'Brand A',
-  },
-  '789101': {
-    name: 'Scanned Product B',
-    description: 'Auto-filled from barcode B',
-    sellingPrice: 49.99,
-    costPrice: 30.0,
-    quantityInStock: 5,
-    brand: 'Brand B',
-  },
-};
-
 export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit }) => {
-  const { categories } = useShopData();
+  const { storeContext } = useAuth();
+  const storeId = storeContext?.storeId;
 
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [categories, setCategories] = useState<ICategory[]>([]);
   const [showScanner, setShowScanner] = useState(false);
   const [scannedId, setScannedId] = useState<string | null>(null);
   const scannerRef = useRef<HTMLDivElement | null>(null);
   const setFieldValueRef = useRef<FormikHelpers<IProduct>['setFieldValue'] | null>(null);
+
+  useEffect(() => {
+    if (!storeId) return;
+
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/products?storeId=${storeId}`
+        );
+        const data = await res.json();
+        setProducts(data.data || []);
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      }
+    };
+
+    const fetchCategories = async (storeId: number) => {
+      try {
+        const response = await api.get(`store/${storeId}/category`);
+        const categoryList = Array.isArray(response.data) ? response.data : response.data.data; // handles { data: [...] } shape
+        setCategories(categoryList);
+      } catch (error) {
+        console.error('❌ Failed to load categories:', error);
+      }
+    };
+
+    fetchProducts();
+    fetchCategories(storeContext.storeId);
+  }, [storeId]);
+
+  useEffect(() => {
+    if (!showScanner || !scannerRef.current || !setFieldValueRef.current) return;
+    if (scannerRef.current.hasChildNodes()) return;
+
+    const scanner = new Html5QrcodeScanner('scanner', { fps: 10, qrbox: 250 }, false);
+
+    scanner.render(
+      (decodedText) => {
+        setScannedId(decodedText);
+        setFieldValueRef.current?.('barcode', decodedText);
+
+        const foundProduct = products.find((p) => p.barcode === decodedText.trim());
+
+        if (foundProduct) {
+          setFieldValueRef.current?.('name', foundProduct.name);
+          setFieldValueRef.current?.('description', foundProduct.description);
+          setFieldValueRef.current?.('sellingPrice', foundProduct.sellingPrice);
+          setFieldValueRef.current?.('costPrice', foundProduct.costPrice);
+          setFieldValueRef.current?.('quantityInStock', 1);
+          setFieldValueRef.current?.('brand', foundProduct.brand);
+          setFieldValueRef.current?.('categoryId', foundProduct.categoryId);
+        } else {
+          alert('Product not found');
+        }
+
+        setShowScanner(false);
+        scanner.clear();
+      },
+      (error) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Scanning error', error);
+        }
+      }
+    );
+
+    return () => {
+      scanner.clear().catch(console.error);
+    };
+  }, [showScanner, products]);
 
   const initialValues = {
     name: initialData?.name || '',
@@ -87,44 +140,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
     imageUrl: initialData?.imageUrl || '',
   };
 
-  // ✅ This hook is now correctly placed at top-level
-  useEffect(() => {
-    if (!showScanner || !scannerRef.current || !setFieldValueRef.current) return;
-    if (scannerRef.current.hasChildNodes()) return;
-
-    const scanner = new Html5QrcodeScanner('scanner', { fps: 10, qrbox: 250 }, false);
-
-    scanner.render(
-      (decodedText) => {
-        setScannedId(decodedText);
-        setFieldValueRef.current?.('barcode', decodedText);
-
-        const found = mockBarcodeDatabase[decodedText];
-        if (found) {
-          Object.entries(found).forEach(([key, value]) => {
-            if (value !== undefined) {
-              setFieldValueRef.current?.(key, value);
-            }
-          });
-        } else {
-          alert('No product found for this barcode.');
-        }
-
-        setShowScanner(false);
-        scanner.clear();
-      },
-      (error) => {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('Scanning error', error);
-        }
-      }
-    );
-
-    return () => {
-      scanner.clear().catch(console.error);
-    };
-  }, [showScanner]);
-
   return (
     <Formik
       initialValues={initialValues}
@@ -135,7 +150,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
       }}
     >
       {({ isSubmitting, setFieldValue, values }) => {
-        // ✅ store latest setFieldValue in ref
         setFieldValueRef.current = setFieldValue;
 
         return (
@@ -151,21 +165,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
                 <Field as={Input} id="sku" name="sku" placeholder="Product code" />
                 <ErrorMessage name="sku" component="div" className="text-red-500 text-sm mt-1" />
               </div>
-            </div>
-
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Field
-                as={Textarea}
-                id="description"
-                name="description"
-                placeholder="Product description"
-              />
-              <ErrorMessage
-                name="description"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
             </div>
 
             <div className="grid grid-cols-2 gap-4 items-end">
@@ -196,7 +195,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
                 </p>
               </div>
             )}
-
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="brand">Brand</Label>
@@ -266,16 +264,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
               <div className="col-span-2">
                 <Label htmlFor="categoryId">Category</Label>
                 <Select
-                  value={values.categoryId?.toString() || ''}
+                  value={values.categoryId !== null ? values.categoryId.toString() : 'none'}
                   onValueChange={(value) =>
-                    setFieldValue('categoryId', value ? parseInt(value) : null)
+                    setFieldValue('categoryId', value === 'none' ? null : parseInt(value))
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">No category</SelectItem>
+                    <SelectItem value="none">No category</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id.toString()}>
                         {category.name}

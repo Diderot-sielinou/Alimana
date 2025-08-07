@@ -32,7 +32,7 @@ export default function StoreSettingsPage() {
   if (error) return <div className="p-4 text-red-600">{error}</div>;
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-6 max-w-5xl mx-auto md:ml-60 min-h-screen bg-gray-50 dark:bg-gray-950">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
         <p className="text-gray-600 mt-2">Manage your store configuration and preferences</p>

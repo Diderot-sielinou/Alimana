@@ -87,3 +87,25 @@ html {
     background-color 0.3s ease,
     color 0.3s ease;
 }
+
+/* Smaller pagination bullets */
+.swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+}
+
+/* Smaller next/prev navigation arrows */
+.swiper-button-prev,
+.swiper-button-next {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px; /* optional: make them round */
+  background: rgba(100, 116, 139, 0.2); /* Tailwind slate-400 with opacity */
+  color: #334155; /* Tailwind slate-700 */
+}
+
+/* Adjust arrow icons inside the buttons */
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  font-size: 14px; /* default is 20-24px */
+}
