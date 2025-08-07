@@ -3,7 +3,7 @@ import {
   ShoppingCart,
   Box,
   BarChart3,
-  Warehouse,
+  // Warehouse,
   Settings,
   UserPlus,
   FileText,
@@ -62,12 +62,12 @@ export const sidebarLinks = [
     icon: BarChart3,
     requiredPermissions: [],
   },
-  {
-    href: '/dashboard/inventory',
-    label: 'Inventory',
-    icon: Warehouse,
-    requiredPermissions: [],
-  },
+  // {
+  //   href: '/dashboard/inventory',
+  //   label: 'Inventory',
+  //   icon: Warehouse,
+  //   requiredPermissions: [],
+  // },
   {
     href: '/dashboard/invitation',
     label: 'Invitation',

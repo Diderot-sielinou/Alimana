@@ -155,7 +155,10 @@ export function StoreInfoForm() {
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
                 <Image
-                  src={storeData.logoUrl || ''}
+                  src={
+                    storeData.logoUrl ||
+                    'https://res.cloudinary.com/dvlfdvcnx/image/upload/v1754585947/alimana/products/nkmvbwjdt4iufqsbaxmx.png'
+                  }
                   alt="Store logo"
                   width={64}
                   height={64}

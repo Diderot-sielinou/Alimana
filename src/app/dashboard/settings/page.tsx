@@ -14,8 +14,7 @@ export default function StoreSettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const res = await api.get(`/store/${storeId}/settings`);
-      console.log(res);
+      await api.get(`/store/${storeId}/settings`);
     } catch (err) {
       console.error(err);
       setError('Failed to load settings');
