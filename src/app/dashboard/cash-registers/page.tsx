@@ -70,7 +70,6 @@ export default function CashRegistersPage() {
         cashRegisterId: selectedRegister?.id,
         initialCash: initialAmount,
       });
-      console.log(`reponse de l'ouverture de sesssion ${response}`);
       setOpenSession(response.data);
       toast.success(
         `Cash register session open for ${selectedRegister?.name} with ${initialAmount.toLocaleString()} XAF.`

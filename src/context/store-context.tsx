@@ -88,7 +88,7 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const fetchPaymentMethods = async (storeId: number) => {
     try {
       const response = await api.get(`store/${storeId}/payment-methods`);
-      console.log('✅ Payment methods loaded:', response.data);
+      // console.log('✅ Payment methods loaded:', response.data);
       setState((prev) => ({ ...prev, paymentMethods: response.data }));
     } catch (error) {
       console.error('❌ Failed to load payment methods:', error);
@@ -176,12 +176,12 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       // Wait for essential data
       await Promise.all(essentialDataPromises);
-      console.log('✅ Essential store data loaded successfully');
+      // console.log('✅ Essential store data loaded successfully');
 
       // Load analytics data in background (don't wait for it)
       Promise.all(analyticsPromises)
         .then(() => {
-          console.log('✅ Analytics data loaded successfully');
+          // console.log('✅ Analytics data loaded successfully');
         })
         .catch(() => {
           console.warn('⚠️ Analytics data failed to load - continuing without analytics');
@@ -217,15 +217,15 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // 2. User has a valid store context
     // 3. We're on a page that actually needs store data
     if (hasFetchedMe && storeContext?.storeId && needsStoreData()) {
-      console.log('🔄 Loading shop data for storeId:', storeContext.storeId, 'on page:', pathname);
+      // console.log('🔄 Loading shop data for storeId:', storeContext.storeId, 'on page:', pathname);
       loadInitialData();
     } else if (hasFetchedMe && storeContext?.storeId) {
-      console.log('⏭️ Skipping store data load - not needed on page:', pathname);
+      // console.log('⏭️ Skipping store data load - not needed on page:', pathname);
     }
   }, [hasFetchedMe, storeContext, loadInitialData, needsStoreData, pathname]);
 
   useEffect(() => {
-    console.log('🧪 Products updated:', state.products);
+    // console.log('🧪 Products updated:', state.products);
   }, [state.products]);
 
   const findProductByBarcode = async (barcode: string): Promise<IProduct | null> => {
@@ -284,6 +284,5 @@ export const useShopData = () => {
   }
   return context;
 };
-
 
 // Note: StoreContext and useStore removed as they were unused and causing TypeScript erro

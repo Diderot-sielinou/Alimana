@@ -73,7 +73,6 @@ export default function ProductsPage() {
 
   useEffect(() => {
     if (!storeId) return;
-    console.log(`store id ${storeId}`);
 
     fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -103,9 +103,9 @@ export default function ProfilePage() {
 
       const data = await response.json();
       await updateProfile({ avatarUrl: data.url });
-      toast.success('Photo de profil mise à jour');
+      toast.success('Profile successfully updated');
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Avatar upload error:', error);
       toast.error('Error sending image');
     }
   };

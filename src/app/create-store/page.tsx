@@ -94,11 +94,10 @@ export default function CreateStorePage() {
     console.log(storeContext);
 
     if (storeContext) {
-      console.log(storeContext);
-      router.replace('/dashboard ');
+      router.replace('/dashboard');
     }
     if (!user) {
-      router.replace('/signin ');
+      router.replace('/signin');
     }
   }, [router, storeContext, user]);
 
