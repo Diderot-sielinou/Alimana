@@ -72,7 +72,6 @@ export function PaymentAnalyticsChart({ storeId }: PaymentAnalyticsChartProps) {
         },
       });
 
-      console.log(response.data);
       setAnalyticsData(response.data);
     } catch (error) {
       console.error('Error fetching payment analytics:', error);

@@ -116,7 +116,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       };
 
       const response = await api.post(`store/${storeContext?.storeId}/sales`, saleData);
-      console.log(`reponse apres une vente ${response}`);
       onPaymentComplete(response.data);
     } catch (error) {
       const err = error as Error;

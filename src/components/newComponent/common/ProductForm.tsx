@@ -73,7 +73,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
         <Form className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="name">Product Name *</Label>
+              <Label htmlFor="name">Product Name</Label>
               <Field as={Input} id="name" name="name" placeholder="Product name" />
               <ErrorMessage name="name" component="div" className="text-red-500 text-sm mt-1" />
             </div>
@@ -111,7 +111,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="sellingPrice">Selling Price *</Label>
+              <Label htmlFor="sellingPrice">Selling Price</Label>
               <Field as={Input} id="sellingPrice" name="sellingPrice" type="number" step="0.01" />
               <ErrorMessage
                 name="sellingPrice"
@@ -120,7 +120,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
               />
             </div>
             <div>
-              <Label htmlFor="costPrice">Cost Price *</Label>
+              <Label htmlFor="costPrice">Cost Price</Label>
               <Field as={Input} id="costPrice" name="costPrice" type="number" step="0.01" />
               <ErrorMessage
                 name="costPrice"
@@ -147,7 +147,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="quantityInStock">Stock Quantity *</Label>
+              <Label htmlFor="quantityInStock">Stock Quantity</Label>
               <Field as={Input} id="quantityInStock" name="quantityInStock" type="number" min="0" />
               <ErrorMessage
                 name="quantityInStock"
@@ -187,48 +187,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
               />
             </div>
           </div>
-          {/* upload product image  */}
-          <div>
-            <Label htmlFor="image">Image du produit</Label>
-            <Input
-              id="image"
-              name="image"
-              type="file"
-              accept="image/*"
-              onChange={async (event) => {
-                const file = event.currentTarget.files?.[0];
-                if (!file) return;
-
-                const formData = new FormData();
-                formData.append('file', file);
-
-                try {
-                  const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_BASE_URL}/upload/image?folder=products`,
-                    {
-                      method: 'POST',
-                      body: formData,
-                      // headers: {
-                      //   'Content-Type': 'application/json',
-                      // },
-                    }
-                  );
-
-                  if (!res.ok) {
-                    throw new Error('Erreur lors de l’upload');
-                  }
-
-                  const data = await res.json();
-                  console.log(data);
-                  setFieldValue('imageUrl', data.url);
-                } catch (error) {
-                  console.error('Erreur upload image:', error);
-                  alert('Erreur lors de l’envoi de l’image.');
-                }
-              }}
-            />
-            <ErrorMessage name="imageUrl" component="div" className="text-red-500 text-sm mt-1" />
-          </div>
           <div>
             <Label htmlFor="imageUrl">Image URL</Label>
             <Field as={Input} id="imageUrl" name="imageUrl" placeholder="https://..." />
@@ -238,7 +196,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-orange-500 hover:bg-orange-600"
+              className="bg-slate-900 hover:bg-slate-800"
             >
               {isSubmitting ? 'Saving...' : 'Save'}
             </Button>

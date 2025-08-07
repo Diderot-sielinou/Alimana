@@ -15,8 +15,6 @@ export default function SelectStorePage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  console.log(user);
-
   useEffect(() => {
     const fetchStores = async () => {
       try {
