@@ -30,10 +30,16 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     formData.append('folder', folder);
 
     try {
-      const res = await fetch('/api/upload/image', {
-        method: 'POST',
-        body: formData,
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/upload/image?folder=products`,
+        {
+          method: 'POST',
+          body: formData,
+          // headers: {
+          //   'Content-Type': 'application/json',
+          // },
+        }
+      );
 
       if (!res.ok) throw new Error('Erreur serveur');
 

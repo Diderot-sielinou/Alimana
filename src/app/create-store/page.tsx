@@ -13,10 +13,12 @@ import { useFormik } from 'formik';
 import { createStoreValidationSchema } from '@/schema/validation-schema';
 import { useAuth } from '@/context/auth-context';
 import { api } from '@/lib/api';
+import { FormikProvider } from 'formik';
+
 export interface StoreData {
   name: string;
   description: string;
-  logo?: File | null;
+  logo?: string;
   address: string;
   city: string;
   state: string;
@@ -36,7 +38,7 @@ export default function CreateStorePage() {
     initialValues: {
       name: '',
       description: '',
-      logo: null,
+      logo: '',
       address: '',
       city: '',
       state: '',
@@ -65,10 +67,9 @@ export default function CreateStorePage() {
         const response = await api.post('/store', payload); // <-- envoi direct ici
         const accessToken = response.data?.accessToken;
         localStorage.setItem('accessToken', accessToken);
-        fetchMe();
-        if (storeContext) {
-          router.replace('/dashboard');
-        }
+        await fetchMe();
+        console.log(storeContext);
+        // router.replace('/dashboard');
       } catch (error) {
         console.error('Store creation error:', error);
       }
@@ -90,10 +91,16 @@ export default function CreateStorePage() {
   };
 
   useEffect(() => {
-    if (!user) {
-      // router.replace('/signin')
+    console.log(storeContext);
+
+    if (storeContext) {
+      console.log(storeContext);
+      router.replace('/dashboard ');
     }
-  }, [router, user]);
+    if (!user) {
+      router.replace('/signin ');
+    }
+  }, [router, storeContext, user]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
@@ -111,16 +118,17 @@ export default function CreateStorePage() {
 
           <CardContent className="space-y-6">
             <Progress value={(step / 2) * 100} className="h-2" />
+            <FormikProvider value={formik}>
+              {step === 1 && <Step1StoreInfo formik={formik} onNext={handleNextStep} />}
 
-            {step === 1 && <Step1StoreInfo formik={formik} onNext={handleNextStep} />}
-
-            {step === 2 && (
-              <Step2StoreLocation
-                formik={formik}
-                onBack={() => setStep(1)}
-                onNext={formik.handleSubmit}
-              />
-            )}
+              {step === 2 && (
+                <Step2StoreLocation
+                  formik={formik}
+                  onBack={() => setStep(1)}
+                  onNext={formik.handleSubmit}
+                />
+              )}
+            </FormikProvider>
           </CardContent>
         </Card>
       </div>

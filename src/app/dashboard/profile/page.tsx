@@ -65,22 +65,22 @@ export default function ProfilePage() {
   const handleProfileUpdate = async (values: UserProfileData) => {
     try {
       await updateProfile(values);
-      toast.success('Profil mis à jour avec succès');
+      toast.success('Profile successfully updated');
       setIsEditingProfile(false);
     } catch (error) {
       const err = error as Error;
-      toast.error(`Erreur lors de la mise à jour: ${err.message}`);
+      toast.error(`Error while updating: ${err.message}`);
     }
   };
 
   const handlePasswordChange = async (values: PasswordChangeData) => {
     try {
       await changePassword(values.currentPassword, values.newPassword);
-      toast.success('Mot de passe modifié avec succès');
+      toast.success('Password changed successfully');
       setIsChangingPassword(false);
     } catch (error) {
       const err = error as Error;
-      toast.error(`Erreur lors du changement de mot de passe: ${err.message}`);
+      toast.error(`Error changing password: ${err.message}`);
     }
   };
 
@@ -105,8 +105,8 @@ export default function ProfilePage() {
       await updateProfile({ avatarUrl: data.url });
       toast.success('Photo de profil mise à jour');
     } catch (error) {
-      console.error('Erreur upload avatar:', error);
-      toast.error("Erreur lors de l'envoi de l'image");
+      console.error('Avatar upload error:', error);
+      toast.error('Error sending image');
     }
   };
 
@@ -192,7 +192,6 @@ export default function ProfilePage() {
                 <div className="text-center">
                   <h3 className="font-semibold text-lg">{ProfileUser.fullName}</h3>
                   <Badge variant="secondary" className="mt-1">
-                    LOCAL
                     {ProfileUser.authProvider === 'local'
                       ? 'Compte local'
                       : ProfileUser.authProvider}
