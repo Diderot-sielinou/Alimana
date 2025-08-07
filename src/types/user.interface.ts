@@ -1,9 +1,14 @@
 // src/types/user.interface.ts
 
+import { AuthProvider } from './store.interface';
+
 export interface IUser {
   id: number;
   email: string;
   fullName: string;
+  avatarUrl?: string;
+  phone?: string;
+  authProvider?: AuthProvider;
   canCreateStore: boolean;
   createdAt: string;
   updatedAt: string;

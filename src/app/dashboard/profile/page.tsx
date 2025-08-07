@@ -103,6 +103,7 @@ export default function ProfilePage() {
 
       const data = await response.json();
       await updateProfile({ avatarUrl: data.url });
+
       toast.success('Profile picture updated');
     } catch (error) {
       console.error('Error occurred while uploading avatar:', error);
