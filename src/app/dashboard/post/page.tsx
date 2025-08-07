@@ -22,7 +22,6 @@ export default function PosPage() {
   // recupere la session de caisse ouverte par l'utilisateur actuellement connecte
   const { loadInitialData } = useShopData(); // Ajout de fetchShopData pour rafraîchir les données
   const [openSession, setSession] = useState<ICashRegisterSession | null>(null);
-  console.log(`session du state ${JSON.stringify(openSession)}`);
   const router = useRouter();
 
   const [cart, setCart] = React.useState<CartItem[]>([]);
