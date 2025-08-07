@@ -417,7 +417,10 @@ export default function CashRegisterPage() {
         <h1 className="text-xl font-semibold">Cash Registers</h1>
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingRegister(null)} className="bg-amber-600">
+            <Button
+              onClick={() => setEditingRegister(null)}
+              className="bg-slate-900 hover:bg-slate-800"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Cash Register
             </Button>
@@ -472,14 +475,16 @@ export default function CashRegisterPage() {
                     className="text-red-500 text-sm"
                   />
                 </div>
-                <Button type="submit">{editingRegister ? 'Update' : 'Create'}</Button>
+                <Button className="bg-slate-900 hover:bg-slate-800" type="submit">
+                  {editingRegister ? 'Update' : 'Create'}
+                </Button>
               </Form>
             </Formik>
           </DialogContent>
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
         {cashRegisters.map((register) => (
           <div
             key={register.id}
@@ -487,14 +492,14 @@ export default function CashRegisterPage() {
           >
             <h2 className="text-lg font-medium">{register.name}</h2>
             <p className="text-sm text-muted-foreground">{register.description}</p>
-            <div className="mt-2">
+            <div className="mt-4">
               <Button
                 size="sm"
                 onClick={() => {
                   setEditingRegister(register);
                   setIsModalOpen(true);
                 }}
-                className="bg-amber-500"
+                className="bg-slate-900"
               >
                 Edit
               </Button>

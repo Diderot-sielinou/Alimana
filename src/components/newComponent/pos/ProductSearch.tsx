@@ -99,7 +99,7 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
             size="sm"
             onClick={() => setSelectedCategory(null)}
           >
-            Toutes
+            All
           </Button>
           {categories.map((category) => (
             <Button
@@ -141,7 +141,7 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
                   }}
                   className="mt-1"
                 >
-                  {product?.category?.name ?? 'Sans catégorie'}
+                  {product?.category?.name ?? 'No category chosen'}
                 </Badge>
               </div>
               <div className="text-right ml-4">

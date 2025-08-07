@@ -113,7 +113,7 @@ export default function RoleModal({ role, permissions, onClose, onSave }: RoleMo
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Role Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Role Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Role Name</label>
               <input
                 type="text"
                 value={formData.name}
@@ -140,7 +140,7 @@ export default function RoleModal({ role, permissions, onClose, onSave }: RoleMo
 
             {/* Permissions */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-4">Permissions *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-4">Permissions</label>
               <div className="space-y-4 max-h-60 overflow-y-auto">
                 {Object.entries(groupedPermissions).map(([category, categoryPermissions]) => (
                   <div key={category} className="border rounded-lg p-4">
@@ -181,7 +181,7 @@ export default function RoleModal({ role, permissions, onClose, onSave }: RoleMo
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:opacity-50"
+                className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50"
                 disabled={loading}
               >
                 {loading ? 'Saving...' : role ? 'Update Role' : 'Create Role'}

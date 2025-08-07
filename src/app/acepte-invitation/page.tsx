@@ -115,7 +115,10 @@ export default function AcceptInvitePage() {
         <div className="text-center p-8 bg-white rounded-xl shadow-2xl border border-red-200">
           <h1 className="text-3xl font-bold text-red-700 mb-4">Invalid Invitation</h1>
           <p className="text-gray-600">The invitation link is invalid or has expired.</p>
-          <Button onClick={() => router.replace('/')} className="mt-6">
+          <Button
+            onClick={() => router.replace('/')}
+            className="mt-6 bg-slate-900 hover:bg-slate-800"
+          >
             Back to landing page
           </Button>
         </div>
@@ -170,7 +173,11 @@ export default function AcceptInvitePage() {
             )}
           </div>
 
-          <Button type="submit" className="w-full py-3 text-lg" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            className="w-full py-3 text-lg bg-slate-900 hover:bg-slate-800"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? 'Submitting...' : 'Accept Invitation'}
           </Button>
         </form>

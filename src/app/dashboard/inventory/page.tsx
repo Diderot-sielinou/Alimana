@@ -192,7 +192,10 @@ export default function InventoryPage() {
           <h1 className="text-2xl font-semibold">Inventory</h1>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="ghost" className="bg-amber-600 hover:bg-amber-700 text-white">
+              <Button
+                variant="ghost"
+                className="bg-slate-900 hover:bg-slate-800 hover:text-white text-white"
+              >
                 Add Product
               </Button>
             </DialogTrigger>
@@ -303,7 +306,7 @@ export default function InventoryPage() {
                   <Input id="image" type="file" disabled />
                   <p className="text-xs text-gray-500">Image upload not implemented yet</p>
                 </div>
-                <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700">
+                <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white">
                   {editingId ? 'Update Product' : 'Add Product'}
                 </Button>
               </form>

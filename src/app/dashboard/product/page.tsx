@@ -194,7 +194,7 @@ export default function ProductsPage() {
           }
           className={
             product.quantityInStock > 10
-              ? 'bg-green-100 text-green-800'
+              ? 'bg-green-100 text-green-800 hover:text-white'
               : product.quantityInStock > 0
                 ? 'bg-yellow-100 text-yellow-800'
                 : 'bg-red-100 text-red-800'
@@ -208,7 +208,7 @@ export default function ProductsPage() {
       key: 'isActive' as keyof IProduct,
       header: 'Status',
       render: (product: IProduct) => (
-        <Badge variant={product.isActive ? 'default' : 'secondary'}>
+        <Badge variant={product.isActive ? 'default' : 'secondary'} className="bg-slate-500">
           {product.isActive ? 'Active' : 'Inactive'}
         </Badge>
       ),
@@ -242,7 +242,7 @@ export default function ProductsPage() {
         </div>
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-orange-500 hover:bg-orange-600">
+            <Button className="bg-slate-900 hover:bg-slate-800">
               <Plus className="w-4 h-4 mr-2" />
               New Product
             </Button>

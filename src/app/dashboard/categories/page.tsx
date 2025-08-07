@@ -177,7 +177,7 @@ export default function CategoriesPage() {
         </div>
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-orange-500 hover:bg-orange-600">
+            <Button className="bg-slate-900 hover:bg-slate-800">
               <Plus className="w-4 h-4 mr-2" />
               New Category
             </Button>
