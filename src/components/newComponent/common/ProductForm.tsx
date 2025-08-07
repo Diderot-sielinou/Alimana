@@ -96,23 +96,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit 
         setScannedId(decodedText);
         setFieldValueRef.current?.('barcode', decodedText);
 
-        const foundProduct = products.find((p) => p.barcode === decodedText.trim());
-
-        if (foundProduct) {
-          setFieldValueRef.current?.('name', foundProduct.name);
-          setFieldValueRef.current?.('description', foundProduct.description);
-          setFieldValueRef.current?.('sellingPrice', foundProduct.sellingPrice);
-          setFieldValueRef.current?.('costPrice', foundProduct.costPrice);
-          setFieldValueRef.current?.('quantityInStock', 1);
-          setFieldValueRef.current?.('brand', foundProduct.brand);
-          setFieldValueRef.current?.('categoryId', foundProduct.categoryId);
-        } else {
-          alert('Product not found');
-        }
-
+        // Just close the scanner and allow user to continue filling the form
         setShowScanner(false);
         scanner.clear();
       },
+
       (error) => {
         if (process.env.NODE_ENV === 'development') {
           console.warn('Scanning error', error);
