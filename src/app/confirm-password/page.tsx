@@ -16,7 +16,6 @@ export default function ConfirmPasswordPage() {
       alert('Passwords do not match');
       return;
     }
-    console.log('Password reset:', password);
     router.push('/login');
   };
 

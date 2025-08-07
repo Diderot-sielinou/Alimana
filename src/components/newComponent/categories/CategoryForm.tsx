@@ -15,7 +15,7 @@ interface CategoryFormProps {
 }
 
 const categorySchema = Yup.object({
-  name: Yup.string().required('Le nom est requis'),
+  name: Yup.string().required('Name is required'),
   description: Yup.string(),
   color: Yup.string(),
 });

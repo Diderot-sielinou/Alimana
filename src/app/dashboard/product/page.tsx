@@ -56,9 +56,9 @@ export default function ProductsPage() {
         Object.entries(rawParams).filter(([_, v]) => v !== undefined && v !== '')
       );
 
-      console.log(`request params ${JSON.stringify(params)}`);
+      // console.log(`request params ${JSON.stringify(params)}`);
       const response = await productAPI.getAll(params, storeId);
-      console.log(`response from paginated fetch ${JSON.stringify(response)}`);
+      // console.log(`response from paginated fetch ${JSON.stringify(response)}`);
       const data = response.data as PaginatedResponse<IProduct>;
 
       setProducts(data.data);
@@ -73,7 +73,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     if (!storeId) return;
-    console.log(`store id ${storeId}`);
+    // console.log(`store id ${storeId}`);
 
     fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
