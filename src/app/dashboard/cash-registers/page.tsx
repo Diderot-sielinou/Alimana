@@ -14,7 +14,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { PlusCircle, PlayCircle, StopCircle, History, Loader2, DollarSign } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
@@ -70,7 +70,7 @@ export default function CashRegistersPage() {
         cashRegisterId: selectedRegister?.id,
         initialCash: initialAmount,
       });
-      console.log(`reponse de l'ouverture de sesssion ${response}`);
+      localStorage.setItem('openSession', JSON.stringify(response.data));
       setOpenSession(response.data);
       toast.success(
         `Cash register session open for ${selectedRegister?.name} with ${initialAmount.toLocaleString()} XAF.`
@@ -80,7 +80,7 @@ export default function CashRegistersPage() {
       setSelectedRegister(null);
       setInitialCash('');
     } catch (error) {
-      console.error("Erreur lors de l'ouverture de session:", error);
+      console.error('An error occurred while opening the session:', error);
       toast.error('Failed to open cash register session.');
     } finally {
       setIsProcessingSession(false);
@@ -148,6 +148,7 @@ export default function CashRegistersPage() {
       loadInitialData();
       setIsClosingModalOpen(false);
       setClosingSession(null);
+      localStorage.removeItem('openSession');
       setClosingAmount('');
     } catch (error) {
       console.error('Error closing session:', error);
@@ -166,7 +167,7 @@ export default function CashRegistersPage() {
       setHistoryRegisterId(registerId);
       setShowHistoryModal(true);
     } catch (error) {
-      console.error("Erreur lors de la récupération de l'historique:", error);
+      console.error('Error occurred while fetching history, try again later:', error);
       toast.error('Failed to fetch history');
     } finally {
       setIsFetchingHistory(false);
@@ -200,7 +201,7 @@ export default function CashRegistersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Management of Cash registers</h1>
-          <p className="text-gray-500 mt-1">Manage your cash regiaters.</p>
+          <p className="text-gray-500 mt-1">Manage your cash registers.</p>
         </div>
         <Button onClick={() => setIsOpeningSession(true)} className="flex items-center">
           <PlusCircle className="w-4 h-4 mr-2" />
@@ -232,7 +233,7 @@ export default function CashRegistersPage() {
                     <PlayCircle className="w-4 h-4 mr-2 text-green-500" />
                     Opened at:{' '}
                     {format(new Date(register?.currentOpenSession.openedAt), 'dd/MM/yyyy HH:mm', {
-                      locale: fr,
+                      locale: enUS,
                     })}
                   </p>
                   <p className="flex items-center mt-1">
@@ -402,7 +403,7 @@ export default function CashRegistersPage() {
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Cash register session hisory (
+              Cash register session history (
               {currentStoreCashRegisters.find((cr) => cr.id === historyRegisterId)?.name})
             </DialogTitle>
           </DialogHeader>
@@ -422,12 +423,12 @@ export default function CashRegistersPage() {
                             : 'bg-gray-100 text-gray-800'
                         }`}
                       >
-                        {session.status === 'open' ? 'Ouverte' : 'Fermée'}
+                        {session.status === 'open' ? 'Opened' : 'Closed'}
                       </span>
                     </div>
                     <p className="text-sm text-gray-700">
                       Opened by: {session.openedBy?.user?.fullName || 'N/A'} le{' '}
-                      {format(new Date(session.openedAt), 'dd/MM/yyyy HH:mm', { locale: fr })}
+                      {format(new Date(session.openedAt), 'dd/MM/yyyy HH:mm', { locale: enUS })}
                     </p>
                     <p className="text-sm text-gray-700">
                       Initial Amount: {session.initialCash.toLocaleString()} XAF
@@ -436,10 +437,12 @@ export default function CashRegistersPage() {
                       <>
                         <p className="text-sm text-gray-700">
                           Closed by: {session.closedBy?.user?.fullName || 'N/A'} le{' '}
-                          {format(new Date(session.closedAt!), 'dd/MM/yyyy HH:mm', { locale: fr })}
+                          {format(new Date(session.closedAt!), 'dd/MM/yyyy HH:mm', {
+                            locale: enUS,
+                          })}
                         </p>
                         <p className="text-sm text-gray-700 font-medium">
-                          Montant de clôture: {session.closingCash?.toLocaleString() || 'N/A'} XAF
+                          Closing amount: {session.closingCash?.toLocaleString() || 'N/A'} XAF
                         </p>
                         <p
                           className={`text-sm font-bold ${

@@ -31,19 +31,19 @@ interface PasswordChangeData {
 
 // Validation schemas
 const profileSchema = Yup.object({
-  fullName: Yup.string().required('Le nom complet est requis'),
-  email: Yup.string().email('Email invalide').required("L'email est requis"),
+  fullName: Yup.string().required('Full name is required'),
+  email: Yup.string().email('Invalid Email').required('Email required'),
   phone: Yup.string(),
 });
 
 const passwordSchema = Yup.object({
-  currentPassword: Yup.string().required('Le mot de passe actuel est requis'),
+  currentPassword: Yup.string().required('Current password is required'),
   newPassword: Yup.string()
-    .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
-    .required('Le nouveau mot de passe est requis'),
+    .min(8, 'Password must be at least 8 characters')
+    .required('New password is required'),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref('newPassword')], 'Les mots de passe ne correspondent pas')
-    .required('Confirmez le nouveau mot de passe'),
+    .oneOf([Yup.ref('newPassword')], 'Passwords do not match')
+    .required('Please confirm new password'),
 });
 
 export default function ProfilePage() {
@@ -65,22 +65,22 @@ export default function ProfilePage() {
   const handleProfileUpdate = async (values: UserProfileData) => {
     try {
       await updateProfile(values);
-      toast.success('Profil mis à jour avec succès');
+      toast.success('Profile updated successfully');
       setIsEditingProfile(false);
     } catch (error) {
       const err = error as Error;
-      toast.error(`Erreur lors de la mise à jour: ${err.message}`);
+      toast.error(`Error updating profile: ${err.message}`);
     }
   };
 
   const handlePasswordChange = async (values: PasswordChangeData) => {
     try {
       await changePassword(values.currentPassword, values.newPassword);
-      toast.success('Mot de passe modifié avec succès');
+      toast.success('Password changed successfully');
       setIsChangingPassword(false);
     } catch (error) {
       const err = error as Error;
-      toast.error(`Erreur lors du changement de mot de passe: ${err.message}`);
+      toast.error(`Error changing password: ${err.message}`);
     }
   };
 
@@ -98,15 +98,16 @@ export default function ProfilePage() {
       );
 
       if (!response.ok) {
-        throw new Error("Erreur lors de l'upload");
+        throw new Error('Upload error');
       }
 
       const data = await response.json();
       await updateProfile({ avatarUrl: data.url });
-      toast.success('Photo de profil mise à jour');
+
+      toast.success('Profile picture updated');
     } catch (error) {
-      console.error('Erreur upload avatar:', error);
-      toast.error("Erreur lors de l'envoi de l'image");
+      console.error('Error occurred while uploading avatar:', error);
+      toast.error('Error uploading image');
     }
   };
 
@@ -120,7 +121,7 @@ export default function ProfilePage() {
   };
 
   const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString('fr-FR', {
+    return new Date(date).toLocaleDateString('en-EN', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -192,9 +193,8 @@ export default function ProfilePage() {
                 <div className="text-center">
                   <h3 className="font-semibold text-lg">{ProfileUser.fullName}</h3>
                   <Badge variant="secondary" className="mt-1">
-                    LOCAL
                     {ProfileUser.authProvider === 'local'
-                      ? 'Compte local'
+                      ? 'Local Account'
                       : ProfileUser.authProvider}
                   </Badge>
                 </div>
@@ -216,7 +216,7 @@ export default function ProfilePage() {
                       <Form className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="fullName">full Name *</Label>
+                            <Label htmlFor="fullName">Full Name</Label>
                             <Field as={Input} id="fullName" name="fullName" />
                             <ErrorMessage
                               name="fullName"
@@ -225,7 +225,7 @@ export default function ProfilePage() {
                             />
                           </div>
                           <div>
-                            <Label htmlFor="email">Email *</Label>
+                            <Label htmlFor="email">Email</Label>
                             <Field as={Input} id="email" name="email" type="email" />
                             <ErrorMessage
                               name="email"
@@ -235,7 +235,7 @@ export default function ProfilePage() {
                           </div>
                         </div>
                         <div>
-                          <Label htmlFor="phone">Téléphone</Label>
+                          <Label htmlFor="phone">Telephone</Label>
                           <Field as={Input} id="phone" name="phone" />
                           <ErrorMessage
                             name="phone"
@@ -247,10 +247,10 @@ export default function ProfilePage() {
                           <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="bg-orange-500 hover:bg-orange-600"
+                            className="bg-slate-900 hover:bg-slate-800"
                           >
                             <Save className="w-4 h-4 mr-2" />
-                            {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+                            {isSubmitting ? 'Creating...' : 'Create'}
                           </Button>
                         </div>
                       </Form>
@@ -270,7 +270,7 @@ export default function ProfilePage() {
                         <Phone className="w-4 h-4 text-gray-400" />
                         <div>
                           <p className="text-sm text-gray-500">phone</p>
-                          <p className="font-medium">{ProfileUser.phone || 'Non renseigné'}</p>
+                          <p className="font-medium">{ProfileUser.phone || 'Not Registered'}</p>
                         </div>
                       </div>
                     </div>
@@ -332,7 +332,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="w-5 h-5" />
-                  Sécurité
+                  Security
                 </CardTitle>
                 <Button
                   variant="outline"
@@ -345,7 +345,7 @@ export default function ProfilePage() {
                       cancel
                     </>
                   ) : (
-                    'Changer le mot de passe'
+                    'Change password'
                   )}
                 </Button>
               </div>
@@ -364,7 +364,7 @@ export default function ProfilePage() {
                   {({ isSubmitting }) => (
                     <Form className="space-y-4">
                       <div>
-                        <Label htmlFor="currentPassword">Current password *</Label>
+                        <Label htmlFor="currentPassword">Current password</Label>
                         <Field
                           as={Input}
                           id="currentPassword"
@@ -379,7 +379,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="newPassword">New Password *</Label>
+                          <Label htmlFor="newPassword">New Password</Label>
                           <Field as={Input} id="newPassword" name="newPassword" type="password" />
                           <ErrorMessage
                             name="newPassword"
@@ -388,7 +388,7 @@ export default function ProfilePage() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="confirmPassword">Confirm password *</Label>
+                          <Label htmlFor="confirmPassword">Confirm password</Label>
                           <Field
                             as={Input}
                             id="confirmPassword"
@@ -405,10 +405,10 @@ export default function ProfilePage() {
                       <Button
                         type="submit"
                         disabled={isSubmitting}
-                        className="bg-orange-500 hover:bg-orange-600"
+                        className="bg-slate-900 hover:bg-slate-800"
                       >
                         <Save className="w-4 h-4 mr-2" />
-                        {isSubmitting ? 'Modification...' : 'Modifier le mot de passe'}
+                        {isSubmitting ? 'Updating...' : 'Change Password'}
                       </Button>
                     </Form>
                   )}

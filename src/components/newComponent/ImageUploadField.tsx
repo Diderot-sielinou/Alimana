@@ -30,18 +30,24 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     formData.append('folder', folder);
 
     try {
-      const res = await fetch('/api/upload/image', {
-        method: 'POST',
-        body: formData,
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/upload/image?folder=products`,
+        {
+          method: 'POST',
+          body: formData,
+          // headers: {
+          //   'Content-Type': 'application/json',
+          // },
+        }
+      );
 
-      if (!res.ok) throw new Error('Erreur serveur');
+      if (!res.ok) throw new Error('Internal server error occurred');
 
       const data = await res.json();
       setFieldValue(name, data.url);
-    } catch (err) {
-      console.error(err);
-      alert("Erreur lors de l'upload de l'image");
+    } catch (error) {
+      console.error(error);
+      alert('Error occurred uploading image');
     }
   };
 

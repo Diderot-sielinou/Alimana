@@ -179,7 +179,7 @@ export const InventoryReportModal = ({ onClose, storeId = 1 }: ModalProps) => {
               </Button>
               <Button
                 type="submit"
-                className="bg-orange-600 hover:bg-orange-700 text-white"
+                className="bg-slate-900 hover:bg-slate-800 text-white"
                 disabled={isDownloading}
               >
                 <Download className="mr-2 h-4 w-4" />

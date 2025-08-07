@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
@@ -94,7 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchProfileUser = async () => {
     try {
       const response = await api.get(`auth/profile/me`);
-      console.log('✅ profileUser loaded:', response.data);
+      // console.log('✅ profileUser loaded:', response.data);
       setProfileUser(response.data);
     } catch (error) {
       console.error('❌ Failed to load fetchProfileUser:', error);
@@ -104,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchStoreInfo = useCallback(async (storeId: number) => {
     try {
       const response = await api.get(`store/profile/${storeId}`);
-      console.log('✅ store Info loaded:', response.data);
+      // console.log('✅ store Info loaded:', response.data);
       setStoreInfo(response.data);
     } catch (error) {
       console.error('❌ Failed to load fetchStoreInfo:', error);
@@ -147,7 +148,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setStoreContext(storeData);
       setIsAuthenticated(!!userData);
       setHasFetchedMe(true);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       setUser(null);
       setStoreContext(null);
@@ -244,7 +244,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           // router.replace(`/select-store`);
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast.error('Failed to sign up with Google');
       }
@@ -263,7 +262,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
     try {
       const response = await api.post('/auth/change-password', { currentPassword, newPassword });
-      console.log(response);
+      // console.log(response);
     } catch (err) {
       throw err;
     }

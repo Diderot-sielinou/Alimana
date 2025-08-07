@@ -1,17 +1,18 @@
 'use client';
 
-import { Store, ArrowRight, Mail, Phone, Globe, Image as ImageIcon } from 'lucide-react';
+import { Store, ArrowRight, Mail, Phone, Globe } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { RequiredLabel } from '../ui/required-label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { FormikProps } from 'formik';
+import { ImageUploadField } from '../newComponent/ImageUploadField';
 
 export interface StoreFormValues {
   name: string;
   description: string;
-  logo?: File | null;
+  logo?: string; // string now (URL after upload)
   address: string;
   city: string;
   state: string;
@@ -120,39 +121,15 @@ export default function Step1StoreInfo({ formik, onNext }: Props) {
         )}
       </div>
 
-      {/* Profile Image URL */}
-      <div className="space-y-2">
-        <Label htmlFor="profileImageUrl">Profile Image URL</Label>
-        <div className="relative">
-          <ImageIcon className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <Input
-            id="profileImageUrl"
-            name="profileImageUrl"
-            type="url"
-            placeholder="https://cdn.store.com/profile.jpg"
-            className="pl-10"
-            value={formik.values.profileImageUrl}
-            onChange={formik.handleChange}
-          />
-        </div>
-        {formik.errors.profileImageUrl && (
-          <p className="text-sm text-red-600">{formik.errors.profileImageUrl}</p>
-        )}
-      </div>
+      {/* Profile Image Upload */}
+      <ImageUploadField name="profileImageUrl" label="Profile Image" folder="store" />
+      {formik.errors.profileImageUrl && (
+        <p className="text-sm text-red-600">{formik.errors.profileImageUrl}</p>
+      )}
 
       {/* Logo Upload */}
-      <div className="space-y-2">
-        <Label htmlFor="logo">Store Logo</Label>
-        <Input
-          id="logo"
-          type="file"
-          accept="image/*"
-          onChange={(e) => {
-            formik.setFieldValue('logo', e.currentTarget.files?.[0]);
-          }}
-        />
-        {formik.errors.logo && <p className="text-sm text-red-600">{formik.errors.logo}</p>}
-      </div>
+      <ImageUploadField name="logo" label="Store Logo" folder="store" />
+      {formik.errors.logo && <p className="text-sm text-red-600">{formik.errors.logo}</p>}
 
       <Button onClick={onNext} className="w-full bg-amber-600 hover:bg-amber-700">
         Continue

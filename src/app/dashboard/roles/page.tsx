@@ -175,7 +175,7 @@ export default function RolesPage() {
         <h1 className="text-2xl font-bold text-gray-800">Manage Roles</h1>
         <button
           onClick={() => handleOpenModal()}
-          className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700"
+          className="bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800"
         >
           <i className="fas fa-plus mr-2"></i>Add Role
         </button>

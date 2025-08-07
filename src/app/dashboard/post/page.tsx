@@ -1,7 +1,7 @@
 // src/app/dashboard/pos/page.tsx
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CartItem } from '@/types/pos';
 import { Button } from '@/components/ui/button';
@@ -16,10 +16,12 @@ import { Receipt } from '@/components/newComponent/pos/Receipt';
 import { useShopData } from '@/context/store-context';
 import { IProduct } from '@/types/product.interface';
 import { ISaleResponse } from '@/types/sale-dto.interface';
+import { ICashRegisterSession } from '@/types/cash-register-session.interface';
 
 export default function PosPage() {
   // recupere la session de caisse ouverte par l'utilisateur actuellement connecte
-  const { loadInitialData, openSession } = useShopData(); // Ajout de fetchShopData pour rafraîchir les données
+  const { loadInitialData } = useShopData(); // Ajout de fetchShopData pour rafraîchir les données
+  const [openSession, setSession] = useState<ICashRegisterSession | null>(null);
   const router = useRouter();
 
   const [cart, setCart] = React.useState<CartItem[]>([]);
@@ -112,6 +114,13 @@ export default function PosPage() {
     clearCart(); // Vide le panier
     loadInitialData(); // Rafraîchit les données de la boutique pour mettre à jour les stocks, etc.
   };
+
+  useEffect(() => {
+    const stored = localStorage.getItem('openSession');
+    if (stored) {
+      setSession(JSON.parse(stored));
+    }
+  }, []);
 
   // Afficher un message si aucune session de caisse n'est ouverte
   if (!openSession) {

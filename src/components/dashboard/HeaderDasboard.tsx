@@ -114,7 +114,7 @@ export default function HeaderDasboard() {
                 className="w-8 h-8 rounded-full"
               />
               <span className="hidden md:inline text-orange-700 dark:text-orange-200 text-sm">
-                {ProfileUser?.currentStoreRole.name}
+                {ProfileUser?.currentStoreRole?.name}
               </span>
             </div>
           </div>
