@@ -7,6 +7,7 @@ import { useShopData } from '@/context/store-context';
 import { useAuth } from '@/context/auth-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, ShoppingCart, CreditCard, TrendingUp } from 'lucide-react';
+import { PaymentAnalyticsChart } from '@/components/dashboard/PaymentAnalyticsChart';
 
 export default function DashboardPage() {
   const {
@@ -27,7 +28,7 @@ export default function DashboardPage() {
   console.log(`cashregister ${cashRegisters}`);
 
   const { storeContext } = useAuth();
-  const storeId = storeContext?.storeId;
+  const storeId = storeContext?.storeId || 0;
 
   const stats = [
     {
@@ -331,12 +332,7 @@ export default function DashboardPage() {
           </Card>
 
           <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">
-              Payment Methods
-            </h3>
-            <div className="mx-auto w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-96 xl:h-96">
-              <canvas ref={doughnutChartRef} className="w-full h-full" />
-            </div>
+            <PaymentAnalyticsChart storeId={storeId} />
           </div>
         </div>
       </div>

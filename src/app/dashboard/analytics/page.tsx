@@ -257,11 +257,6 @@ export default function AnalyticsPage() {
             <h2 className="text-lg font-semibold mb-2">Top-Selling Products</h2>
             <canvas ref={topProductsChartRef} height={180} />
           </Card>
-
-          <Card className="p-4">
-            <h2 className="text-lg font-semibold mb-2">Customer Insights</h2>
-            <canvas ref={customerInsightsChartRef} height={200} />
-          </Card>
         </div>
       </main>
     </div>
