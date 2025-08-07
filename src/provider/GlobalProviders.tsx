@@ -1,7 +1,6 @@
 'use client';
 
 import { AuthProvider } from '@/context/auth-context';
-import { AuthProvider2 } from '@/context/AuthContext';
 import { DataProvider } from '@/context/DataContext';
 import { ShopProvider } from '@/context/shopContext';
 import { SidebarProvider } from '@/context/sidebar-context';
@@ -19,15 +18,13 @@ interface GlobalProvidersProps {
 export default function GlobalProviders({ children }: GlobalProvidersProps) {
   return (
     <SidebarProvider>
-      <AuthProvider2>
-        <AuthProvider>
-          <ShopProvider>
-            <ShopDataProvider>
-              <DataProvider>{children}</DataProvider>
-            </ShopDataProvider>
-          </ShopProvider>
-        </AuthProvider>
-      </AuthProvider2>
+      <AuthProvider>
+        <ShopProvider>
+          <ShopDataProvider>
+            <DataProvider>{children}</DataProvider>
+          </ShopDataProvider>
+        </ShopProvider>
+      </AuthProvider>
     </SidebarProvider>
   );
 }

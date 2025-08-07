@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React from 'react';
@@ -5,7 +6,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useForm } from 'react-hook-form';
 import { PAYMENT_METHOD_TYPES } from '@/constants/paymentMethodTypes';
 
 interface PaymentMethodFormProps {
@@ -43,7 +43,9 @@ export const PaymentMethodDialog = ({
             <select id="type" {...register('type')} className="w-full border rounded px-3 py-2">
               <option value="">Sélectionner un type</option>
               {PAYMENT_METHOD_TYPES.map((type) => (
-                <option key={type.value} value={type.value}>{type.label}</option>
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
               ))}
             </select>
             {errors.type && <p className="text-red-500 text-sm">{errors.type.message}</p>}
