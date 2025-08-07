@@ -14,7 +14,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { format } from 'date-fns';
-import { enUS, fr } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { PlusCircle, PlayCircle, StopCircle, History, Loader2, DollarSign } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
@@ -232,7 +232,7 @@ export default function CashRegistersPage() {
                     <PlayCircle className="w-4 h-4 mr-2 text-green-500" />
                     Opened at:{' '}
                     {format(new Date(register?.currentOpenSession.openedAt), 'dd/MM/yyyy HH:mm', {
-                      locale: fr,
+                      locale: enUS,
                     })}
                   </p>
                   <p className="flex items-center mt-1">
@@ -402,7 +402,7 @@ export default function CashRegistersPage() {
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Cash register session hisory (
+              Cash register session history (
               {currentStoreCashRegisters.find((cr) => cr.id === historyRegisterId)?.name})
             </DialogTitle>
           </DialogHeader>
