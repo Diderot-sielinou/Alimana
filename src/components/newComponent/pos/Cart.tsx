@@ -24,6 +24,7 @@ export const Cart: React.FC<CartProps> = ({
   onCheckout,
   total,
 }) => {
+  console.log(total);
   const updateQuantity = (productId: number, newQuantity: number) => {
     if (newQuantity > 0) {
       onUpdateItem(productId, { quantity: newQuantity });
@@ -123,7 +124,7 @@ export const Cart: React.FC<CartProps> = ({
 
                 {/* Sous-total */}
                 <div className="text-right">
-                  <p className="font-semibold text-primary">{item.subtotal.toLocaleString()} XAF</p>
+                  <p className="font-semibold text-primary">{item.subtotal} XAF</p>
                 </div>
               </div>
             ))}
