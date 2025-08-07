@@ -86,22 +86,39 @@ export default function RolesPage() {
     handleCloseModal();
   };
 
-  const handleDeleteRole = async (id: number) => {
+  const handleDeleteRole = (id: number) => {
     if (!storeId) return;
 
-    if (!confirm('Are you sure you want to delete this role?')) {
-      return;
-    }
-
-    try {
-      await deleteRole(storeId, id);
-      setRoles((prev) => prev.filter((role) => role.id !== id));
-      setFilteredRoles((prev) => prev.filter((role) => role.id !== id));
-      toast.success('Role deleted successfully');
-    } catch (err) {
-      console.error('Error deleting role:', err);
-      toast.error('Failed to delete role');
-    }
+    toast.custom((t) => (
+      <div className="bg-white shadow-md p-4 rounded-lg flex items-center justify-between gap-4 w-[320px]">
+        <div className="text-gray-800 text-sm">Confirm deletion of this role?</div>
+        <div className="flex gap-2">
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                await deleteRole(storeId, id);
+                setRoles((prev) => prev.filter((role) => role.id !== id));
+                setFilteredRoles((prev) => prev.filter((role) => role.id !== id));
+                toast.success('Role deleted successfully');
+              } catch (err) {
+                console.error('Error deleting role:', err);
+                toast.error('Failed to delete role');
+              }
+            }}
+            className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
+          >
+            Yes
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 text-xs px-3 py-1 rounded"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ));
   };
 
   const handleSearch = (query: string, status: 'all' | 'active' | 'inactive') => {
@@ -165,7 +182,6 @@ export default function RolesPage() {
       </div>
 
       <RoleFilterBar
-        // roles={roles}
         filteredRoles={filteredRoles}
         onSearch={handleSearch}
         // onCreateRole={() => handleOpenModal()}
