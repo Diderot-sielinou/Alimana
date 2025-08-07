@@ -42,6 +42,10 @@ export default function CashRegistersPage() {
   const [registerHistory, setRegisterHistory] = React.useState<ICashRegisterSession[]>([]);
   const [isFetchingHistory, setIsFetchingHistory] = React.useState(false);
 
+  const [isClosingModalOpen, setIsClosingModalOpen] = React.useState(false);
+  const [closingSession, setClosingSession] = React.useState<ICashRegisterSession | null>(null);
+  const [closingAmount, setClosingAmount] = React.useState('');
+
   // Filtrer les caisses pour la boutique actuelle
   // const currentStoreCashRegisters = React.useMemo(() => {
   //   return cashRegisters.filter(cr => cr.storeId === currentStore?.id);
@@ -84,33 +88,69 @@ export default function CashRegistersPage() {
   };
 
   // Fermer une session de caisse
-  const handleCloseSession = async (session: ICashRegisterSession) => {
+  // const handleCloseSession = async (session: ICashRegisterSession) => {
+  //   if (!session || session.status === 'closed') return;
+
+  //   console.log(`session ouverte ${JSON.stringify(session)}`);
+
+  //   const closingAmount = prompt(`Confirm the closing amount ${session.id}`);
+  //   if (closingAmount === null) return; // Annulé par l'utilisateur
+
+  //   const finalClosingAmount = parseFloat(closingAmount);
+  //   if (isNaN(finalClosingAmount) || finalClosingAmount < 0) {
+  //     toast.error('The closing amount must be greater than 0');
+  //     return;
+  //   }
+
+  //   setIsProcessingSession(true);
+  //   try {
+  //     await api.post(`store/${user?.storeId}/cash-register-sessions/${session.id}/close`, {
+  //       // sessionId: session.id,
+  //       finalCash: finalClosingAmount,
+  //       // closedByStoreUserId: user?.s, // Assurez-vous que l'ID de l'utilisateur est envoyé
+  //     });
+  //     toast.success(
+  //       `Casg=h register session ${session.id} closed with ${finalClosingAmount.toLocaleString()} XAF.`
+  //     );
+  //     loadInitialData(); // Rafraîchir les données
+  //   } catch (error) {
+  //     console.error('Erreur lors de la fermeture de session:', error);
+  //     toast.error('Failed to close cash register session.');
+  //   } finally {
+  //     setIsProcessingSession(false);
+  //   }
+  // };
+
+  const handleCloseSession = (session: ICashRegisterSession) => {
     if (!session || session.status === 'closed') return;
+    setClosingSession(session);
+    setClosingAmount('');
+    setIsClosingModalOpen(true);
+  };
 
-    console.log(`session ouverte ${JSON.stringify(session)}`);
+  const confirmCloseSession = async () => {
+    if (!closingSession) return;
 
-    const closingAmount = prompt(`Confirm the closing amount ${session.id}`);
-    if (closingAmount === null) return; // Annulé par l'utilisateur
-
-    const finalClosingAmount = parseFloat(closingAmount);
-    if (isNaN(finalClosingAmount) || finalClosingAmount < 0) {
+    const finalAmount = parseFloat(closingAmount);
+    if (isNaN(finalAmount) || finalAmount < 0) {
       toast.error('The closing amount must be greater than 0');
       return;
     }
 
     setIsProcessingSession(true);
     try {
-      await api.post(`store/${user?.storeId}/cash-register-sessions/${session.id}/close`, {
-        // sessionId: session.id,
-        finalCash: finalClosingAmount,
-        // closedByStoreUserId: user?.s, // Assurez-vous que l'ID de l'utilisateur est envoyé
+      await api.post(`store/${user?.storeId}/cash-register-sessions/${closingSession.id}/close`, {
+        finalCash: finalAmount,
       });
       toast.success(
-        `Casg=h register session ${session.id} closed with ${finalClosingAmount.toLocaleString()} XAF.`
+        `Cash register session ${closingSession.id} closed with ${finalAmount.toLocaleString()} XAF.`
       );
-      loadInitialData(); // Rafraîchir les données
+      loadInitialData();
+      setIsClosingModalOpen(false);
+      setClosingSession(null);
+      setClosingAmount('');
     } catch (error) {
-      console.error('Erreur lors de la fermeture de session:', error);
+      console.error('Error closing session:', error);
       toast.error('Failed to close cash register session.');
     } finally {
       setIsProcessingSession(false);
@@ -167,7 +207,6 @@ export default function CashRegistersPage() {
           Open a new session
         </Button>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {currentStoreCashRegisters.map((register) => (
           <Card key={register?.id}>
@@ -254,6 +293,40 @@ export default function CashRegistersPage() {
           </Card>
         ))}
       </div>
+      {/* Modal pour fermer une session */}
+
+      <Dialog open={isClosingModalOpen} onOpenChange={setIsClosingModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Close Cash Register Session</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-700">
+              Please enter the closing amount for session #{closingSession?.id}
+            </p>
+            <Input
+              type="number"
+              value={closingAmount}
+              onChange={(e) => setClosingAmount(e.target.value)}
+              placeholder="Ex: 45000"
+              min="0"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsClosingModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmCloseSession} disabled={isProcessingSession}>
+              {isProcessingSession ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <StopCircle className="w-4 h-4 mr-2" />
+              )}
+              Confirm Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Modal pour ouvrir une session */}
       <Dialog open={isOpeningSession} onOpenChange={setIsOpeningSession}>
@@ -324,7 +397,6 @@ export default function CashRegistersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
       {/* Modal pour l'historique des sessions */}
       <Dialog open={showHistoryModal} onOpenChange={setShowHistoryModal}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">

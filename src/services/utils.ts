@@ -48,7 +48,7 @@ export const productAPI = {
   getById: (id: number, storId: number) => api.get(`/store/${storId}/product/${id}`),
   create: (data: Partial<IProduct>, storId: number) => api.post(`/store/${storId}/product?`, data),
   update: (id: number, data: Partial<IProduct>, storId: number) =>
-    api.put(`/store/${storId}/product/${id}`, data),
+    api.patch(`/store/${storId}/product/${id}`, data),
   delete: (id: number, storId: number) => api.delete(`/store/${storId}/product/${id}`),
   toggleActive: (id: number, storId: number) =>
     api.patch<ApiResponse<IProduct>>(`/store/${storId}/product/${id}/toggle-active`),
