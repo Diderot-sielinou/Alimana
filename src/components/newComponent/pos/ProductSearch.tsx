@@ -1,4 +1,3 @@
-// src/components/pos/ProductSearch.tsx
 'use client';
 
 import React from 'react';
@@ -9,19 +8,16 @@ import { Search, Scan, Package } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useShopData } from '@/context/store-context';
 import { IProduct } from '@/types/product.interface';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 
 interface ProductSearchProps {
   onProductSelect: (product: IProduct) => void;
 }
 
 export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect }) => {
-  // fonction pour stocker une couleur aléatoire par catégorie
   const categoryColorsMap = new Map<number, string>();
-
   const getCategoryColor = (categoryId: number): string => {
-    if (categoryColorsMap.has(categoryId)) {
-      return categoryColorsMap.get(categoryId)!;
-    }
+    if (categoryColorsMap.has(categoryId)) return categoryColorsMap.get(categoryId)!;
     const randomColor = `#${Math.floor(Math.random() * 16777215)
       .toString(16)
       .padStart(6, '0')}`;
@@ -33,6 +29,8 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedCategory, setSelectedCategory] = React.useState<number | null>(null);
   const [isScanning, setIsScanning] = React.useState(false);
+  const [showScanner, setShowScanner] = React.useState(false);
+  const scannerRef = React.useRef<HTMLDivElement | null>(null);
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch =
@@ -50,13 +48,13 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
         if (product) {
           onProductSelect(product);
           setSearchTerm('');
-          toast.success(`Product not found: ${product.name}`);
+          toast.success(`Product found: ${product.name}`);
         } else {
           toast.error('Product not found');
         }
       } catch (error) {
         const err = error as Error;
-        toast.error(`Error while searching,${err.message}`);
+        toast.error(`Error while searching: ${err.message}`);
       } finally {
         setIsScanning(false);
       }
@@ -65,18 +63,50 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
-    // Recherche automatique par code-barres si le format correspond
     if (/^\d{8,}$/.test(value)) {
       handleBarcodeSearch(value);
     }
   };
+
+  // Initialize barcode scanner
+  React.useEffect(() => {
+    if (!showScanner || !scannerRef.current) return;
+    if (scannerRef.current.hasChildNodes()) return;
+
+    const scanner = new Html5QrcodeScanner('barcode-scanner', { fps: 10, qrbox: 250 }, false);
+
+    scanner.render(
+      (decodedText) => {
+        setSearchTerm(decodedText);
+        handleBarcodeSearch(decodedText);
+        setShowScanner(false);
+        scanner.clear();
+      },
+      (error) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Scanning error', error);
+        }
+      }
+    );
+
+    return () => {
+      scanner.clear().catch(console.error);
+    };
+  }, [showScanner]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border p-6">
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Search a product</h2>
 
-        {/* Barre de recherche */}
+        {/* Barcode Scanner Button */}
+        <div className="flex justify-between mb-4">
+          <Button type="button" variant="outline" onClick={() => setShowScanner(true)}>
+            📷 Scan Barcode
+          </Button>
+        </div>
+
+        {/* Search Input */}
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
@@ -92,7 +122,22 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
           )}
         </div>
 
-        {/* Filtres par catégorie */}
+        {/* Barcode Scanner UI */}
+        {showScanner && (
+          <div className="mt-4">
+            <div ref={scannerRef} id="barcode-scanner" className="w-full max-w-sm mx-auto" />
+            <p className="text-center text-sm text-gray-600 mt-2">
+              Place the barcode in front of your camera.
+            </p>
+            <div className="text-center mt-2">
+              <Button variant="ghost" onClick={() => setShowScanner(false)}>
+                ❌ Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Category Filters */}
         <div className="flex flex-wrap gap-2">
           <Button
             variant={selectedCategory === null ? 'default' : 'outline'}
@@ -114,7 +159,7 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
         </div>
       </div>
 
-      {/* Liste des produits */}
+      {/* Product List */}
       <div className="space-y-2 max-h-96 overflow-y-auto">
         {filteredProducts.length === 0 ? (
           <div className="text-center py-8">
@@ -141,7 +186,7 @@ export const ProductSearch: React.FC<ProductSearchProps> = ({ onProductSelect })
                   }}
                   className="mt-1"
                 >
-                  {product?.category?.name ?? 'No category chosen'}
+                  {product?.category?.name ?? 'No category'}
                 </Badge>
               </div>
               <div className="text-right ml-4">
