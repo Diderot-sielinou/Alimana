@@ -70,7 +70,6 @@ export default function CashRegistersPage() {
         cashRegisterId: selectedRegister?.id,
         initialCash: initialAmount,
       });
-      console.log(`response ${JSON.stringify(response.data)}`);
       localStorage.setItem('openSession', JSON.stringify(response.data));
       setOpenSession(response.data);
       toast.success(
