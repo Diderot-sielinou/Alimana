@@ -98,7 +98,7 @@ export const ShopDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const fetchCashRegisters = async (storeId: number) => {
     try {
       const response = await api.get(`store/${storeId}/cash-register`);
-      console.log('✅ Cash registers loaded:', response.data);
+      // console.log('✅ Cash registers loaded:', response.data);
       setState((prev) => ({ ...prev, cashRegisters: response.data }));
     } catch (error) {
       console.error('❌ Failed to load cash registers:', error);

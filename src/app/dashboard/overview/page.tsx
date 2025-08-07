@@ -23,9 +23,6 @@ export default function DashboardPage() {
   const lineChartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
 
-  console.log(`product ${products}`);
-  console.log(`cashregister ${cashRegisters}`);
-
   const { storeContext } = useAuth();
   const storeId = storeContext?.storeId;
 
@@ -78,7 +75,7 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         const salesData = salesOverview;
-        console.log(salesData);
+        // console.log(salesData);
 
         // Process data
         const labels = salesData.map((item) =>
@@ -87,7 +84,7 @@ export default function DashboardPage() {
 
         const revenueData = salesData.map((item) => parseFloat(item.revenue));
         const profitData = salesData.map((item) => parseFloat(item.profit));
-        console.log(profitData);
+        // console.log(profitData);
 
         // Destroy previous chart
         if (chartInstance.current) {
