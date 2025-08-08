@@ -147,6 +147,7 @@ export function PaymentAnalyticsChart({ storeId }: PaymentAnalyticsChartProps) {
 
   useEffect(() => {
     fetchAnalyticsData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeId, dateRange]);
 
   useEffect(() => {
@@ -159,6 +160,7 @@ export function PaymentAnalyticsChart({ storeId }: PaymentAnalyticsChartProps) {
         chartInstanceRef.current.destroy();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analyticsData, viewType, isLoading]);
 
   const formatCurrency = (amount: number) => {
