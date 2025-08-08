@@ -30,6 +30,7 @@ import { CategoryForm } from '@/components/newComponent/categories/CategoryForm'
 import { useShopData } from '@/context/store-context';
 import { categoryAPI } from '@/services/utils';
 import { useAuth } from '@/context/auth-context';
+import { LoadingSpinner } from '@/components/dashboard/LoadingSpinner';
 
 export default function CategoriesClientPage() {
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,7 @@ export default function CategoriesClientPage() {
   const { categories, refreshCategories } = useShopData();
   const { storeContext } = useAuth();
   if (!storeContext) {
-    throw Error('missing store context');
+    return <LoadingSpinner />;
   }
 
   const filteredCategories = categories.filter(
