@@ -1,19 +1,35 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { storeTokens, setAuthToken } from '@/lib/api';
 import { Loader2 } from 'lucide-react';
 
 /**
- * Page de callback pour OAuth (Google, etc.)
- *
- * Cette page reçoit les tokens via les paramètres URL après l'authentification OAuth
- * puis les stocke et redirige l'utilisateur vers la bonne page.
+ * Composant de chargement pendant la suspension
+ */
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <Loader2 className="h-12 w-12 animate-spin text-amber-600 mx-auto" />
+        <div className="space-y-2">
+          <h1 className="text-xl font-semibold text-gray-900">Connexion en cours...</h1>
+          <p className="text-gray-500">
+            Veuillez patienter pendant que nous finalisons votre authentification.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Composant interne qui utilise useSearchParams
  *
  * URL attendue: /auth/callback?accessToken=xxx&refreshToken=xxx&isNewUser=true|false
  */
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const hasProcessed = useRef(false);
@@ -72,17 +88,19 @@ export default function AuthCallbackPage() {
     processCallback();
   }, [router, searchParams]);
 
+  return <LoadingScreen />;
+}
+
+/**
+ * Page de callback pour OAuth (Google, etc.)
+ *
+ * Cette page reçoit les tokens via les paramètres URL après l'authentification OAuth
+ * puis les stocke et redirige l'utilisateur vers la bonne page.
+ */
+export default function AuthCallbackPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-      <div className="text-center space-y-4">
-        <Loader2 className="h-12 w-12 animate-spin text-amber-600 mx-auto" />
-        <div className="space-y-2">
-          <h1 className="text-xl font-semibold text-gray-900">Connexion en cours...</h1>
-          <p className="text-gray-500">
-            Veuillez patienter pendant que nous finalisons votre authentification.
-          </p>
-        </div>
-      </div>
-    </div>
+    <Suspense fallback={<LoadingScreen />}>
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
