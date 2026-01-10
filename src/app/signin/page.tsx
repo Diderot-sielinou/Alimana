@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
@@ -59,9 +59,36 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 // =============================================================================
-// COMPONENT
+// LOADING COMPONENT
 // =============================================================================
-export default function SigninPage() {
+function SigninSkeleton() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50/30 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="h-6 w-32 bg-slate-200 rounded animate-pulse mx-auto mb-6" />
+          <div className="h-8 w-48 bg-slate-200 rounded animate-pulse mx-auto mb-2" />
+          <div className="h-4 w-64 bg-slate-200 rounded animate-pulse mx-auto" />
+        </div>
+        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader className="text-center pb-2">
+            <div className="h-6 w-32 bg-slate-200 rounded animate-pulse mx-auto mb-2" />
+            <div className="h-4 w-48 bg-slate-200 rounded animate-pulse mx-auto" />
+          </CardHeader>
+          <CardContent className="space-y-6 pt-4">
+            <div className="h-12 bg-slate-200 rounded animate-pulse" />
+            <div className="h-24 bg-slate-200 rounded animate-pulse" />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================================
+// SIGNIN CONTENT COMPONENT (uses useSearchParams)
+// =============================================================================
+function SigninContent() {
   const { login, registerWithGoogle, isAuthenticated, isLoading } = useAuth();
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
@@ -317,5 +344,16 @@ export default function SigninPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+// =============================================================================
+// MAIN COMPONENT WITH SUSPENSE
+// =============================================================================
+export default function SigninPage() {
+  return (
+    <Suspense fallback={<SigninSkeleton />}>
+      <SigninContent />
+    </Suspense>
   );
 }
