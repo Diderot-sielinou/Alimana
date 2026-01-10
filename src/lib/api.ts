@@ -1,46 +1,28 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
 // =============================================================================
-// CONFIGURATION
+// CONSTANTS
 // =============================================================================
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
+const TOKEN_STORAGE_KEY = 'auth_tokens';
+
+interface StoredTokens {
+  accessToken: string | null;
+  refreshToken: string | null;
+}
 
 // =============================================================================
-// API INSTANCE
+// TOKEN STORAGE HELPERS
 // =============================================================================
 
 /**
- * Instance Axios configurée pour communiquer avec api.alimana.cc
+ * Stocke les tokens dans localStorage
  */
-export const api: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  // ✅ CRUCIAL: Permet l'envoi/réception des cookies cross-subdomain
-  withCredentials: true,
-});
-
-// =============================================================================
-// TOKEN MANAGEMENT (Backup pour compatibilité)
-// =============================================================================
-
-const TOKEN_KEY = 'accessToken';
-const REFRESH_TOKEN_KEY = 'refreshToken';
-
-/**
- * Stocke les tokens dans localStorage (backup si cookies échouent)
- */
-export const storeTokens = (accessToken: string, refreshToken?: string): void => {
+export const storeTokens = (accessToken: string, refreshToken: string): void => {
   if (typeof window === 'undefined') return;
 
   try {
-    localStorage.setItem(TOKEN_KEY, accessToken);
-    if (refreshToken) {
-      localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-    }
+    localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({ accessToken, refreshToken }));
   } catch (error) {
     console.error('Failed to store tokens:', error);
   }
@@ -49,16 +31,16 @@ export const storeTokens = (accessToken: string, refreshToken?: string): void =>
 /**
  * Récupère les tokens depuis localStorage
  */
-export const getStoredTokens = (): { accessToken: string | null; refreshToken: string | null } => {
+export const getStoredTokens = (): StoredTokens => {
   if (typeof window === 'undefined') {
     return { accessToken: null, refreshToken: null };
   }
 
   try {
-    return {
-      accessToken: localStorage.getItem(TOKEN_KEY),
-      refreshToken: localStorage.getItem(REFRESH_TOKEN_KEY),
-    };
+    const stored = localStorage.getItem(TOKEN_STORAGE_KEY);
+    if (!stored) return { accessToken: null, refreshToken: null };
+
+    return JSON.parse(stored) as StoredTokens;
   } catch {
     return { accessToken: null, refreshToken: null };
   }
@@ -71,15 +53,37 @@ export const clearStoredTokens = (): void => {
   if (typeof window === 'undefined') return;
 
   try {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    // Cleanup legacy key if exists
+    localStorage.removeItem('accessToken');
   } catch (error) {
     console.error('Failed to clear tokens:', error);
   }
 };
 
+// =============================================================================
+// API INSTANCE
+// =============================================================================
+
 /**
- * Configure le header Authorization
+ * Instance Axios configurée
+ */
+export const api: AxiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  // ✅ Toujours envoyer les cookies (pour les cas où le domaine est partagé)
+  withCredentials: true,
+});
+
+// =============================================================================
+// TOKEN MANAGEMENT
+// =============================================================================
+
+/**
+ * Configure le token d'authentification pour les requêtes
  */
 export const setAuthToken = (token: string | null): void => {
   if (token) {
@@ -90,7 +94,7 @@ export const setAuthToken = (token: string | null): void => {
 };
 
 /**
- * Efface le token d'authentification
+ * Efface le token et le storage
  */
 export const clearAuthToken = (): void => {
   delete api.defaults.headers.common['Authorization'];
@@ -103,7 +107,7 @@ export const clearAuthToken = (): void => {
 
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Si pas de token dans les headers, essaye depuis localStorage (backup)
+    // Si pas de token dans les headers, essaye de le récupérer du storage
     if (!config.headers['Authorization']) {
       const { accessToken } = getStoredTokens();
       if (accessToken) {
@@ -116,7 +120,7 @@ api.interceptors.request.use(
 );
 
 // =============================================================================
-// RESPONSE INTERCEPTOR - AUTO REFRESH
+// RESPONSE INTERCEPTOR - TOKEN REFRESH
 // =============================================================================
 
 let isRefreshing = false;
@@ -145,15 +149,9 @@ api.interceptors.response.use(
 
     // Si erreur 401 et pas déjà en retry
     if (error.response?.status === 401 && !originalRequest._retry) {
-      // Ne pas retry pour les routes d'auth (sauf /auth/user/me et /auth/store/me)
-      const url = originalRequest.url || '';
-      const isAuthEndpoint =
-        url.includes('/auth/login') ||
-        url.includes('/auth/register') ||
-        url.includes('/auth/refresh') ||
-        url.includes('/auth/logout');
-
-      if (isAuthEndpoint) {
+      // Ne pas retry pour les routes d'auth
+      const isAuthRoute = originalRequest.url?.includes('/auth/');
+      if (isAuthRoute && !originalRequest.url?.includes('/auth/user/me')) {
         return Promise.reject(error);
       }
 
@@ -173,27 +171,37 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // ✅ Appel refresh - les cookies sont envoyés automatiquement avec withCredentials
-        const response = await api.post('/auth/refresh', {});
+        const { refreshToken } = getStoredTokens();
 
-        const { accessToken, refreshToken } = response.data;
-
-        // Stocke aussi dans localStorage (backup)
-        if (accessToken) {
-          storeTokens(accessToken, refreshToken);
-          setAuthToken(accessToken);
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
         }
 
-        processQueue(null, accessToken);
+        // ✅ Envoie le refresh token dans le body (cross-domain compatible)
+        const response = await axios.post(
+          `${API_BASE_URL}/auth/refresh`,
+          { refreshToken },
+          { withCredentials: true }
+        );
+
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data;
+
+        // Stocke les nouveaux tokens
+        storeTokens(newAccessToken, newRefreshToken);
+        setAuthToken(newAccessToken);
+
+        // Process la queue avec le nouveau token
+        processQueue(null, newAccessToken);
 
         // Retry la requête originale
-        originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
+        // Échec du refresh - déconnexion
         processQueue(refreshError as Error, null);
         clearAuthToken();
 
-        // Redirige vers login
+        // Redirige vers login si côté client
         if (typeof window !== 'undefined') {
           window.location.href = '/signin';
         }
@@ -213,7 +221,7 @@ api.interceptors.response.use(
 // =============================================================================
 
 /**
- * Initialise l'API avec le token stocké
+ * Initialise l'API avec le token stocké (à appeler au démarrage de l'app)
  */
 export const initializeApi = (): void => {
   const { accessToken } = getStoredTokens();
@@ -222,7 +230,7 @@ export const initializeApi = (): void => {
   }
 };
 
-// Auto-initialize côté client
+// Auto-initialize si côté client
 if (typeof window !== 'undefined') {
   initializeApi();
 }

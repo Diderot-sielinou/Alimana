@@ -88,7 +88,7 @@ export default function SignupPage() {
             <CardDescription>Create your account to get started with Alimana</CardDescription>
             <Button
               variant="outline"
-              onClick={() => registerWithGoogle(true)}
+              onClick={() => registerWithGoogle()}
               className="w-full bg-transparent dark:hover:bg-slate-200 dark:text-slate-900"
             >
               <svg height="20" width="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
